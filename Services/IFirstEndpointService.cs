@@ -2,6 +2,6 @@
 {
     public interface IFirstEndpointService
     {
-        
+        string AdditionService(int first, int second);
     }
 }

@@ -1,25 +1,30 @@
-﻿using System;
-using asp_net_po_schedule_management_server.Utils;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using asp_net_po_schedule_management_server.Services;
 
 namespace asp_net_po_schedule_management_server.Controllers
 {
     [ApiController]
-    [Route(nameof(Configuration.API_PREFIX) + nameof(Configuration.WEATHER_FORECAST_ENDPOINT))]
-    public class WeatherForecastController : ControllerBase
+    [Route("/api/v1/dotnet/[controller]")]
+    public sealed class FirstEndpointController : ControllerBase
     {
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<FirstEndpointController> _logger;
+        private readonly IFirstEndpointService _service;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public FirstEndpointController(ILogger<FirstEndpointController> logger, IFirstEndpointService service)
         {
             _logger = logger;
+            _service = service;
         }
 
-        [HttpGet]
-        public Action<string> Get([FromRoute] string message)
+        [HttpGet("getinfo/{first:int}/{second:int}")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public ActionResult<string> GetMessageValue([FromRoute] int first, [FromRoute] int second)
         {
-            return 
+            return StatusCode((int)HttpStatusCode.OK, _service.AdditionService(first, second));
         }
     }
 }
