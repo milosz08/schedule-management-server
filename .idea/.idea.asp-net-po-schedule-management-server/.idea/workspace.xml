@@ -6,28 +6,14 @@
     <projectFile profileName="Postman Development">asp-net-po-schedule-management-server.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/discord.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/config/applicationhost.config" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Controllers/FirstEndpointController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Properties/launchSettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/IFirstEndpointService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/ServicesImplementation/FirstEndpointServiceImplementation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Startup.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/appsettings.Development.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/appsettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/asp-net-po-schedule-management-server.sln" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/asp-net-po-schedule-management-server.sln.DotSettings.user" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/global.json" afterDir="false" />
-    </list>
+    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="initial commit and generate some boilerplate code" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -103,8 +89,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1648541811332</updated>
-      <workItem from="1648541814052" duration="4546000" />
+      <workItem from="1648541814052" duration="4894000" />
     </task>
+    <task id="LOCAL-00001" summary="initial commit and generate some boilerplate code">
+      <created>1648546665068</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1648546665068</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -127,5 +121,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="initial commit and generate some boilerplate code" />
+    <option name="LAST_COMMIT_MESSAGE" value="initial commit and generate some boilerplate code" />
   </component>
 </project>
