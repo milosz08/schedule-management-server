@@ -6,10 +6,9 @@
     <projectFile profileName="Postman Development">asp-net-po-schedule-management-server.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="initial commit and generate some boilerplate code">
-      <change afterPath="$PROJECT_DIR$/Models/SampleEntity.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" afterDir="false" />
+    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="prepare for mySequel database connection (and generate first migration)">
+      <change afterPath="$PROJECT_DIR$/Doc/tables-relations-mapping.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +22,13 @@
         <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8e2590d59983c8e2c567a170b82baf2e46c6db04b5fd9ee7b161a29d9e27a0/FileStream.Win32.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fa60121f8597edda05ba1e79c874b7b6527c3a7a58eed18a5e6266beec5bea/FileStream.Windows.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/de369466103029844e32fc32ca1c29c4255338929e1f1da02e7972a2532fafcd/DeveloperExceptionPageMiddleware.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4e6c67f571da801e2e54b0a2e1a0c819daa360cb13fc513f2ca8767f83d85a71/DefaultHttpContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2e12c2e1c694770af83cfc880637c7c3f499dad0837b782e1150a8caeb4/FeatureReferences.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -40,7 +46,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="SolutionBuilderGeneralOptionsPageId" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected=".NET Launch Settings Profile.asp-net-po-schedule-management-server: Postman Development">
@@ -98,7 +105,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1648541811332</updated>
-      <workItem from="1648541814052" duration="11784000" />
+      <workItem from="1648541814052" duration="33079000" />
+      <workItem from="1648640670131" duration="73000" />
+      <workItem from="1648640767843" duration="583000" />
+      <workItem from="1648641393044" duration="64000" />
+      <workItem from="1648641495380" duration="5419000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit and generate some boilerplate code">
       <created>1648546665068</created>
@@ -121,14 +132,42 @@
       <option name="project" value="LOCAL" />
       <updated>1648547430038</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="install mySQL driver and object-relational mapping .NET EntityFramework">
+      <created>1648559704659</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1648559704659</updated>
+    </task>
+    <task id="LOCAL-00005" summary="update project auto-editable files">
+      <created>1648653778933</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1648653778934</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add Utils static class helper">
+      <created>1648653857894</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1648653857894</updated>
+    </task>
+    <task id="LOCAL-00007" summary="prepare for mySequel database connection (and generate first migration)">
+      <created>1648653867271</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1648653867271</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
-  <component name="UnityProjectConfiguration" hasMinimizedUI="null" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -145,6 +184,10 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="initial commit and generate some boilerplate code" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit and generate some boilerplate code" />
+    <MESSAGE value="install mySQL driver and object-relational mapping .NET EntityFramework" />
+    <MESSAGE value="update project auto-editable files" />
+    <MESSAGE value="add Utils static class helper" />
+    <MESSAGE value="prepare for mySequel database connection (and generate first migration)" />
+    <option name="LAST_COMMIT_MESSAGE" value="prepare for mySequel database connection (and generate first migration)" />
   </component>
 </project>
