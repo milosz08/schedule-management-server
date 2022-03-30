@@ -6,18 +6,9 @@
     <projectFile profileName="Postman Development">asp-net-po-schedule-management-server.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" afterDir="false" />
+    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="prepare for mySequel database connection (and generate first migration)">
       <change afterPath="$PROJECT_DIR$/Doc/tables-relations-mapping.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Entities/Person.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Migrations/20220330120118_Init.Designer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Migrations/20220330120118_Init.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Migrations/ApplicationDbContextModelSnapshot.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/ApplicationUtils.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appsettings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +109,7 @@
       <workItem from="1648640670131" duration="73000" />
       <workItem from="1648640767843" duration="583000" />
       <workItem from="1648641393044" duration="64000" />
-      <workItem from="1648641495380" duration="5199000" />
+      <workItem from="1648641495380" duration="5419000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit and generate some boilerplate code">
       <created>1648546665068</created>
@@ -148,7 +139,28 @@
       <option name="project" value="LOCAL" />
       <updated>1648559704659</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="update project auto-editable files">
+      <created>1648653778933</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1648653778934</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add Utils static class helper">
+      <created>1648653857894</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1648653857894</updated>
+    </task>
+    <task id="LOCAL-00007" summary="prepare for mySequel database connection (and generate first migration)">
+      <created>1648653867271</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1648653867271</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -173,6 +185,9 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="initial commit and generate some boilerplate code" />
     <MESSAGE value="install mySQL driver and object-relational mapping .NET EntityFramework" />
-    <option name="LAST_COMMIT_MESSAGE" value="install mySQL driver and object-relational mapping .NET EntityFramework" />
+    <MESSAGE value="update project auto-editable files" />
+    <MESSAGE value="add Utils static class helper" />
+    <MESSAGE value="prepare for mySequel database connection (and generate first migration)" />
+    <option name="LAST_COMMIT_MESSAGE" value="prepare for mySequel database connection (and generate first migration)" />
   </component>
 </project>
