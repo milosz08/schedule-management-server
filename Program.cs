@@ -12,8 +12,9 @@ namespace asp_net_po_schedule_management_server
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args)
-                       .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+            return Host
+                .CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         }
     }
 }

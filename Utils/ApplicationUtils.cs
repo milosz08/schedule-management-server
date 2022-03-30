@@ -1,7 +1,21 @@
-﻿namespace asp_net_po_schedule_management_server.Utils
+﻿using System;
+using System.Text;
+
+namespace asp_net_po_schedule_management_server.Utils
 {
     public static class ApplicationUtils
     {
+        private static readonly string RANDOM_CHARS = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUWXYZ0123456789";
+        private static readonly Random _random = new Random();
         
+        public static string ArtificialIndexGenerator()
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < 20; i++) {
+                int randomIndex = _random.Next(RANDOM_CHARS.Length);
+                builder.Append(RANDOM_CHARS[randomIndex]);
+            }
+            return builder.ToString();
+        }
     }
 }

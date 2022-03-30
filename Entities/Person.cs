@@ -1,15 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using asp_net_po_schedule_management_server.Entities.Shared;
 
 namespace asp_net_po_schedule_management_server.Entities
 {
     [Table("persons-table")]
-    public class Person
+    public class Person : PrimaryKeyWithClientIdentifierInjection
     {
-        [Key]
-        [Column("primary-key")]
-        public int Id { get; set; }
-        
         [Column("person-identifier")]
         public string PersonIdentifier { get; set; }
         
