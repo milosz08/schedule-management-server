@@ -30,7 +30,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
         {
             // konfiguracja połączenia do bazy danych
             optionsBuilder
-                .UseMySql(_configuration.GetConnectionString("MySequelConnection"), new MySqlServerVersion("5.7.35"))
+                .UseMySql(
+                    _configuration.GetConnectionString("MySequelConnection"),
+                    new MySqlServerVersion(GlobalConfigurer.DB_DRIVER))
                 .UseLoggerFactory(LoggerFactory.Create(factory => factory
                     .AddConsole()
                     .AddFilter(level => level >= LogLevel.Information)

@@ -6,9 +6,9 @@
     <projectFile profileName="Postman Development">asp-net-po-schedule-management-server.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="prepare ApplicationDbContext for automatically inject values to base entity model fields">
+    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="remove unused code">
       <change afterPath="$PROJECT_DIR$/Doc/tables-relations-mapping.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entities/Shared/PrimaryKeyWithClientIdentifierInjection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Entities/Shared/PrimaryKeyWithClientIdentifierInjection.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +32,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d39cd666d9ef7aca4f2e90b9fac62693bd55c6c678a844e9d4401b3e9bdc7abc/EntityType.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fa9338635bf46b6dc7b6e7a05ef6c41fc09dfe49f2fc5af7ab1f4fbc5cd99021/InternalDbSet.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/981d65c7fbe528a515db85bcbb92fe19ea3641e6ccd184df299fbba0eff72630/AnyAll.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Entities/Shared/PrimaryKeyWithClientIdentifierInjection.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/866da261a9df76b7935cc23342cc3170c987664630ed9a27193d1fb54ff0b6b8/Stack.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f942afe71f49968ca0ea574796862e49367a3c432b8a15afb97b75d85fcb/StateManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
@@ -134,7 +135,7 @@
       <workItem from="1648640670131" duration="73000" />
       <workItem from="1648640767843" duration="583000" />
       <workItem from="1648641393044" duration="64000" />
-      <workItem from="1648641495380" duration="10906000" />
+      <workItem from="1648641495380" duration="11056000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit and generate some boilerplate code">
       <created>1648546665068</created>
@@ -248,7 +249,14 @@
       <option name="project" value="LOCAL" />
       <updated>1648659367560</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="remove unused code">
+      <created>1648659478350</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659478350</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -284,6 +292,7 @@
     <MESSAGE value="create artificial index generator static method" />
     <MESSAGE value="create application configuration static class" />
     <MESSAGE value="prepare ApplicationDbContext for automatically inject values to base entity model fields" />
-    <option name="LAST_COMMIT_MESSAGE" value="prepare ApplicationDbContext for automatically inject values to base entity model fields" />
+    <MESSAGE value="remove unused code" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove unused code" />
   </component>
 </project>
