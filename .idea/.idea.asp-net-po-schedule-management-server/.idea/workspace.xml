@@ -6,22 +6,9 @@
     <projectFile profileName="Postman Development">asp-net-po-schedule-management-server.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="">
+    <list default="true" id="375bc664-a006-4ca7-82d7-574830a23d29" name="Changes" comment="remove unused code">
       <change afterPath="$PROJECT_DIR$/Doc/tables-relations-mapping.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Entities/Shared/PrimaryKeyEntityInjection.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Entities/Shared/PrimaryKeyWithClientIdentifierInjection.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/GlobalConfigurer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.asp-net-po-schedule-management-server/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DbConfig/ApplicationDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entities/Person.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Entities/Person.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Migrations/20220330120118_Init.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Migrations/20220330160417_BaseEntities.Designer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Migrations/20220330120118_Init.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Migrations/20220330160417_BaseEntities.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Migrations/ApplicationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Migrations/ApplicationDbContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/ServicesImplementation/FirstEndpointServiceImplementation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ServicesImplementation/FirstEndpointServiceImplementation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Startup.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/ApplicationUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/ApplicationUtils.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/asp-net-po-schedule-management-server.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,26 +27,34 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8e2590d59983c8e2c567a170b82baf2e46c6db04b5fd9ee7b161a29d9e27a0/FileStream.Win32.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fa60121f8597edda05ba1e79c874b7b6527c3a7a58eed18a5e6266beec5bea/FileStream.Windows.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a1ad5a7d97acf249703d8974f947adc860504c75285deda565c9631a8b36b87/KeyValuePair.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8f40db1c9df947a85fe7869240d245473af55e37bd2ed3d1b7d753d4213268ce/DbContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f35b868e7d5508a88ac563b718431523c6ee367ea5d9bdb5f9015bc25c7eec/SortedSet.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b0458e2e2a64106c8ec1ac771ed958d1ec78f44bf823b70123cc98e36f14/DbContextDependenciesExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d39cd666d9ef7aca4f2e90b9fac62693bd55c6c678a844e9d4401b3e9bdc7abc/EntityType.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fa9338635bf46b6dc7b6e7a05ef6c41fc09dfe49f2fc5af7ab1f4fbc5cd99021/InternalDbSet.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/981d65c7fbe528a515db85bcbb92fe19ea3641e6ccd184df299fbba0eff72630/AnyAll.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Entities/Shared/PrimaryKeyWithClientIdentifierInjection.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/866da261a9df76b7935cc23342cc3170c987664630ed9a27193d1fb54ff0b6b8/Stack.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f942afe71f49968ca0ea574796862e49367a3c432b8a15afb97b75d85fcb/StateManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/DbConfig/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/474a9f986ecf704cc8bdc050bf4936d3329b6f5456ddfad026ea77b6c757737/EntityReferenceMap.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/29aed850ee5087e1a837561a546a766d40cb53e1b26e57acfdcec2161f5f29e6/ModelExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Startup.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Entities/Person.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8f40db1c9df947a85fe7869240d245473af55e37bd2ed3d1b7d753d4213268ce/DbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Services/ServicesImplementation/FirstEndpointServiceImplementation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2e12c2e1c694770af83cfc880637c7c3f499dad0837b782e1150a8caeb4/FeatureReferences.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fcb7c6c2bdd189d6d8f13a694cf733524fb73b87c4131674538619a9bc6acfac/RuntimeHelpers.CoreCLR.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d39cd666d9ef7aca4f2e90b9fac62693bd55c6c678a844e9d4401b3e9bdc7abc/EntityType.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/DbConfig/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fa9338635bf46b6dc7b6e7a05ef6c41fc09dfe49f2fc5af7ab1f4fbc5cd99021/InternalDbSet.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7f1f28d4b361a75ea99082442382d45246fbf20227a60a4eafa6ff77c6/Model.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/981d65c7fbe528a515db85bcbb92fe19ea3641e6ccd184df299fbba0eff72630/AnyAll.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/20768fcfc173ad6ae8244d16c3e4885f7bd15bcea6463041356d5fbe81/ConcurrentDictionary.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/866da261a9df76b7935cc23342cc3170c987664630ed9a27193d1fb54ff0b6b8/Stack.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/de369466103029844e32fc32ca1c29c4255338929e1f1da02e7972a2532fafcd/DeveloperExceptionPageMiddleware.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/41781d52b315e16e4bdf22642549bd978083e94faee0c3c61f956fcdc95b2eb/RuntimeType.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f942afe71f49968ca0ea574796862e49367a3c432b8a15afb97b75d85fcb/StateManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4e6c67f571da801e2e54b0a2e1a0c819daa360cb13fc513f2ca8767f83d85a71/DefaultHttpContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9ef041c92efd1c2081b8df9c0ff9d7eca42dc2a75468070bbdb5ab3c62c67b/EqualityComparer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/474a9f986ecf704cc8bdc050bf4936d3329b6f5456ddfad026ea77b6c757737/EntityReferenceMap.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/95062fbbbf5fde1dab1efa3cab4c6922676f26e5572fa3f6686fb1efead339/SortedDictionary.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/29aed850ee5087e1a837561a546a766d40cb53e1b26e57acfdcec2161f5f29e6/ModelExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Projekty Programistyczne/C# Applications/asp-net-po-schedule-management-server/Utils/ApplicationUtils.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -140,7 +135,7 @@
       <workItem from="1648640670131" duration="73000" />
       <workItem from="1648640767843" duration="583000" />
       <workItem from="1648641393044" duration="64000" />
-      <workItem from="1648641495380" duration="10543000" />
+      <workItem from="1648641495380" duration="11056000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit and generate some boilerplate code">
       <created>1648546665068</created>
@@ -198,7 +193,70 @@
       <option name="project" value="LOCAL" />
       <updated>1648653945122</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="change auto-generated files (auto-modify)">
+      <created>1648659135894</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659135894</updated>
+    </task>
+    <task id="LOCAL-00010" summary="register ApplicationDbContext class for dependency injection">
+      <created>1648659174966</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659174966</updated>
+    </task>
+    <task id="LOCAL-00011" summary="minor changes">
+      <created>1648659189743</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659189743</updated>
+    </task>
+    <task id="LOCAL-00012" summary="create base entities (for inheritance) and remove unused primary-key column">
+      <created>1648659227679</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659227679</updated>
+    </task>
+    <task id="LOCAL-00013" summary="inject dbContext object in class constructor">
+      <created>1648659272779</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659272779</updated>
+    </task>
+    <task id="LOCAL-00014" summary="create artificial index generator static method">
+      <created>1648659292956</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659292956</updated>
+    </task>
+    <task id="LOCAL-00015" summary="create application configuration static class">
+      <created>1648659322236</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659322236</updated>
+    </task>
+    <task id="LOCAL-00016" summary="prepare ApplicationDbContext for automatically inject values to base entity model fields">
+      <created>1648659367560</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659367560</updated>
+    </task>
+    <task id="LOCAL-00017" summary="remove unused code">
+      <created>1648659478350</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1648659478350</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -226,6 +284,15 @@
     <MESSAGE value="update project auto-editable files" />
     <MESSAGE value="add Utils static class helper" />
     <MESSAGE value="prepare for mySequel database connection (and generate first migration)" />
-    <option name="LAST_COMMIT_MESSAGE" value="prepare for mySequel database connection (and generate first migration)" />
+    <MESSAGE value="change auto-generated files (auto-modify)" />
+    <MESSAGE value="register ApplicationDbContext class for dependency injection" />
+    <MESSAGE value="minor changes" />
+    <MESSAGE value="create base entities (for inheritance) and remove unused primary-key column" />
+    <MESSAGE value="inject dbContext object in class constructor" />
+    <MESSAGE value="create artificial index generator static method" />
+    <MESSAGE value="create application configuration static class" />
+    <MESSAGE value="prepare ApplicationDbContext for automatically inject values to base entity model fields" />
+    <MESSAGE value="remove unused code" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove unused code" />
   </component>
 </project>

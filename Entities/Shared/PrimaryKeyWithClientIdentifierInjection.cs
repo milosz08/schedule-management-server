@@ -7,6 +7,6 @@ namespace asp_net_po_schedule_management_server.Entities.Shared
     {
         [StringLength(20, ErrorMessage = "Sztuczny index musi mieć 20 znaków")]
         [Column("artifician-index")]
-        public string ArtifIndex { get; set; } = "123";
+        public string ArtifIndex { get; set; }
     }
 }
