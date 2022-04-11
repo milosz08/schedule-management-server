@@ -11,6 +11,7 @@ using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Entities.Shared;
 
+
 namespace asp_net_po_schedule_management_server.DbConfig
 {
     public sealed class ApplicationDbContext : DbContext
@@ -20,9 +21,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
         // zmapowane tabele bazy danych
         public DbSet<Person> Persons { get; set; }
         
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
-            : base(options)
-        {
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options) {
             _configuration = configuration;
         }
         
@@ -73,8 +73,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .Where(x => x.Entity is PrimaryKeyWithClientIdentifierInjection && x.State == EntityState.Added);
             
             foreach (var entityEntry in entitiesWithPrimaryKeyAndArtificianIndex) {
-                ((PrimaryKeyWithClientIdentifierInjection)entityEntry.Entity).ArtifIndex 
-                    = ApplicationUtils.ArtificialIndexGenerator();
+                ((PrimaryKeyWithClientIdentifierInjection)entityEntry.Entity).DictionaryHash = 
+                    ApplicationUtils.DictionaryHashGenerator();
             }
         }
     }
