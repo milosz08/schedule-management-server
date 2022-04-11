@@ -23,7 +23,12 @@ namespace asp_net_po_schedule_management_server
 
         public void ConfigureServices(IServiceCollection services)
         {
+            string jwtToken = Configuration.GetConnectionString("JwtKey");
             services.AddControllers();
+            
+            // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
+            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation(jwtToken));
+            JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services, jwtToken);
             
             // strefa dodawania serwisów i ich implementacji
             services.AddScoped<IFirstEndpointService, FirstEndpointServiceImplementation>();
@@ -46,9 +51,21 @@ namespace asp_net_po_schedule_management_server
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseHttpsRedirection();
             app.UseRouting();
+
+            // ustawianie polityki cors
+            app.UseCors(options => options
+                .SetIsOriginAllowed(url => env.IsDevelopment() 
+                    ? url == $"http://localhost:{GlobalConfigurer.ANGULAR_PORT}"    // dla wersji developerskiej
+                    : url == $"https://{GlobalConfigurer.ANGULAR_PROD}")            // dla wersji produkcyjnej
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+            );
+            
             app.UseAuthorization();
+            app.UseAuthentication();
+            
             // umożliwia mapowanie endpointów na podstawie annotacji w kontrolerach
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
