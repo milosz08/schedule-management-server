@@ -56,8 +56,11 @@ namespace asp_net_po_schedule_management_server
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment()) {
-                app.UseDeveloperExceptionPage();
+            // przechwytywanie globalnych wyjątków aplikacji i wyświetlanie ich w formie zserializowanego JSONa
+            app.UseMiddleware<ExceptionsHandlingMiddleware>();
+            
+            if (!env.IsDevelopment()) {
+                app.UseHttpsRedirection();
             }
             app.UseRouting();
 
