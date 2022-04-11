@@ -1,14 +1,18 @@
-using asp_net_po_schedule_management_server.DbConfig;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
+using asp_net_po_schedule_management_server.DbConfig;
+using asp_net_po_schedule_management_server.Utils;
+
+using asp_net_po_schedule_management_server.Jwt;
+using asp_net_po_schedule_management_server.Middleware;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
-using asp_net_po_schedule_management_server.Utils;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace asp_net_po_schedule_management_server
 {
@@ -37,7 +41,8 @@ namespace asp_net_po_schedule_management_server
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     Configuration.GetConnectionString("MySequelConnection"),
-                    new MySqlServerVersion(GlobalConfigurer.DB_DRIVER)));
+                    new MySqlServerVersion(GlobalConfigurer.DB_DRIVER)
+                ));
             
             // zmienia ścieżki routingu z wielkich liter na małe
             services.AddRouting(options => {
