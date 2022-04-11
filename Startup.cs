@@ -35,8 +35,11 @@ namespace asp_net_po_schedule_management_server
             JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services, jwtToken);
             
             // strefa dodawania serwisów i ich implementacji
-            services.AddScoped<IFirstEndpointService, FirstEndpointServiceImplementation>();
+            services.AddScoped<IUserService, UserServiceImplementation>();
             
+            // strefa dodawnia middleware'ów
+            services.AddScoped<ExceptionsHandlingMiddleware>();
+
             // Dodawanie kontekstu bazy danych
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
