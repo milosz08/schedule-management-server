@@ -23,9 +23,9 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public ActionResult<UserResponseDto> Post([FromBody] UserRequestDto user)
+        public ActionResult<UserResponseDto> ValidateCredentials([FromBody] UserRequestDto user)
         {
-            return StatusCode((int) HttpStatusCode.OK, _service.AuthenticateUser(user));
+            return StatusCode((int) HttpStatusCode.OK, _service.ValidateCredentials(user));
         }
     }
 }

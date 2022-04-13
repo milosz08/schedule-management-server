@@ -15,7 +15,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             _manager = manager;
         }
         
-        public UserResponseDto AuthenticateUser(UserRequestDto user)
+        public UserResponseDto ValidateCredentials(UserRequestDto user)
         {
             string token = _manager.BearerHandlingService(user.Login);
             
