@@ -17,10 +17,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
     public sealed class ApplicationDbContext : DbContext
     {
         private IConfiguration _configuration;
-        
+
         // zmapowane tabele bazy danych
         public DbSet<Person> Persons { get; set; }
-        
+        public DbSet<Role> Roles { get; set; }
+
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options) {
             _configuration = configuration;
