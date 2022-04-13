@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Utils;
+using asp_net_po_schedule_management_server.DbConfig;
 
 using asp_net_po_schedule_management_server.Jwt;
-using asp_net_po_schedule_management_server.Middleware;
 using asp_net_po_schedule_management_server.Services;
+using asp_net_po_schedule_management_server.Middleware;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
 
 
@@ -47,6 +47,9 @@ namespace asp_net_po_schedule_management_server
                     new MySqlServerVersion(GlobalConfigurer.DB_DRIVER)
                 ));
             
+            // dodawanie seedera jako serwisu
+            services.AddScoped<ApplicationDbSeeder>();
+            
             // zmienia ścieżki routingu z wielkich liter na małe
             services.AddRouting(options => {
                 options.LowercaseUrls = true;
@@ -54,8 +57,11 @@ namespace asp_net_po_schedule_management_server
             });
         }
         
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbSeeder seeder)
         {
+            // seedowanie początkowych danych do encji bazy danych
+            seeder.Seed();
+            
             // przechwytywanie globalnych wyjątków aplikacji i wyświetlanie ich w formie zserializowanego JSONa
             app.UseMiddleware<ExceptionsHandlingMiddleware>();
             

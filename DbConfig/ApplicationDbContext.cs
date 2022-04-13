@@ -17,10 +17,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
     public sealed class ApplicationDbContext : DbContext
     {
         private IConfiguration _configuration;
-        
+
         // zmapowane tabele bazy danych
         public DbSet<Person> Persons { get; set; }
-        
+        public DbSet<Role> Roles { get; set; }
+
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options) {
             _configuration = configuration;
@@ -51,16 +52,19 @@ namespace asp_net_po_schedule_management_server.DbConfig
         // autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji)
         private void AddAutoInjectionSeqelDates()
         {
+            DateTime d = DateTime.Now;
             // znazienie encji ze statusem dodane lub zmodyfikowane dziedziczących klucz główny
             IEnumerable<EntityEntry> entitiesWithPrimaryKey = ChangeTracker.Entries()
                 .Where(x => x.Entity is PrimaryKeyEntityInjection
                             && (x.State == EntityState.Added || x.State == EntityState.Modified));
             
             foreach (var entityEntry in entitiesWithPrimaryKey) {
+                DateTime formatedDateTime = new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second);
                 if (entityEntry.State == EntityState.Added) {
-                    ((PrimaryKeyEntityInjection)entityEntry.Entity).CreatedDate = DateTime.UtcNow;
+                    ((PrimaryKeyEntityInjection)entityEntry.Entity).CreatedDate = formatedDateTime;
                 }
-                ((PrimaryKeyEntityInjection)entityEntry.Entity).UpdatedDate = DateTime.UtcNow;
+
+                ((PrimaryKeyEntityInjection) entityEntry.Entity).UpdatedDate = formatedDateTime;
             }
         }
         
