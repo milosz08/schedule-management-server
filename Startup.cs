@@ -5,10 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.DbConfig;
-
-using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Middleware;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
