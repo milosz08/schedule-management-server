@@ -1,14 +1,19 @@
+using FluentValidation.AspNetCore;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Identity;
+
 using Microsoft.EntityFrameworkCore;
+
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.DbConfig;
-
-using asp_net_po_schedule_management_server.Jwt;
+using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Middleware;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
@@ -27,24 +32,27 @@ namespace asp_net_po_schedule_management_server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string jwtToken = Configuration.GetConnectionString("JwtKey");
-            services.AddControllers();
+            Configuration.GetSection("ServerConfiguration").Bind(new GlobalConfigurer());
+            services.AddControllers().AddFluentValidation();
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation(jwtToken));
-            JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services, jwtToken);
+            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
+            JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
+            
+            services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             
             // strefa dodawania serwisów i ich implementacji
-            services.AddScoped<IUserService, UserServiceImplementation>();
-            
+            services.AddScoped<IAuthService, AuthServiceImplementation>();
+
             // strefa dodawnia middleware'ów
             services.AddScoped<ExceptionsHandlingMiddleware>();
-
+            services.AddAutoMapper(this.GetType().Assembly);
+            
             // Dodawanie kontekstu bazy danych
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     Configuration.GetConnectionString("MySequelConnection"),
-                    new MySqlServerVersion(GlobalConfigurer.DB_DRIVER)
+                    new MySqlServerVersion(GlobalConfigurer.DbDriverVersion)
                 ));
             
             // dodawanie seedera jako serwisu
@@ -61,27 +69,28 @@ namespace asp_net_po_schedule_management_server
         {
             // seedowanie początkowych danych do encji bazy danych
             seeder.Seed();
+
+            if (!env.IsDevelopment()) { // przekierowanie na adres szyfrowany SSL (tylko na produkcji)
+                app.UseHttpsRedirection();
+            }
             
             // przechwytywanie globalnych wyjątków aplikacji i wyświetlanie ich w formie zserializowanego JSONa
             app.UseMiddleware<ExceptionsHandlingMiddleware>();
-            
-            if (!env.IsDevelopment()) {
-                app.UseHttpsRedirection();
-            }
+
+            app.UseAuthentication();
             app.UseRouting();
 
             // ustawianie polityki cors
             app.UseCors(options => options
                 .SetIsOriginAllowed(url => env.IsDevelopment() 
-                    ? url == $"http://localhost:{GlobalConfigurer.ANGULAR_PORT}"    // dla wersji developerskiej
-                    : url == $"https://{GlobalConfigurer.ANGULAR_PROD}")            // dla wersji produkcyjnej
+                    ? url == $"http://localhost:{GlobalConfigurer.AngularPort}"     // dla wersji developerskiej
+                    : url == $"https://{GlobalConfigurer.AngularProductionUrl}")    // dla wersji produkcyjnej
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
             );
             
             app.UseAuthorization();
-            app.UseAuthentication();
             
             // umożliwia mapowanie endpointów na podstawie annotacji w kontrolerach
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

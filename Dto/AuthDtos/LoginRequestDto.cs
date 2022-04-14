@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace asp_net_po_schedule_management_server.Dto
+namespace asp_net_po_schedule_management_server.Dto.AuthDtos
 {
-    public class UserRequestDto
+    public sealed class LoginRequestDto
     {
         [JsonPropertyName("login")]
         [Required(ErrorMessage = "Pole loginu nie może być puste")]

@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace asp_net_po_schedule_management_server.Dto
 {
-    public class ServerExceptionResponseDto
+    public sealed class ServerExceptionResponseDto
     {
         [JsonPropertyName("message")]
         public string ExceptionMessage { get; set; }

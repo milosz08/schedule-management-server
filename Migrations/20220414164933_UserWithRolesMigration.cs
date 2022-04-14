@@ -31,7 +31,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "person-table",
+                name: "person",
                 columns: table => new
                 {
                     primarykey = table.Column<long>(name: "primary-key", type: "bigint", nullable: false)
@@ -42,9 +42,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     shortcut = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    applogin = table.Column<string>(name: "app-login", type: "longtext", nullable: false)
+                    login = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    apppassword = table.Column<string>(name: "app-password", type: "longtext", nullable: true)
+                    firstaccess = table.Column<bool>(name: "first-access", type: "tinyint(1)", nullable: false),
+                    password = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     email = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -52,8 +53,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     city = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoleForeignKey = table.Column<int>(type: "int", nullable: false),
-                    roleId = table.Column<long>(type: "bigint", nullable: true),
+                    RoleId = table.Column<long>(type: "bigint", nullable: false),
                     createddate = table.Column<DateTime>(name: "created-date", type: "datetime(6)", nullable: false),
                     updateddate = table.Column<DateTime>(name: "updated-date", type: "datetime(6)", nullable: false),
                     dictionaryhash = table.Column<string>(name: "dictionary-hash", type: "varchar(20)", maxLength: 20, nullable: true)
@@ -61,26 +61,26 @@ namespace asp_net_po_schedule_management_server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_person-table", x => x.primarykey);
+                    table.PrimaryKey("PK_person", x => x.primarykey);
                     table.ForeignKey(
-                        name: "FK_person-table_role_roleId",
-                        column: x => x.roleId,
+                        name: "FK_person_role_RoleId",
+                        column: x => x.RoleId,
                         principalTable: "role",
                         principalColumn: "primary-key",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_person-table_roleId",
-                table: "person-table",
-                column: "roleId");
+                name: "IX_person_RoleId",
+                table: "person",
+                column: "RoleId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "person-table");
+                name: "person");
 
             migrationBuilder.DropTable(
                 name: "role");

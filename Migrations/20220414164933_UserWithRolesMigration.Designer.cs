@@ -9,7 +9,7 @@ using asp_net_po_schedule_management_server.DbConfig;
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220413090738_UserWithRolesMigration")]
+    [Migration("20220414164933_UserWithRolesMigration")]
     partial class UserWithRolesMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,15 +25,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("primary-key");
-
-                    b.Property<string>("AppLogin")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("app-login");
-
-                    b.Property<string>("AppPassword")
-                        .HasColumnType("longtext")
-                        .HasColumnName("app-password");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -55,6 +46,15 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("email");
 
+                    b.Property<bool>("FirstAccess")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("first-access");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("login");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -67,8 +67,12 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("nationality");
 
-                    b.Property<int>("RoleForeignKey")
-                        .HasColumnType("int");
+                    b.Property<string>("Password")
+                        .HasColumnType("longtext")
+                        .HasColumnName("password");
+
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Shortcut")
                         .HasMaxLength(8)
@@ -85,14 +89,11 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated-date");
 
-                    b.Property<long?>("roleId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("roleId");
+                    b.HasIndex("RoleId");
 
-                    b.ToTable("person-table");
+                    b.ToTable("person");
                 });
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Role", b =>
@@ -127,11 +128,13 @@ namespace asp_net_po_schedule_management_server.Migrations
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Person", b =>
                 {
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.Role", "role")
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("roleId");
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("role");
+                    b.Navigation("Role");
                 });
 #pragma warning restore 612, 618
         }
