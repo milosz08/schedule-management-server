@@ -7,7 +7,7 @@ using asp_net_po_schedule_management_server.Entities.Shared;
 namespace asp_net_po_schedule_management_server.Entities
 {
     [Table("role")]
-    public class Role : PrimaryKeyWithClientIdentifierInjection
+    public sealed class Role : PrimaryKeyWithClientIdentifierInjection
     {
         [Column("name")]
         [MaxLength(50)]
@@ -18,6 +18,6 @@ namespace asp_net_po_schedule_management_server.Entities
     {
         TEACHER,
         EDITOR,
-        AMINISTRATOR,
+        ADMINISTRATOR,
     }
 }

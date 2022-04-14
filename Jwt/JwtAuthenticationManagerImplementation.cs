@@ -12,7 +12,7 @@ using asp_net_po_schedule_management_server.Utils;
 
 namespace asp_net_po_schedule_management_server.Jwt
 {
-    public class JwtAuthenticationManagerImplementation : IJwtAuthenticationManager
+    public sealed class JwtAuthenticationManagerImplementation : IJwtAuthenticationManager
     {
         private readonly string _token;
 

@@ -10,7 +10,7 @@ using asp_net_po_schedule_management_server.Utils;
 
 namespace asp_net_po_schedule_management_server.Middleware
 {
-    public class ExceptionsHandlingMiddleware : IMiddleware
+    public sealed class ExceptionsHandlingMiddleware : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

@@ -6,7 +6,7 @@ using asp_net_po_schedule_management_server.Entities;
 
 namespace asp_net_po_schedule_management_server.DbConfig
 {
-    public class ApplicationDbSeeder
+    public sealed class ApplicationDbSeeder
     {
         private readonly ApplicationDbContext _context;
 
