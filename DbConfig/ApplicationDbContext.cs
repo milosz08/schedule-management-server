@@ -33,7 +33,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             optionsBuilder
                 .UseMySql(
                     _configuration.GetConnectionString("MySequelConnection"),
-                    new MySqlServerVersion(GlobalConfigurer.DB_DRIVER))
+                    new MySqlServerVersion(GlobalConfigurer.DbDriverVersion))
                 .UseLoggerFactory(LoggerFactory.Create(factory => factory
                     .AddConsole()
                     .AddFilter(level => level >= LogLevel.Information)

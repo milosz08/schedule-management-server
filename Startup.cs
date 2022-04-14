@@ -26,8 +26,8 @@ namespace asp_net_po_schedule_management_server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string jwtToken = Configuration.GetConnectionString("JwtKey");
-            services.AddControllers();
+            Configuration.GetSection("ServerConfiguration").Bind(new GlobalConfigurer());
+            services.AddControllers().AddFluentValidation();
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation(jwtToken));
