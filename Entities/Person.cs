@@ -4,47 +4,53 @@ using asp_net_po_schedule_management_server.Entities.Shared;
 
 namespace asp_net_po_schedule_management_server.Entities
 {
-    [Table("person-table")]
+    [Table("person")]
     public class Person : PrimaryKeyWithClientIdentifierInjection
     {
         [Required]
         [Column("name")]
-        [StringLength(50, ErrorMessage = "Pole imienia użytkownika nie może przekraczać 50 znaków")]
+        [StringLength(50)]
         public string Name { get; set; }
         
         [Required]
         [Column("surname")]
-        [StringLength(50, ErrorMessage = "Pole nazwiska użytkownika nie może przekraczać 50 znaków")]
+        [StringLength(50)]
         public string Surname { get; set; }
         
         [Column("shortcut")]
-        [StringLength(8, ErrorMessage = "Pole skrótu użytkownika nie może przekraczać 8 znaków")]
+        [StringLength(8)]
         public string Shortcut { get; set; }
         
         [Required]
-        [Column("app-login")]
-        public string AppLogin { get; set; }
+        [Column("login")]
+        [StringLength(50)]
+        public string Login { get; set; }
         
-        [Column("app-password")]
-        public string AppPassword { get; set; }
+        [Column("first-access")]
+        public bool FirstAccess { get; set; } = true;
+        
+        [Column("password")]
+        [StringLength(500)]
+        public string Password { get; set; }
         
         [Required]
         [Column("email")]
+        [StringLength(100)]
         public string Email { get; set; }
         
         [Required]
         [Column("nationality")]
-        [StringLength(50, ErrorMessage = "Pole pochodzenia użytkownika nie może przekraczać 50 znaków")]
+        [StringLength(100)]
         public string Nationality { get; set; }
         
         [Required]
         [Column("city")]
-        [StringLength(100, ErrorMessage = "Pole miejscowości użytkownika nie może przekraczać 100 znaków")]
+        [StringLength(100)]
         public string City { get; set; }
-
-        [ForeignKey("role-key")]
-        public int RoleForeignKey { get; set; }
         
-        public virtual Role role { get; set; }
+        [ForeignKey("Role")]
+        public long RoleId { get; set; }
+        
+        public virtual Role Role { get; set; }
     }
 }
