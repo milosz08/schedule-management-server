@@ -36,15 +36,18 @@ namespace asp_net_po_schedule_management_server
             services.AddControllers().AddFluentValidation();
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation(jwtToken));
-            JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services, jwtToken);
+            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
+            JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
+            
+            services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             
             // strefa dodawania serwisów i ich implementacji
-            services.AddScoped<IUserService, UserServiceImplementation>();
-            
+            services.AddScoped<IAuthService, AuthServiceImplementation>();
+
             // strefa dodawnia middleware'ów
             services.AddScoped<ExceptionsHandlingMiddleware>();
-
+            services.AddAutoMapper(this.GetType().Assembly);
+            
             // Dodawanie kontekstu bazy danych
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
