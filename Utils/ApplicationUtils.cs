@@ -10,17 +10,17 @@ namespace asp_net_po_schedule_management_server.Utils
         private static readonly Random _random = new Random();
         
         // generowanie hasza słownikowego (głównie na potrzeby frontu)
-        public static string DictionaryHashGenerator()
+        public static string DictionaryHashGenerator(int hashSize = 20)
         {
             StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < hashSize; i++) {
                 int randomIndex = _random.Next(RANDOM_CHARS.Length);
                 builder.Append(RANDOM_CHARS[randomIndex]);
             }
             return builder.ToString();
         }
         
-        // funkcja konwertująca obiekt Date na chwilę czasową (liczba sekund)
+        // funkcja konwertująca obiekt Date na chwilę czasową
         public static String GetTimestamp(DateTime date)
         {
             return date.ToString("yyyyMMddHHmmssffff");
