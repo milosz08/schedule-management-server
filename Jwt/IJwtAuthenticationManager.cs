@@ -1,7 +1,10 @@
-﻿namespace asp_net_po_schedule_management_server.Jwt
+﻿using asp_net_po_schedule_management_server.Entities;
+
+
+namespace asp_net_po_schedule_management_server.Jwt
 {
     public interface IJwtAuthenticationManager
     {
-        string BearerHandlingService(string username);
+        string BearerHandlingService(Person person);
     }
 }

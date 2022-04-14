@@ -8,32 +8,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using asp_net_po_schedule_management_server.Utils;
+using asp_net_po_schedule_management_server.Entities;
 
 
 namespace asp_net_po_schedule_management_server.Jwt
 {
     public sealed class JwtAuthenticationManagerImplementation : IJwtAuthenticationManager
     {
-        private readonly string _token;
-
-        public JwtAuthenticationManagerImplementation(string token)
-        {
-            _token = token;
-        }
-
+        
         // funkcja generująca JWT dla użytkownika na podstawie jego nazwy. Token jest ważny n-czasu, w
         // zależności od przechowywanej wartości w zmiennej TOKEN_EXPIRED_HOURS
-        public string BearerHandlingService(string username)
+        public string BearerHandlingService(Person person)
         {
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            byte[] tokenKey = Encoding.ASCII.GetBytes(_token);
+            byte[] tokenKey = Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey);
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new []
                 {
-                    new Claim(ClaimTypes.Name, username)
+                    new Claim(ClaimTypes.Name, person.Login),
+                    new Claim(ClaimTypes.Role, person.Role.Name)
                 }),
-                Expires = DateTime.UtcNow.AddHours(GlobalConfigurer.TOKEN_EXPIRED_HOURS),
+                Expires = DateTime.UtcNow.AddHours(GlobalConfigurer.JwtExpiredHours),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature
@@ -43,22 +39,23 @@ namespace asp_net_po_schedule_management_server.Jwt
             return handler.WriteToken(generatedToken);
         }
         
+        
         // metoda statyczna ustawiająca konfigurację autentykacji w aplikacji (używana w klasie Startup.cs)
-        public static void ImplementsJwtOnStartup(IServiceCollection services, string jwtKey)
+        public static void ImplementsJwtOnStartup(IServiceCollection services)
         {
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options => {
-                options.RequireHttpsMetadata = true; // na developmencie false, na produkcji true <- ważne!!
+                options.RequireHttpsMetadata = false; // na developmencie false, na produkcji true <- ważne!!
                 options.SaveToken = true; // czy klucz ma być przechowywany
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuerSigningKey = true, // czy walidacja ma się odbywać przy pomocy klucza
                     // ustawianie klucza symetrycznego używanego do walidacji
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey)),
+                    ValidateAudience = false, // nie waliduj audiencji (można zaimplementować ale po co xd)
+                    ValidateIssuer = false,   // nie waliduj wystawcy (można zaimplementować ale po co xd)
                 };
             });
         }
