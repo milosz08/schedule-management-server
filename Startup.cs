@@ -33,7 +33,12 @@ namespace asp_net_po_schedule_management_server
         public void ConfigureServices(IServiceCollection services)
         {
             Configuration.GetSection("ServerConfiguration").Bind(new GlobalConfigurer());
-            services.AddControllers().AddFluentValidation();
+            services.AddControllers()
+                .AddFluentValidation()
+                // ignorowanie serializacji JSONów w przypadku zapętlonych referencji (wstawianie nulla)
+                .AddNewtonsoftJson(options => {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
