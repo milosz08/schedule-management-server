@@ -10,6 +10,7 @@ using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
+using asp_net_po_schedule_management_server.Dto.Misc;
 using asp_net_po_schedule_management_server.Exceptions;
 using asp_net_po_schedule_management_server.Dto.AuthDtos;
 
@@ -51,13 +52,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .VerifyHashedPassword(findPerson, findPerson.Password, user.Password);
             
             if (verificatrionRes == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Podano zły login lub hasło. Spróbuj ponownie",
-                    HttpStatusCode.Unauthorized);
+                throw new BasicServerException("Podano zły login lub hasło. Spróbuj ponownie", HttpStatusCode.Unauthorized);
             }
             
-            return new LoginResponseDto() {
-                BearerToken = _manager.BearerHandlingService(findPerson.Result),
-                Role = findPerson.Result.Role.Name
+            return new LoginResponseDto() 
+            {
+                BearerToken = _manager.BearerHandlingService(findPerson),
+                Role = findPerson.Role.Name,
             };
         }
 

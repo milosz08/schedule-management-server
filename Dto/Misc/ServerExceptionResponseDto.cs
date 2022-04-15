@@ -3,7 +3,7 @@
 using System.Text.Json;
 
 
-namespace asp_net_po_schedule_management_server.Dto
+namespace asp_net_po_schedule_management_server.Dto.Misc
 {
     public sealed class ServerExceptionResponseDto
     {

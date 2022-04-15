@@ -72,8 +72,7 @@ namespace asp_net_po_schedule_management_server
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbSeeder seeder)
         {
-            // seedowanie początkowych danych do encji bazy danych
-            seeder.Seed();
+            seeder.Seed(); // seedowanie (umieszczanie) początkowych danych do encji bazy danych
 
             if (!env.IsDevelopment()) { // przekierowanie na adres szyfrowany SSL (tylko na produkcji)
                 app.UseHttpsRedirection();
