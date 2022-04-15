@@ -29,7 +29,7 @@ namespace asp_net_po_schedule_management_server.Jwt
                     new Claim(ClaimTypes.Name, person.Login),
                     new Claim(ClaimTypes.Role, person.Role.Name)
                 }),
-                Expires = DateTime.UtcNow.AddHours(GlobalConfigurer.JwtExpiredHours),
+                Expires = DateTime.UtcNow.AddMinutes(GlobalConfigurer.JwtExpiredMinutes),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature

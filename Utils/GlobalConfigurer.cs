@@ -3,7 +3,7 @@
     public class GlobalConfigurer
     {
         public static string JwtKey { get; set; }
-        public static byte JwtExpiredHours { get; set; }
+        public static byte JwtExpiredMinutes { get; set; }
         public static int AngularPort { get; set; }
         public static string AngularProductionUrl { get; set; }
         public static string DbDriverVersion { get; set; }

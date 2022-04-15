@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 
-using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
+using asp_net_po_schedule_management_server.Dto.Misc;
 using asp_net_po_schedule_management_server.Exceptions;
 
 
