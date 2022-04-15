@@ -12,10 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
-using asp_net_po_schedule_management_server.DbConfig;
-using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
+using asp_net_po_schedule_management_server.Entities;
+using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Middleware;
+using asp_net_po_schedule_management_server.Dto.AuthDtos;
+using asp_net_po_schedule_management_server.Dto.Validators;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
 
 
@@ -52,6 +54,9 @@ namespace asp_net_po_schedule_management_server
             // strefa dodawnia middleware'ów
             services.AddScoped<ExceptionsHandlingMiddleware>();
             services.AddAutoMapper(this.GetType().Assembly);
+            
+            // strefa dodawania customowych walidatorów Dtos'ów
+            services.AddScoped<IValidator<ChangePasswordRequestDto>, ChangePasswordRequestDtoValidator>();
             
             // Dodawanie kontekstu bazy danych
             services.AddDbContext<ApplicationDbContext>(options =>
