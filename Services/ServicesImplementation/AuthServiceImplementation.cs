@@ -35,8 +35,9 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             _passwordHasher = passwordHasher;
             _mapper = mapper;
         }
-
         
+        #region Login
+
         // metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek)
         public async Task<LoginResponseDto> UserLogin(LoginRequestDto user)
         {
@@ -62,7 +63,10 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             };
         }
 
+        #endregion
         
+        #region Register
+
         // metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych
         public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user)
         {
@@ -90,5 +94,36 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             response.Role = nameof(AvailableRoles.TEACHER);
             return response;
         }
+
+        #endregion
+        
+        #region ChangePassword
+
+        // metoda odpowiadająca za zmianę początkowego hasła przez użytkownika
+        public async Task<PseudoNoContentResponseDto> UserChangePassword(ChangePasswordRequestDto dto, string userId)
+        {
+            Person findPerson = await _context.Persons.FirstOrDefaultAsync(p => p.DictionaryHash == userId);
+            if (findPerson == null) {
+                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych", HttpStatusCode.NotFound);
+            }
+            
+            PasswordVerificationResult verificationPassword = _passwordHasher
+                .VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
+            if (verificationPassword == PasswordVerificationResult.Failed) {
+                throw new BasicServerException("Podano złe hasło pierwotne", HttpStatusCode.Unauthorized);
+            }
+            
+            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.NewPassword);
+            findPerson.FirstAccess = false;
+            _context.Persons.Update(findPerson);
+            await _context.SaveChangesAsync();
+            
+            return new PseudoNoContentResponseDto()
+            {
+                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione"
+            };
+        }
+
+        #endregion
     }
 }
