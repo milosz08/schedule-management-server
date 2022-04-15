@@ -1,3 +1,4 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
 
 using Microsoft.AspNetCore.Builder;
@@ -45,7 +46,6 @@ namespace asp_net_po_schedule_management_server
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
             JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
-            
             services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             
             // strefa dodawania serwisów i ich implementacji
