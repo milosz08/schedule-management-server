@@ -37,18 +37,18 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         
         // metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek)
-        public LoginResponseDto UserLogin(LoginRequestDto user)
+        public async Task<LoginResponseDto> UserLogin(LoginRequestDto user)
         {
-            Task<Person> findPerson = _context.Persons
+            Person findPerson = await _context.Persons
                 .Include(p => p.Role)
                 .FirstOrDefaultAsync(p => p.Login == user.Login);
 
-            if (findPerson.Result == null) {
+            if (findPerson == null) {
                 throw new BasicServerException("Podany użytkownik nie istenieje w bazie.", HttpStatusCode.NotFound);
             }
             
-            var verificatrionRes = _passwordHasher
-                .VerifyHashedPassword(findPerson.Result, findPerson.Result.Password, user.Password);
+            PasswordVerificationResult verificatrionRes = _passwordHasher
+                .VerifyHashedPassword(findPerson, findPerson.Password, user.Password);
             
             if (verificatrionRes == PasswordVerificationResult.Failed) {
                 throw new BasicServerException("Podano zły login lub hasło. Spróbuj ponownie",
@@ -63,26 +63,26 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         
         // metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych
-        public RegisterNewUserResponseDto UserRegister(RegisterNewUserRequestDto user)
+        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user)
         {
             string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
             string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.DictionaryHashGenerator(5);
             string generatedFirstPassword = ApplicationUtils.DictionaryHashGenerator(8);
             string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}@schedule.pl";
 
-            long findRoleId = _context.Roles
-                .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER)).Result.Id;
+            Role findRoleId = await _context.Roles
+                .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER));
 
             Person newPerson = _mapper.Map<Person>(user);
             newPerson.Shortcut = generatedShortcut;
             newPerson.Email = generatedEmail;
             newPerson.Login = generatedLogin;
             newPerson.Password = generatedFirstPassword;
-            newPerson.RoleId = findRoleId;
+            newPerson.RoleId = findRoleId.Id;
             
             newPerson.Password = _passwordHasher.HashPassword(newPerson, generatedFirstPassword);
-            _context.Persons.Add(newPerson);
-            _context.SaveChanges();
+            await _context.Persons.AddAsync(newPerson);
+            await _context.SaveChangesAsync();
             
             RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
             response.Password = generatedFirstPassword;

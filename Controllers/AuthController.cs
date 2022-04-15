@@ -1,5 +1,5 @@
 ﻿using System.Net;
-
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,16 +26,16 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         [AllowAnonymous]
         [HttpPost("login")]
-        public ActionResult<LoginResponseDto> UserLogin([FromBody] LoginRequestDto user)
+        public async Task<ActionResult<LoginResponseDto>> UserLogin([FromBody] LoginRequestDto user)
         {
-            return StatusCode((int) HttpStatusCode.OK, _service.UserLogin(user));
+            return StatusCode((int) HttpStatusCode.OK, await _service.UserLogin(user));
         }
         
         [HttpPost("register")]
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
-        public ActionResult<RegisterNewUserResponseDto> UserRegister([FromBody] RegisterNewUserRequestDto user)
+        public async Task<ActionResult<RegisterNewUserResponseDto>> UserRegister([FromBody] RegisterNewUserRequestDto user)
         {
-            return StatusCode((int) HttpStatusCode.Created, _service.UserRegister(user));
+            return StatusCode((int) HttpStatusCode.Created,  await _service.UserRegister(user));
         }
     }
 }
