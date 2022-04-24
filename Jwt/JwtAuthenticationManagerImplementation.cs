@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 
 using Microsoft.IdentityModel.Tokens;
@@ -15,31 +16,50 @@ namespace asp_net_po_schedule_management_server.Jwt
 {
     public sealed class JwtAuthenticationManagerImplementation : IJwtAuthenticationManager
     {
+        // sekretny klucz prywatny do JWT
+        private byte[] tokenKey = Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey);
         
         // funkcja generująca JWT dla użytkownika na podstawie jego nazwy. Token jest ważny n-czasu, w
         // zależności od przechowywanej wartości w zmiennej TOKEN_EXPIRED_HOURS
         public string BearerHandlingService(Person person)
         {
+            return JwtDeploymentDescriptor(new[]
+            {
+                new Claim(ClaimTypes.Name, person.Login),
+                new Claim(ClaimTypes.Role, person.Role.Name),
+            });
+        }
+
+        // metoda odpowiadająca za generowanie nowego tokenu JWT na podstawie tokenu odświeżania
+        public string BearerHandlingRefreshTokenService(Claim[] claims)
+        {
+            return JwtDeploymentDescriptor(claims);
+        }
+        
+        // metoda odpowiadająca za generowanie tokenu używanego do odświeżania tokenu JWT
+        public string RefreshTokenGenerator()
+        {
+            byte[] randomNumbers = new byte[32];
+            RandomNumberGenerator.Create().GetBytes(randomNumbers);
+            return Convert.ToBase64String(randomNumbers);
+        }
+
+        // metoda inicjalizująca deskpryptor wdrożenia dla JWT
+        private string JwtDeploymentDescriptor(Claim[] claims)
+        {
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            byte[] tokenKey = Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey);
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(new []
-                {
-                    new Claim(ClaimTypes.Name, person.Login),
-                    new Claim(ClaimTypes.Role, person.Role.Name)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(GlobalConfigurer.JwtExpiredMinutes),
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature
                 )
             };
-            SecurityToken generatedToken = handler.CreateToken(descriptor);
-            return handler.WriteToken(generatedToken);
+            return handler.WriteToken(handler.CreateToken(descriptor));
         }
-        
-        
+
         // metoda statyczna ustawiająca konfigurację autentykacji w aplikacji (używana w klasie Startup.cs)
         public static void ImplementsJwtOnStartup(IServiceCollection services)
         {
@@ -50,12 +70,13 @@ namespace asp_net_po_schedule_management_server.Jwt
             }).AddJwtBearer(options => {
                 options.RequireHttpsMetadata = false; // na developmencie false, na produkcji true <- ważne!!
                 options.SaveToken = true; // czy klucz ma być przechowywany
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters =  new TokenValidationParameters()
                 {
                     // ustawianie klucza symetrycznego używanego do walidacji
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey)),
-                    ValidateAudience = false, // nie waliduj audiencji (można zaimplementować ale po co xd)
-                    ValidateIssuer = false,   // nie waliduj wystawcy (można zaimplementować ale po co xd)
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ValidateLifetime = true,
                 };
             });
         }
