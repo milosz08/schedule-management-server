@@ -1,14 +1,19 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
-using asp_net_po_schedule_management_server.Dto.Misc;
-using asp_net_po_schedule_management_server.Dto.AuthDtos;
 using asp_net_po_schedule_management_server.CustomDecorators;
+
+using asp_net_po_schedule_management_server.Dto.AuthDtos;
+using asp_net_po_schedule_management_server.Dto.Requests;
+using asp_net_po_schedule_management_server.Dto.Responses;
+using asp_net_po_schedule_management_server.Dto.CrossQuery;
 
 
 namespace asp_net_po_schedule_management_server.Controllers
@@ -26,20 +31,20 @@ namespace asp_net_po_schedule_management_server.Controllers
         }
         
         [AllowAnonymous]
-        [HttpPost("login")]
+        [HttpPost(ApiEndpoints.LOGIN)]
         public async Task<ActionResult<LoginResponseDto>> UserLogin([FromBody] LoginRequestDto user)
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.UserLogin(user));
         }
         
-        [HttpPost("register")]
+        [HttpPost(ApiEndpoints.REGISTER)]
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         public async Task<ActionResult<RegisterNewUserResponseDto>> UserRegister([FromBody] RegisterNewUserRequestDto user)
         {
-            return StatusCode((int) HttpStatusCode.Created,  await _service.UserRegister(user));
+            return StatusCode((int) HttpStatusCode.Created, await _service.UserRegister(user));
         }
         
-        [HttpPost("change-password")]
+        [HttpPost(ApiEndpoints.CHANGE_PASSWORD)]
         public async Task<ActionResult<PseudoNoContentResponseDto>> UserFirstChangePassword(
             [FromQuery] string userId,
             [FromBody] ChangePasswordRequestDto form)
