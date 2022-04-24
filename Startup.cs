@@ -73,11 +73,23 @@ namespace asp_net_po_schedule_management_server
                 options.LowercaseUrls = true;
                 options.LowercaseQueryStrings = true;
             });
+
+            // zezwolenie na politykę CORS
+            services.AddCors(options => {
+                options.AddPolicy("AngularClient", builder =>
+                    builder.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:8383")
+                    );
+            });
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbSeeder seeder)
         {
-            seeder.Seed(); // seedowanie (umieszczanie) początkowych danych do encji bazy danych
+            // ustawianie polityki cors
+            app.UseCors("AngularClient");
+            
+            seeder.Seed().Wait(); // seedowanie (umieszczanie) początkowych danych do encji bazy danych
 
             if (!env.IsDevelopment()) { // przekierowanie na adres szyfrowany SSL (tylko na produkcji)
                 app.UseHttpsRedirection();
@@ -89,16 +101,6 @@ namespace asp_net_po_schedule_management_server
             app.UseAuthentication();
             app.UseRouting();
 
-            // ustawianie polityki cors
-            app.UseCors(options => options
-                .SetIsOriginAllowed(url => env.IsDevelopment() 
-                    ? url == $"http://localhost:{GlobalConfigurer.AngularPort}"     // dla wersji developerskiej
-                    : url == $"https://{GlobalConfigurer.AngularProductionUrl}")    // dla wersji produkcyjnej
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-            );
-            
             app.UseAuthorization();
             
             // umożliwia mapowanie endpointów na podstawie annotacji w kontrolerach
