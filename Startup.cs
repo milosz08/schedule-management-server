@@ -13,12 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
-using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Middleware;
+
 using asp_net_po_schedule_management_server.Dto.AuthDtos;
 using asp_net_po_schedule_management_server.Dto.Validators;
+
+using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
 
 
@@ -45,11 +47,13 @@ namespace asp_net_po_schedule_management_server
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
+
             JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
             services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             
             // strefa dodawania serwisów i ich implementacji
             services.AddScoped<IAuthService, AuthServiceImplementation>();
+            services.AddScoped<IFilesService, FilesServiceImplementation>();
 
             // strefa dodawnia middleware'ów
             services.AddScoped<ExceptionsHandlingMiddleware>();
