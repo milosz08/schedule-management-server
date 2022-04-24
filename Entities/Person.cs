@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using asp_net_po_schedule_management_server.Entities.Shared;
+
 
 namespace asp_net_po_schedule_management_server.Entities
 {
@@ -48,7 +50,11 @@ namespace asp_net_po_schedule_management_server.Entities
         [StringLength(100)]
         public string City { get; set; }
         
-        [ForeignKey("Role")]
+        [Column("has-picture")]
+        public bool HasPicture { get; set; }
+        
+        [ForeignKey(nameof(Role))]
+        [Column("role-key")]
         public long RoleId { get; set; }
         
         public virtual Role Role { get; set; }
