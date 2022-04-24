@@ -51,5 +51,12 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.UserChangePassword(form, userId));
         }
+
+        [AllowAnonymous]
+        [HttpPost(ApiEndpoints.REFRESH_TOKEN)]
+        public async Task<ActionResult<RefreshTokenDto>> UserRefreshToken(RefreshTokenDto dto)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UserRefreshToken(dto));
+        }
     }
 }
