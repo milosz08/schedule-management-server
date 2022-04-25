@@ -20,7 +20,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
     {
         private readonly ApplicationDbContext _context;
         
-        private readonly static string[] ACCEPTABLE_IMAGE_TYPES = { "image/jpeg", "image/png" };
+        private readonly static string[] ACCEPTABLE_IMAGE_TYPES = { "image/jpeg" };
         private readonly static string ROOT_PATH = Directory.GetCurrentDirectory();
         
         public FilesServiceImplementation(ApplicationDbContext context)
@@ -77,7 +77,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             // jeśli plik jest w niezgodnym formacie rzuć wyjątek 417
             if (Array.IndexOf(ACCEPTABLE_IMAGE_TYPES, image.ContentType) == -1) {
                 throw new BasicServerException(
-                    "Akceptowane rozszerzenia pliku to .png lub .jpeg", HttpStatusCode.ExpectationFailed);
+                    "Akceptowane rozszerzenia pliku to: .jpeg", HttpStatusCode.ExpectationFailed);
             }
             string folderPath = $"{ROOT_PATH}/_StaticPrivateContent/UserImages";
             if (!Directory.Exists(folderPath)) { // jeśli folder nie istnieje, stwórz
@@ -92,9 +92,10 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             findPerson.HasPicture = true;
             await _context.SaveChangesAsync();
 
+            stream.Close();
             return new PseudoNoContentResponseDto()
             {
-                Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało zmienione.",
+                Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione.",
             };
         }
 

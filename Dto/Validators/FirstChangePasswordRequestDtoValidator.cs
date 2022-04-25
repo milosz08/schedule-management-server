@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
 
 using System.Text.RegularExpressions;
-using asp_net_po_schedule_management_server.Dto.AuthDtos;
+
+using asp_net_po_schedule_management_server.Dto.Requests;
 
 
 namespace asp_net_po_schedule_management_server.Dto.Validators

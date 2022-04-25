@@ -3,7 +3,6 @@
 using System;
 using System.Net;
 using System.Linq;
-using System.Text;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,10 +17,10 @@ using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Exceptions;
 
-using asp_net_po_schedule_management_server.Dto.AuthDtos;
 using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
 using asp_net_po_schedule_management_server.Dto.CrossQuery;
+using asp_net_po_schedule_management_server.Ssh.SshEmailService;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -32,17 +31,20 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         private readonly IJwtAuthenticationManager _manager;
         private readonly IPasswordHasher<Person> _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly ISshEmailService _emailService;
         
         public AuthServiceImplementation(
             ApplicationDbContext context,
             IJwtAuthenticationManager manager,
             IPasswordHasher<Person> passwordHasher,
-            IMapper mapper)
+            IMapper mapper,
+            ISshEmailService emailService)
         {
             _context = context;
             _manager = manager;
-            _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
+            _emailService = emailService;
         }
         
         #region Login
@@ -111,11 +113,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 JwtSecurityToken jwtToken = validatedToken as JwtSecurityToken;
                 if (jwtToken == null || !jwtToken.Header.Alg
                         .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)) {
-                    throw new BasicServerException("Niepoprawny token", HttpStatusCode.ExpectationFailed);
+                    throw new BasicServerException("Niepoprawny token.", HttpStatusCode.ExpectationFailed);
                 }
             }
             catch (Exception ex) {
-                throw new BasicServerException("Nieoczekiwany błąd podczas odczytywania tokenu",
+                throw new BasicServerException("Nieoczekiwany błąd podczas odczytywania tokenu.",
                     HttpStatusCode.ExpectationFailed);
             }
             
@@ -124,7 +126,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Include(p => p.Person)
                 .FirstOrDefaultAsync(t => t.TokenValue == dto.RefreshBearerToken && t.PersonId == t.Person.Id);
             if (findRefreshToken == null) {
-                throw new BasicServerException("Nie znaleziono tokenu odświeżającego", HttpStatusCode.Forbidden);
+                throw new BasicServerException("Nie znaleziono tokenu odświeżającego.", HttpStatusCode.Forbidden);
             }
             
             // stworzenie nowego tokenu odświeżającego oraz JWT i wysyłka do klienta
@@ -148,9 +150,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user)
         {
             string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
-            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator(3);
-            string generatedFirstPassword = ApplicationUtils.DictionaryHashGenerator(8);
-            string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}@schedule.pl";
+            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator();
+            string generatedFirstPassword = ApplicationUtils.GenerateUserFirstPassword();
+            string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}" +
+                                    $"{ApplicationUtils.RandomNumberGenerator()}@" +
+                                    $"{GlobalConfigurer.UserEmailDomain}";
+            
+            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstPassword);
 
             Role findRoleId = await _context.Roles
                 .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER));
@@ -178,18 +184,26 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region ChangePassword
 
         // metoda odpowiadająca za zmianę początkowego hasła przez użytkownika
-        public async Task<PseudoNoContentResponseDto> UserChangePassword(ChangePasswordRequestDto dto, string userId)
+        public async Task<PseudoNoContentResponseDto> UserChangePassword(
+            ChangePasswordRequestDto dto, string userId, Claim userLogin)
         {
             Person findPerson = await _context.Persons.FirstOrDefaultAsync(p => p.DictionaryHash == userId);
             if (findPerson == null) {
-                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych", HttpStatusCode.NotFound);
+                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
+            }
+
+            // jeśli login zapisany w tokenie JWT nie jest zgody ze znalezionym użytkownikiem
+            if (findPerson.Login != userLogin.Value) {
+                throw new BasicServerException("Brak poświadczeń do edycji zasobu.", HttpStatusCode.Forbidden);
             }
             
             PasswordVerificationResult verificationPassword = _passwordHasher
                 .VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
             if (verificationPassword == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Podano złe hasło pierwotne", HttpStatusCode.Unauthorized);
+                throw new BasicServerException("Podano złe hasło pierwotne.", HttpStatusCode.Unauthorized);
             }
+            
+            _emailService.UpdateEmailPassword(findPerson.Email, dto.NewPassword);
             
             findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.NewPassword);
             findPerson.FirstAccess = false;
@@ -198,7 +212,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             
             return new PseudoNoContentResponseDto()
             {
-                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione"
+                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione."
             };
         }
 

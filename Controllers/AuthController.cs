@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.CustomDecorators;
 
-using asp_net_po_schedule_management_server.Dto.AuthDtos;
 using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
 using asp_net_po_schedule_management_server.Dto.CrossQuery;
@@ -49,7 +49,8 @@ namespace asp_net_po_schedule_management_server.Controllers
             [FromQuery] string userId,
             [FromBody] ChangePasswordRequestDto form)
         {
-            return StatusCode((int) HttpStatusCode.OK, await _service.UserChangePassword(form, userId));
+            Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
+            return StatusCode((int) HttpStatusCode.OK, await _service.UserChangePassword(form, userId, userLogin));
         }
 
         [AllowAnonymous]

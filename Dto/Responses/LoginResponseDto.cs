@@ -15,6 +15,8 @@ namespace asp_net_po_schedule_management_server.Dto.Responses
         
         public string NameWithSurname { get; set; }
         
+        public string Login { get; set; }
+        
         public string Email { get; set; }
         
         public DateTime TokenExpirationDate { get; set; }
