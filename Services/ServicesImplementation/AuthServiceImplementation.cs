@@ -3,7 +3,6 @@
 using System;
 using System.Net;
 using System.Linq;
-using System.Text;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,17 +31,20 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         private readonly IJwtAuthenticationManager _manager;
         private readonly IPasswordHasher<Person> _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly ISshEmailService _emailService;
         
         public AuthServiceImplementation(
             ApplicationDbContext context,
             IJwtAuthenticationManager manager,
             IPasswordHasher<Person> passwordHasher,
-            IMapper mapper)
+            IMapper mapper,
+            ISshEmailService emailService)
         {
             _context = context;
             _manager = manager;
-            _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
+            _emailService = emailService;
         }
         
         #region Login
@@ -200,6 +202,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             if (verificationPassword == PasswordVerificationResult.Failed) {
                 throw new BasicServerException("Podano złe hasło pierwotne.", HttpStatusCode.Unauthorized);
             }
+            
+            _emailService.UpdateEmailPassword(findPerson.Email, dto.NewPassword);
             
             findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.NewPassword);
             findPerson.FirstAccess = false;
