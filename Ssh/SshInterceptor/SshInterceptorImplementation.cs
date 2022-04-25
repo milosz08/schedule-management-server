@@ -43,11 +43,9 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
             SshCommand customCommand;
             try {
                 _sshClient.Connect();
-            
+
                 customCommand = _sshClient.CreateCommand(commandParameter);
                 result = customCommand.Execute();
-                
-                _sshClient.Disconnect();
             }
             catch (SocketException ex) {
                 throw new BasicServerException(
@@ -58,6 +56,9 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
                 throw new BasicServerException(
                     $"Zbyt długi czas wykonywania komendy. Potencjalny problem z połączeniem. Komunikat błędu: {ex}",
                     HttpStatusCode.GatewayTimeout);
+            }
+            finally {
+                _sshClient.Disconnect();
             }
             return result;
         }
