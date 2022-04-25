@@ -178,17 +178,23 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region ChangePassword
 
         // metoda odpowiadająca za zmianę początkowego hasła przez użytkownika
-        public async Task<PseudoNoContentResponseDto> UserChangePassword(ChangePasswordRequestDto dto, string userId)
+        public async Task<PseudoNoContentResponseDto> UserChangePassword(
+            ChangePasswordRequestDto dto, string userId, Claim userLogin)
         {
             Person findPerson = await _context.Persons.FirstOrDefaultAsync(p => p.DictionaryHash == userId);
             if (findPerson == null) {
-                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych", HttpStatusCode.NotFound);
+                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
+            }
+
+            // jeśli login zapisany w tokenie JWT nie jest zgody ze znalezionym użytkownikiem
+            if (findPerson.Login != userLogin.Value) {
+                throw new BasicServerException("Brak poświadczeń do edycji zasobu.", HttpStatusCode.Forbidden);
             }
             
             PasswordVerificationResult verificationPassword = _passwordHasher
                 .VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
             if (verificationPassword == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Podano złe hasło pierwotne", HttpStatusCode.Unauthorized);
+                throw new BasicServerException("Podano złe hasło pierwotne.", HttpStatusCode.Unauthorized);
             }
             
             findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.NewPassword);
@@ -198,7 +204,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             
             return new PseudoNoContentResponseDto()
             {
-                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione"
+                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione."
             };
         }
 
