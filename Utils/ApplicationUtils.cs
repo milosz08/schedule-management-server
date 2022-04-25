@@ -8,6 +8,7 @@ namespace asp_net_po_schedule_management_server.Utils
     {
         private static readonly string RANDOM_CHARS = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUWXYZ0123456789";
         private static readonly string RANDOM_NUMBERS = "0123456789";
+        private static readonly string SPECIAL_CHARS = "@#%&$";
         private static readonly Random _random = new Random();
         
         // generowanie hasza słownikowego (głównie na potrzeby frontu)
@@ -29,6 +30,17 @@ namespace asp_net_po_schedule_management_server.Utils
                 int randomIndex = _random.Next(RANDOM_NUMBERS.Length);
                 builder.Append(RANDOM_NUMBERS[randomIndex]);
             }
+            return builder.ToString();
+        }
+
+        // generowanie początkowego hasła dla użytkowników (możliwośc zmiany na własne)
+        public static string GenerateUserFirstPassword()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(DictionaryHashGenerator(6));
+            builder.Append(RandomNumberGenerator());
+            builder.Append(SPECIAL_CHARS[_random.Next(SPECIAL_CHARS.Length)]);
+            builder.Append(DictionaryHashGenerator(6));
             return builder.ToString();
         }
         
