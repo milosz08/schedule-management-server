@@ -92,6 +92,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             findPerson.HasPicture = true;
             await _context.SaveChangesAsync();
 
+            stream.Close();
             return new PseudoNoContentResponseDto()
             {
                 Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione.",
