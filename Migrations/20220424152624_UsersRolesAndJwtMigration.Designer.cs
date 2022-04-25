@@ -9,8 +9,8 @@ using asp_net_po_schedule_management_server.DbConfig;
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220414164933_UserWithRolesMigration")]
-    partial class UserWithRolesMigration
+    [Migration("20220424152624_UsersRolesAndJwtMigration")]
+    partial class UsersRolesAndJwtMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,16 +43,22 @@ namespace asp_net_po_schedule_management_server.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("email");
 
                     b.Property<bool>("FirstAccess")
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("first-access");
 
+                    b.Property<bool>("HasPicture")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("has-picture");
+
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("longtext")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("login");
 
                     b.Property<string>("Name")
@@ -63,16 +69,18 @@ namespace asp_net_po_schedule_management_server.Migrations
 
                     b.Property<string>("Nationality")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
                         .HasColumnName("nationality");
 
                     b.Property<string>("Password")
-                        .HasColumnType("longtext")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
                         .HasColumnName("password");
 
                     b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("role-key");
 
                     b.Property<string>("Shortcut")
                         .HasMaxLength(8)
@@ -94,6 +102,36 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("person");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.RefreshToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("primary-key");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created-date");
+
+                    b.Property<long>("PersonId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("person-key");
+
+                    b.Property<string>("TokenValue")
+                        .HasColumnType("longtext")
+                        .HasColumnName("token-value");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated-date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("jwt-tokens");
                 });
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Role", b =>
@@ -135,6 +173,17 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
                 });
 #pragma warning restore 612, 618
         }

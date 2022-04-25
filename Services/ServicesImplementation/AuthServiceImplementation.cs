@@ -1,18 +1,27 @@
 ﻿using AutoMapper;
 
+using System;
 using System.Net;
+using System.Linq;
+using System.Text;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
-using asp_net_po_schedule_management_server.Dto.Misc;
 using asp_net_po_schedule_management_server.Exceptions;
+
 using asp_net_po_schedule_management_server.Dto.AuthDtos;
+using asp_net_po_schedule_management_server.Dto.Requests;
+using asp_net_po_schedule_management_server.Dto.Responses;
+using asp_net_po_schedule_management_server.Dto.CrossQuery;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -46,24 +55,92 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .FirstOrDefaultAsync(p => p.Login == user.Login);
 
             if (findPerson == null) {
-                throw new BasicServerException("Podany użytkownik nie istenieje w bazie.", HttpStatusCode.NotFound);
+                throw new BasicServerException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
             }
             
             PasswordVerificationResult verificatrionRes = _passwordHasher
                 .VerifyHashedPassword(findPerson, findPerson.Password, user.Password);
             
             if (verificatrionRes == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Podano zły login lub hasło. Spróbuj ponownie", HttpStatusCode.Unauthorized);
+                throw new BasicServerException("Podano zły login lub hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
             }
             
-            return new LoginResponseDto() 
+            string bearerRefreshToken;
+
+            RefreshToken findRefreshToken = await _context.Tokens.FirstOrDefaultAsync(t => t.PersonId == findPerson.Id);
+            if (findRefreshToken == null) {
+                bearerRefreshToken = _manager.RefreshTokenGenerator();
+                RefreshToken refreshToken = new RefreshToken()
+                {
+                    TokenValue = bearerRefreshToken,
+                    PersonId = findPerson.Id,
+                };
+                await _context.Tokens.AddAsync(refreshToken);
+                await _context.SaveChangesAsync();
+            } else {
+                bearerRefreshToken = findRefreshToken.TokenValue;
+            }
+
+            LoginResponseDto response = _mapper.Map<LoginResponseDto>(findPerson);
+            response.BearerToken = _manager.BearerHandlingService(findPerson);
+            response.TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp);
+            response.RefreshBearerToken = bearerRefreshToken;
+            return response;
+        }
+        
+        #endregion
+
+        
+        #region Refresh Token
+        
+        // metoda odpowiadająca za odświeżanie JWT na podstawie tokenu odświeżającego
+        public async Task<RefreshTokenDto> UserRefreshToken(RefreshTokenDto dto)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken validatedToken;
+            ClaimsPrincipal principal;
+
+            try {
+                // walidacja tokena JWT poprze uzyskanie obiektu principals
+                principal = tokenHandler.ValidateToken(
+                    dto.BearerToken,
+                    JwtAuthenticationManagerImplementation.GetBasicTokenValidationParameters(false),
+                    out validatedToken
+                );
+            
+                JwtSecurityToken jwtToken = validatedToken as JwtSecurityToken;
+                if (jwtToken == null || !jwtToken.Header.Alg
+                        .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)) {
+                    throw new BasicServerException("Niepoprawny token", HttpStatusCode.ExpectationFailed);
+                }
+            }
+            catch (Exception ex) {
+                throw new BasicServerException("Nieoczekiwany błąd podczas odczytywania tokenu",
+                    HttpStatusCode.ExpectationFailed);
+            }
+            
+            // wyszukanie, czy podany token odświeżający istnieje, jeśli nie rzuć wyjącek 403 forbidden
+            RefreshToken findRefreshToken = await _context.Tokens
+                .Include(p => p.Person)
+                .FirstOrDefaultAsync(t => t.TokenValue == dto.RefreshBearerToken && t.PersonId == t.Person.Id);
+            if (findRefreshToken == null) {
+                throw new BasicServerException("Nie znaleziono tokenu odświeżającego", HttpStatusCode.Forbidden);
+            }
+            
+            // stworzenie nowego tokenu odświeżającego oraz JWT i wysyłka do klienta
+            string bearerRefreshToken = _manager.RefreshTokenGenerator();
+            findRefreshToken.TokenValue = bearerRefreshToken;
+            await _context.SaveChangesAsync();
+            
+            return new RefreshTokenDto()
             {
-                BearerToken = _manager.BearerHandlingService(findPerson),
-                Role = findPerson.Role.Name,
+                BearerToken = _manager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
+                RefreshBearerToken = bearerRefreshToken,
             };
         }
 
         #endregion
+
         
         #region Register
 
@@ -71,7 +148,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user)
         {
             string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
-            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.DictionaryHashGenerator(5);
+            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator(3);
             string generatedFirstPassword = ApplicationUtils.DictionaryHashGenerator(8);
             string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}@schedule.pl";
 
@@ -96,6 +173,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
+        
         
         #region ChangePassword
 

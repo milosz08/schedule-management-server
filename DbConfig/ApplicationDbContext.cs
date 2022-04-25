@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -21,9 +23,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
         // zmapowane tabele bazy danych
         public DbSet<Person> Persons { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<RefreshToken> Tokens { get; set; }
 
         public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options) {
+            DbContextOptions<ApplicationDbContext> options,
+            IConfiguration configuration) : base(options) {
             _configuration = configuration;
         }
         
@@ -42,11 +46,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .EnableDetailedErrors();
         }
 
-        public override int SaveChanges()
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             AddAutoInjectionSeqelDates();
             AddAutoInjectionSequelArtificianIndex();
-            return base.SaveChanges();
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         // autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji)

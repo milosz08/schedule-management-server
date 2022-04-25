@@ -13,12 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Utils;
-using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Middleware;
+
 using asp_net_po_schedule_management_server.Dto.AuthDtos;
 using asp_net_po_schedule_management_server.Dto.Validators;
+
+using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Services.ServicesImplementation;
 
 
@@ -45,11 +47,13 @@ namespace asp_net_po_schedule_management_server
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
+
             JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
             services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             
             // strefa dodawania serwisów i ich implementacji
             services.AddScoped<IAuthService, AuthServiceImplementation>();
+            services.AddScoped<IFilesService, FilesServiceImplementation>();
 
             // strefa dodawnia middleware'ów
             services.AddScoped<ExceptionsHandlingMiddleware>();
@@ -73,11 +77,23 @@ namespace asp_net_po_schedule_management_server
                 options.LowercaseUrls = true;
                 options.LowercaseQueryStrings = true;
             });
+
+            // zezwolenie na politykę CORS
+            services.AddCors(options => {
+                options.AddPolicy("AngularClient", builder =>
+                    builder.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:8383")
+                    );
+            });
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbSeeder seeder)
         {
-            seeder.Seed(); // seedowanie (umieszczanie) początkowych danych do encji bazy danych
+            // ustawianie polityki cors
+            app.UseCors("AngularClient");
+            
+            seeder.Seed().Wait(); // seedowanie (umieszczanie) początkowych danych do encji bazy danych
 
             if (!env.IsDevelopment()) { // przekierowanie na adres szyfrowany SSL (tylko na produkcji)
                 app.UseHttpsRedirection();
@@ -89,16 +105,6 @@ namespace asp_net_po_schedule_management_server
             app.UseAuthentication();
             app.UseRouting();
 
-            // ustawianie polityki cors
-            app.UseCors(options => options
-                .SetIsOriginAllowed(url => env.IsDevelopment() 
-                    ? url == $"http://localhost:{GlobalConfigurer.AngularPort}"     // dla wersji developerskiej
-                    : url == $"https://{GlobalConfigurer.AngularProductionUrl}")    // dla wersji produkcyjnej
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-            );
-            
             app.UseAuthorization();
             
             // umożliwia mapowanie endpointów na podstawie annotacji w kontrolerach

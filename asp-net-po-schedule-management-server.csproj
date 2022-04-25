@@ -19,12 +19,14 @@
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
         <PackageReference Include="NLog.Web.AspNetCore" Version="5.0.0-rc2" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.4" />
+        <PackageReference Include="SSH.NET" Version="2020.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.17.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Migrations" />
+      <Folder Include="_StaticPrivateContent\UserImages" />
     </ItemGroup>
 
 </Project>
