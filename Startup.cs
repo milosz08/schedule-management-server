@@ -17,7 +17,7 @@ using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Middleware;
 
-using asp_net_po_schedule_management_server.Dto.AuthDtos;
+using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Validators;
 
 using asp_net_po_schedule_management_server.Services;
@@ -47,7 +47,6 @@ namespace asp_net_po_schedule_management_server
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
-
             JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
             services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             

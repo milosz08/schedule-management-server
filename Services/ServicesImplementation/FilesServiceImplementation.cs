@@ -94,7 +94,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
             return new PseudoNoContentResponseDto()
             {
-                Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało zmienione.",
+                Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione.",
             };
         }
 

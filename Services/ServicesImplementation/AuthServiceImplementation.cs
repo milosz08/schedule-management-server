@@ -18,10 +18,10 @@ using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Exceptions;
 
-using asp_net_po_schedule_management_server.Dto.AuthDtos;
 using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
 using asp_net_po_schedule_management_server.Dto.CrossQuery;
+using asp_net_po_schedule_management_server.Ssh.SshEmailService;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -111,11 +111,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 JwtSecurityToken jwtToken = validatedToken as JwtSecurityToken;
                 if (jwtToken == null || !jwtToken.Header.Alg
                         .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)) {
-                    throw new BasicServerException("Niepoprawny token", HttpStatusCode.ExpectationFailed);
+                    throw new BasicServerException("Niepoprawny token.", HttpStatusCode.ExpectationFailed);
                 }
             }
             catch (Exception ex) {
-                throw new BasicServerException("Nieoczekiwany błąd podczas odczytywania tokenu",
+                throw new BasicServerException("Nieoczekiwany błąd podczas odczytywania tokenu.",
                     HttpStatusCode.ExpectationFailed);
             }
             
@@ -124,7 +124,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Include(p => p.Person)
                 .FirstOrDefaultAsync(t => t.TokenValue == dto.RefreshBearerToken && t.PersonId == t.Person.Id);
             if (findRefreshToken == null) {
-                throw new BasicServerException("Nie znaleziono tokenu odświeżającego", HttpStatusCode.Forbidden);
+                throw new BasicServerException("Nie znaleziono tokenu odświeżającego.", HttpStatusCode.Forbidden);
             }
             
             // stworzenie nowego tokenu odświeżającego oraz JWT i wysyłka do klienta
@@ -148,9 +148,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user)
         {
             string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
-            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator(3);
-            string generatedFirstPassword = ApplicationUtils.DictionaryHashGenerator(8);
-            string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}@schedule.pl";
+            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator();
+            string generatedFirstPassword = ApplicationUtils.GenerateUserFirstPassword();
+            string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}" +
+                                    $"{ApplicationUtils.RandomNumberGenerator()}@" +
+                                    $"{GlobalConfigurer.UserEmailDomain}";
+            
+            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstPassword);
 
             Role findRoleId = await _context.Roles
                 .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER));

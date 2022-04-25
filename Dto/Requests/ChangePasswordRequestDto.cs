@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace asp_net_po_schedule_management_server.Dto.AuthDtos
+namespace asp_net_po_schedule_management_server.Dto.Requests
 {
     public sealed class ChangePasswordRequestDto
     {
