@@ -26,7 +26,7 @@ namespace asp_net_po_schedule_management_server.Controllers
             _service = service;
         }
         
-        [HttpGet(ApiEndpoints.ADD_AVATAR)]
+        [HttpGet(ApiEndpoints.GET_AVATAR)]
         public async Task<ActionResult> UserGetCustomAvatar([FromQuery] string userId)
         {
             Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
@@ -34,7 +34,7 @@ namespace asp_net_po_schedule_management_server.Controllers
             return File(imageTuple.Item1, imageTuple.Item2);
         }
         
-        [HttpPost(ApiEndpoints.GET_AVATAR)]
+        [HttpPost(ApiEndpoints.ADD_AVATAR)]
         public async Task<ActionResult<PseudoNoContentResponseDto>> UserAddCustomAvatar([FromForm] IFormFile image)
         {
             Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
