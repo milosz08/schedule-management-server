@@ -17,7 +17,7 @@ namespace asp_net_po_schedule_management_server.Jwt
     public sealed class JwtAuthenticationManagerImplementation : IJwtAuthenticationManager
     {
         // sekretny klucz prywatny do JWT
-        private byte[] tokenKey = Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey);
+        private static byte[] tokenKey = Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey);
         
         // funkcja generująca JWT dla użytkownika na podstawie jego nazwy. Token jest ważny n-czasu, w
         // zależności od przechowywanej wartości w zmiennej TOKEN_EXPIRED_HOURS
@@ -70,15 +70,22 @@ namespace asp_net_po_schedule_management_server.Jwt
             }).AddJwtBearer(options => {
                 options.RequireHttpsMetadata = false; // na developmencie false, na produkcji true <- ważne!!
                 options.SaveToken = true; // czy klucz ma być przechowywany
-                options.TokenValidationParameters =  new TokenValidationParameters()
-                {
-                    // ustawianie klucza symetrycznego używanego do walidacji
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey)),
-                    ValidateAudience = false,
-                    ValidateIssuer = false,
-                    ValidateLifetime = true,
-                };
+                options.TokenValidationParameters = GetBasicTokenValidationParameters();
             });
+        }
+
+        // metoda statyczna zwracająca obiekt konfiguracji parametrów walidacji tokenu JWT
+        public static TokenValidationParameters GetBasicTokenValidationParameters(bool ifValidateLifetime = true)
+        {
+            return new TokenValidationParameters()
+            {
+                // ustawianie klucza symetrycznego używanego do walidacji
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(tokenKey),
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateLifetime = ifValidateLifetime,
+            };
         }
     }
 }
