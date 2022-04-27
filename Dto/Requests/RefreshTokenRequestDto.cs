@@ -1,6 +1,6 @@
-﻿namespace asp_net_po_schedule_management_server.Dto.CrossQuery
+﻿namespace asp_net_po_schedule_management_server.Dto.Requests
 {
-    public sealed class RefreshTokenDto
+    public sealed class RefreshTokenRequestDto
     {
         public string BearerToken { get; set; }
         

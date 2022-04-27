@@ -19,7 +19,7 @@ using asp_net_po_schedule_management_server.Exceptions;
 
 using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
-using asp_net_po_schedule_management_server.Dto.CrossQuery;
+
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
 
 
@@ -96,7 +96,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Refresh Token
         
         // metoda odpowiadająca za odświeżanie JWT na podstawie tokenu odświeżającego
-        public async Task<RefreshTokenDto> UserRefreshToken(RefreshTokenDto dto)
+        public async Task<RefreshTokenResponseDto> UserRefreshToken(RefreshTokenRequestDto dto)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken validatedToken;
@@ -134,10 +134,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             findRefreshToken.TokenValue = bearerRefreshToken;
             await _context.SaveChangesAsync();
             
-            return new RefreshTokenDto()
+            return new RefreshTokenResponseDto()
             {
                 BearerToken = _manager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
                 RefreshBearerToken = bearerRefreshToken,
+                TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp),
             };
         }
 

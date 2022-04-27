@@ -13,7 +13,6 @@ using asp_net_po_schedule_management_server.CustomDecorators;
 
 using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
-using asp_net_po_schedule_management_server.Dto.CrossQuery;
 
 
 namespace asp_net_po_schedule_management_server.Controllers
@@ -55,7 +54,7 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         [AllowAnonymous]
         [HttpPost(ApiEndpoints.REFRESH_TOKEN)]
-        public async Task<ActionResult<RefreshTokenDto>> UserRefreshToken(RefreshTokenDto dto)
+        public async Task<ActionResult<RefreshTokenResponseDto>> UserRefreshToken(RefreshTokenRequestDto dto)
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.UserRefreshToken(dto));
         }
