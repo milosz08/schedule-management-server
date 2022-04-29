@@ -1,3 +1,3 @@
-# ASP.NET_PO_Schedule_Management_Server
+## Schedule Management System (ASP.NET WebAPI Server)
 
-...something will be here
+...in progress, but don't worry, documentation will be appear soon ;).
