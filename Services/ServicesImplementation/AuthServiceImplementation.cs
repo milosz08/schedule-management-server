@@ -185,43 +185,5 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
-        
-        
-        #region ChangePassword
-
-        // metoda odpowiadająca za zmianę początkowego hasła przez użytkownika
-        public async Task<PseudoNoContentResponseDto> UserChangePassword(
-            ChangePasswordRequestDto dto, string userId, Claim userLogin)
-        {
-            Person findPerson = await _context.Persons.FirstOrDefaultAsync(p => p.DictionaryHash == userId);
-            if (findPerson == null) {
-                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
-            }
-
-            // jeśli login zapisany w tokenie JWT nie jest zgody ze znalezionym użytkownikiem
-            if (findPerson.Login != userLogin.Value) {
-                throw new BasicServerException("Brak poświadczeń do edycji zasobu.", HttpStatusCode.Forbidden);
-            }
-            
-            PasswordVerificationResult verificationPassword = _passwordHasher
-                .VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
-            if (verificationPassword == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Podano złe hasło pierwotne.", HttpStatusCode.Unauthorized);
-            }
-            
-            _emailService.UpdateEmailPassword(findPerson.Email, dto.NewPassword);
-            
-            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.NewPassword);
-            findPerson.FirstAccess = false;
-            _context.Persons.Update(findPerson);
-            await _context.SaveChangesAsync();
-            
-            return new PseudoNoContentResponseDto()
-            {
-                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione."
-            };
-        }
-
-        #endregion
     }
 }
