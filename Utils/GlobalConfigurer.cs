@@ -17,9 +17,25 @@ namespace asp_net_po_schedule_management_server.Utils
         public static string SshPassword { get; set; }
         public static string SshPasswordFieldName { get; set; }
         
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // obsługa email
+        public static string StmpSenderAddress { get; set; }
+        public static string StmpSenderDisplayName { get; set; }
+        public static string StmpUsername { get; set; }
+        public static string StmpPassword { get; set; }
+        public static string StmpHost { get; set; }
+        public static int StmpPort { get; set; }
+        public static bool EnableSSL { get; set; }
+        public static bool UseDefaultCredentials { get; set; }
+        public static bool IsBodyHTML { get; set; }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         // inne
         public static string UserEmailDomain { get; set; }
         public static string DbDriverVersion { get; set; }
         public static byte UserEmailMaxSizeMb { get; set; }
+        public static TimeSpan OptExpired { get; set; }
     }
 }

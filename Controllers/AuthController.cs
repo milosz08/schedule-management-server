@@ -23,8 +23,11 @@ namespace asp_net_po_schedule_management_server.Controllers
     public sealed class AuthController : ControllerBase
     {
         private readonly IAuthService _service;
-
-        public AuthController(IAuthService service)
+        private readonly IResetPasswordService _resetPasswordService;
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        public AuthController(IAuthService service, IResetPasswordService resetPasswordService)
         {
             _service = service;
             _resetPasswordService = resetPasswordService;
@@ -60,19 +63,47 @@ namespace asp_net_po_schedule_management_server.Controllers
         //--------------------------------------------------------------------------------------------------------------
         
         [HttpPost(ApiEndpoints.CHANGE_PASSWORD)]
-        public async Task<ActionResult<PseudoNoContentResponseDto>> UserFirstChangePassword(
+        public async Task<ActionResult<PseudoNoContentResponseDto>> UserChangePassword(
             [FromQuery] string userId,
             [FromBody] ChangePasswordRequestDto form)
         {
             Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
-            return StatusCode((int) HttpStatusCode.OK, await _service.UserChangePassword(form, userId, userLogin));
+            return StatusCode((int) HttpStatusCode.OK,
+                await _resetPasswordService.UserChangePassword(form, userId, userLogin));
         }
 
-        [AllowAnonymous]
-        [HttpPost(ApiEndpoints.REFRESH_TOKEN)]
-        public async Task<ActionResult<RefreshTokenResponseDto>> UserRefreshToken(RefreshTokenRequestDto dto)
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpPost(ApiEndpoints.RESET_PASSWORD)]
+        public async Task<ActionResult<PseudoNoContentResponseDto>> UserResetPassword(
+            [FromBody] SetResetPasswordRequestDto dto)
         {
-            return StatusCode((int) HttpStatusCode.OK, await _service.UserRefreshToken(dto));
+            Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
+            Claim resetToken = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Rsa);
+            return StatusCode((int) HttpStatusCode.OK,
+                await _resetPasswordService.UserResetPassword(dto, resetToken, userLogin));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpPost(ApiEndpoints.SEND_RESET_PASSWORD_TOKEN)]
+        public async Task<ActionResult<PseudoNoContentResponseDto>> SendPasswordResetTokenViaEmail(
+            [FromQuery] string userEmail)
+        {
+            return StatusCode((int) HttpStatusCode.OK,
+                await _resetPasswordService.SendPasswordResetTokenViaEmail(userEmail));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpPost(ApiEndpoints.CONFIRM_RESET_TOKEN)]
+        public async Task<ActionResult<SetNewPasswordViaEmailResponse>> ResetPasswordViaEmailToken(
+            [FromQuery] string emailToken)
+        {
+            return StatusCode((int) HttpStatusCode.OK,
+                await _resetPasswordService.ResetPasswordViaEmailToken(emailToken));
         }
     }
 }

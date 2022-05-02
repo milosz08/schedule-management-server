@@ -24,7 +24,10 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public DbSet<Person> Persons { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<RefreshToken> Tokens { get; set; }
+        public DbSet<ResetPasswordOtp> ResetPasswordOpts { get; set; }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
             IConfiguration configuration) : base(options) {
