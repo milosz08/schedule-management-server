@@ -33,6 +33,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         private readonly IMapper _mapper;
         private readonly ISshEmailService _emailService;
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         public AuthServiceImplementation(
             ApplicationDbContext context,
             IJwtAuthenticationManager manager,
@@ -46,6 +48,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             _passwordHasher = passwordHasher;
             _emailService = emailService;
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Login
 
@@ -92,6 +96,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #endregion
 
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Refresh Token
         
@@ -144,6 +149,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         #endregion
 
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Register
 

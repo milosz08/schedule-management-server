@@ -12,7 +12,7 @@ namespace asp_net_po_schedule_management_server.Dto.Requests
         public string NewPassword { get; set; }
         
         [Required(ErrorMessage = "Pole potwierdzenia nowego hasła nie może być puste")]
-        [Compare("NewPassword", ErrorMessage = "Hasła w obu polach muszą być identyczne.")]
+        [Compare(nameof(NewPassword), ErrorMessage = "Hasła w obu polach muszą być identyczne.")]
         public string NewPasswordConfirmed { get; set; }
     }
 }

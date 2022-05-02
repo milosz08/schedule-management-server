@@ -22,10 +22,14 @@ namespace asp_net_po_schedule_management_server.Controllers
     {
         private readonly IFilesService _service;
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         public FileController(IFilesService service)
         {
             _service = service;
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [HttpGet(ApiEndpoints.GET_AVATAR)]
         public async Task<ActionResult> UserGetCustomAvatar([FromQuery] string userId)
@@ -34,6 +38,8 @@ namespace asp_net_po_schedule_management_server.Controllers
             (byte[], string) imageTuple = await _service.UserGetCustomAvatar(userId, userLogin);
             return File(imageTuple.Item1, imageTuple.Item2);
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [HttpPost(ApiEndpoints.ADD_AVATAR)]
         public async Task<ActionResult<PseudoNoContentResponseDto>> UserAddCustomAvatar([FromForm] IFormFile image)

@@ -13,6 +13,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
             _sshInterceptor = sshInterceptor;
         }
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         // dodawanie nowej skrzynki pocztowej i ustawianie jej pojemności
         public void AddNewEmailAccount(string emailAddress, string emailPassword)
         {
@@ -27,6 +29,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
             );
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // aktualizacja hasła na podstawie adresu email
         public void UpdateEmailPassword(string emailAddress, string newEmailPassword)
         {
@@ -36,6 +40,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
                 $"| nc -U /var/run/devil2.sock"
             );
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         // usuwanie skrzynki pocztowej
         public void DeleteEmailAccount(string emailAddress)

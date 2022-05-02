@@ -27,7 +27,10 @@ namespace asp_net_po_schedule_management_server.Controllers
         public AuthController(IAuthService service)
         {
             _service = service;
+            _resetPasswordService = resetPasswordService;
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [AllowAnonymous]
         [HttpPost(ApiEndpoints.LOGIN)]
@@ -36,12 +39,25 @@ namespace asp_net_po_schedule_management_server.Controllers
             return StatusCode((int) HttpStatusCode.OK, await _service.UserLogin(user));
         }
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpPost(ApiEndpoints.REGISTER)]
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         public async Task<ActionResult<RegisterNewUserResponseDto>> UserRegister([FromBody] RegisterNewUserRequestDto user)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.UserRegister(user));
         }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpPost(ApiEndpoints.REFRESH_TOKEN)]
+        public async Task<ActionResult<RefreshTokenResponseDto>> UserRefreshToken(RefreshTokenRequestDto dto)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UserRefreshToken(dto));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [HttpPost(ApiEndpoints.CHANGE_PASSWORD)]
         public async Task<ActionResult<PseudoNoContentResponseDto>> UserFirstChangePassword(

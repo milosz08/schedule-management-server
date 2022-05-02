@@ -11,10 +11,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
     {
         private readonly ApplicationDbContext _context;
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         public ApplicationDbSeeder(ApplicationDbContext context)
         {
             _context = context;
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         // funkcja seedująca dane do bazy danych
         public async Task Seed()
@@ -28,6 +32,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
             }
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // umieszczanie wszystkich możliwych ról (na podstawie enuma) w liście.
         private IEnumerable<Role> InsertRoles()
         {

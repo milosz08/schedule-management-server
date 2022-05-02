@@ -22,12 +22,16 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         private readonly static string[] ACCEPTABLE_IMAGE_TYPES = { "image/jpeg" };
         private readonly static string ROOT_PATH = Directory.GetCurrentDirectory();
+
+        //--------------------------------------------------------------------------------------------------------------
         
         public FilesServiceImplementation(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         private async Task<Person> GetPersonFromDb(Claim userLogin)
         {
             // jeśli JWT jest nieprawidłowy, rzuć wyjątek dostępu (forbidden 403)
@@ -42,6 +46,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             return findPerson;
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Get Custom Avatar
 
         // metoda zwraca obraz w postaci tupli reprezentującej tablicę bajtów (zdjęcie) oraz rozszerzenie
@@ -62,6 +68,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Add Custom Avatar
 

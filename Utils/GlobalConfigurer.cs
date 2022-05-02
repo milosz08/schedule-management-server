@@ -9,6 +9,8 @@ namespace asp_net_po_schedule_management_server.Utils
         public static string JwtKey { get; set; }
         public static TimeSpan JwtExpiredTimestamp { get; set; }
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         // obsługa SSH
         public static string SshServer { get; set; }
         public static string SshUsername { get; set; }
