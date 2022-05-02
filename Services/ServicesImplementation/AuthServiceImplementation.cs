@@ -33,6 +33,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         private readonly IMapper _mapper;
         private readonly ISshEmailService _emailService;
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         public AuthServiceImplementation(
             ApplicationDbContext context,
             IJwtAuthenticationManager manager,
@@ -47,6 +49,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             _emailService = emailService;
         }
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Login
 
         // metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek)
@@ -54,7 +58,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         {
             Person findPerson = await _context.Persons
                 .Include(p => p.Role)
-                .FirstOrDefaultAsync(p => p.Login == user.Login);
+                .FirstOrDefaultAsync(p => p.Login == user.Login || p.Email == user.Login);
 
             if (findPerson == null) {
                 throw new BasicServerException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
@@ -87,11 +91,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             response.BearerToken = _manager.BearerHandlingService(findPerson);
             response.TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp);
             response.RefreshBearerToken = bearerRefreshToken;
+            response.tokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds;
             return response;
         }
         
         #endregion
 
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Refresh Token
         
@@ -128,22 +134,19 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             if (findRefreshToken == null) {
                 throw new BasicServerException("Nie znaleziono tokenu odświeżającego.", HttpStatusCode.Forbidden);
             }
-            
-            // stworzenie nowego tokenu odświeżającego oraz JWT i wysyłka do klienta
-            string bearerRefreshToken = _manager.RefreshTokenGenerator();
-            findRefreshToken.TokenValue = bearerRefreshToken;
-            await _context.SaveChangesAsync();
-            
+
             return new RefreshTokenResponseDto()
             {
                 BearerToken = _manager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
-                RefreshBearerToken = bearerRefreshToken,
+                RefreshBearerToken = findRefreshToken.TokenValue,
                 TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp),
+                tokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds,
             };
         }
 
         #endregion
 
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Register
 
@@ -153,11 +156,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
             string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator();
             string generatedFirstPassword = ApplicationUtils.GenerateUserFirstPassword();
+            string generatedFirstEmailPassword = ApplicationUtils.GenerateUserFirstPassword();
             string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}" +
                                     $"{ApplicationUtils.RandomNumberGenerator()}@" +
                                     $"{GlobalConfigurer.UserEmailDomain}";
             
-            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstPassword);
+            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
 
             Role findRoleId = await _context.Roles
                 .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER));
@@ -175,46 +179,9 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             
             RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
             response.Password = generatedFirstPassword;
+            response.EmailPassword = generatedFirstEmailPassword;
             response.Role = nameof(AvailableRoles.TEACHER);
             return response;
-        }
-
-        #endregion
-        
-        
-        #region ChangePassword
-
-        // metoda odpowiadająca za zmianę początkowego hasła przez użytkownika
-        public async Task<PseudoNoContentResponseDto> UserChangePassword(
-            ChangePasswordRequestDto dto, string userId, Claim userLogin)
-        {
-            Person findPerson = await _context.Persons.FirstOrDefaultAsync(p => p.DictionaryHash == userId);
-            if (findPerson == null) {
-                throw new BasicServerException($"Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
-            }
-
-            // jeśli login zapisany w tokenie JWT nie jest zgody ze znalezionym użytkownikiem
-            if (findPerson.Login != userLogin.Value) {
-                throw new BasicServerException("Brak poświadczeń do edycji zasobu.", HttpStatusCode.Forbidden);
-            }
-            
-            PasswordVerificationResult verificationPassword = _passwordHasher
-                .VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
-            if (verificationPassword == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Podano złe hasło pierwotne.", HttpStatusCode.Unauthorized);
-            }
-            
-            _emailService.UpdateEmailPassword(findPerson.Email, dto.NewPassword);
-            
-            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.NewPassword);
-            findPerson.FirstAccess = false;
-            _context.Persons.Update(findPerson);
-            await _context.SaveChangesAsync();
-            
-            return new PseudoNoContentResponseDto()
-            {
-                Message = $"Hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało pomyślnie zmienione."
-            };
         }
 
         #endregion

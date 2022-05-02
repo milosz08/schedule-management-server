@@ -11,6 +11,8 @@ namespace asp_net_po_schedule_management_server.Utils
         private static readonly string SPECIAL_CHARS = "@#%&$";
         private static readonly Random _random = new Random();
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         // generowanie hasza słownikowego (głównie na potrzeby frontu)
         public static string DictionaryHashGenerator(int hashSize = 20)
         {
@@ -22,6 +24,8 @@ namespace asp_net_po_schedule_management_server.Utils
             return builder.ToString();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // generowanie randomowego zestawu cyfr (o długości na podstawie parametru)
         public static string RandomNumberGenerator(int randomSize = 3)
         {
@@ -33,6 +37,8 @@ namespace asp_net_po_schedule_management_server.Utils
             return builder.ToString();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // generowanie początkowego hasła dla użytkowników (możliwośc zmiany na własne)
         public static string GenerateUserFirstPassword()
         {
@@ -43,6 +49,8 @@ namespace asp_net_po_schedule_management_server.Utils
             builder.Append(DictionaryHashGenerator(6));
             return builder.ToString();
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         // funkcja konwertująca obiekt Date na chwilę czasową
         public static String GetTimestamp(DateTime date)

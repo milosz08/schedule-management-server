@@ -24,12 +24,17 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public DbSet<Person> Persons { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<RefreshToken> Tokens { get; set; }
+        public DbSet<ResetPasswordOtp> ResetPasswordOpts { get; set; }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
             IConfiguration configuration) : base(options) {
             _configuration = configuration;
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -46,6 +51,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .EnableDetailedErrors();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             AddAutoInjectionSeqelDates();
@@ -53,6 +60,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
             return await base.SaveChangesAsync(cancellationToken);
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji)
         private void AddAutoInjectionSeqelDates()
         {
@@ -71,6 +80,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 ((PrimaryKeyEntityInjection) entityEntry.Entity).UpdatedDate = formatedDateTime;
             }
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         // automatyczne wstawianie pola sztucznego indeksu (potrzebny do front-endu,
         // generowany w metodzie statycznej klasy "ApplicationUtils")

@@ -9,5 +9,7 @@ namespace asp_net_po_schedule_management_server.Dto.Responses
         public string RefreshBearerToken { get; set; }
         
         public DateTime TokenExpirationDate { get; set; }
+        
+        public double tokenRefreshInSeconds { get; set; }
     }
 }

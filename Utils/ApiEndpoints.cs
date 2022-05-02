@@ -7,7 +7,12 @@
         public const string REGISTER = "register";
         public const string CHANGE_PASSWORD = "change-password";
         public const string REFRESH_TOKEN = "refresh-token";
-
+        public const string SEND_RESET_PASSWORD_TOKEN = "reset-password-email";
+        public const string CONFIRM_RESET_TOKEN = "confirm-reset-password";
+        public const string RESET_PASSWORD = "reset-password";
+     
+        //--------------------------------------------------------------------------------------------------------------
+        
         // kontroller FileController
         public const string GET_AVATAR = "get-avatar";
         public const string ADD_AVATAR = "add-avatar";

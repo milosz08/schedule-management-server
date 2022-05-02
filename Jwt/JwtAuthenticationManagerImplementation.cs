@@ -19,6 +19,8 @@ namespace asp_net_po_schedule_management_server.Jwt
         // sekretny klucz prywatny do JWT
         private static byte[] tokenKey = Encoding.ASCII.GetBytes(GlobalConfigurer.JwtKey);
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         // funkcja generująca JWT dla użytkownika na podstawie jego nazwy. Token jest ważny n-czasu, w
         // zależności od przechowywanej wartości w zmiennej TOKEN_EXPIRED_HOURS
         public string BearerHandlingService(Person person)
@@ -27,15 +29,33 @@ namespace asp_net_po_schedule_management_server.Jwt
             {
                 new Claim(ClaimTypes.Name, person.Login),
                 new Claim(ClaimTypes.Role, person.Role.Name),
-            });
+            }, GlobalConfigurer.JwtExpiredTimestamp);
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // metoda odpowiadająca za generowanie tokenu JWT używanego do odzyskiwania hasła. Token ważny w
+        // zależności od ważności token OPT.
+        public string BearerHandlingResetPasswordTokenService(Person person, string otpToken)
+        {
+            return JwtDeploymentDescriptor(new[]
+            {
+                new Claim(ClaimTypes.Name, person.Login),
+                new Claim(ClaimTypes.Role, person.Role.Name),
+                new Claim(ClaimTypes.Rsa, otpToken),
+            }, GlobalConfigurer.OptExpired);
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         // metoda odpowiadająca za generowanie nowego tokenu JWT na podstawie tokenu odświeżania
         public string BearerHandlingRefreshTokenService(Claim[] claims)
         {
-            return JwtDeploymentDescriptor(claims);
+            return JwtDeploymentDescriptor(claims, GlobalConfigurer.JwtExpiredTimestamp);
         }
-        
+
+        //--------------------------------------------------------------------------------------------------------------
+
         // metoda odpowiadająca za generowanie tokenu używanego do odświeżania tokenu JWT
         public string RefreshTokenGenerator()
         {
@@ -43,15 +63,17 @@ namespace asp_net_po_schedule_management_server.Jwt
             RandomNumberGenerator.Create().GetBytes(randomNumbers);
             return Convert.ToBase64String(randomNumbers);
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
 
         // metoda inicjalizująca deskpryptor wdrożenia dla JWT
-        private string JwtDeploymentDescriptor(Claim[] claims)
+        private string JwtDeploymentDescriptor(Claim[] claims, TimeSpan tokenExpired)
         {
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp),
+                Expires = DateTime.UtcNow.Add(tokenExpired),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature
@@ -60,6 +82,8 @@ namespace asp_net_po_schedule_management_server.Jwt
             return handler.WriteToken(handler.CreateToken(descriptor));
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // metoda statyczna ustawiająca konfigurację autentykacji w aplikacji (używana w klasie Startup.cs)
         public static void ImplementsJwtOnStartup(IServiceCollection services)
         {
@@ -74,6 +98,8 @@ namespace asp_net_po_schedule_management_server.Jwt
             });
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // metoda statyczna zwracająca obiekt konfiguracji parametrów walidacji tokenu JWT
         public static TokenValidationParameters GetBasicTokenValidationParameters(bool ifValidateLifetime = true)
         {

@@ -19,6 +19,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
         private static readonly string USR_NAME = GlobalConfigurer.SshUsername;
         private static readonly string SRV_HOST = GlobalConfigurer.SshServer;
         
+        //--------------------------------------------------------------------------------------------------------------
+        
         // klient subskrybujący połączenie SSH
         private SshClient _sshClient;
         
@@ -27,6 +29,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
             Initialise();
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // initializacja połączenia z serwerem poprzez połączenie SSH
         private void Initialise()
         {
@@ -36,6 +40,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
             _sshClient = new SshClient(connectionInfo);
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // wywołanie customowej komendy (na podstawie parametru w commandParameter)
         public string ExecuteCommand(string commandParameter)
         {
@@ -63,6 +69,8 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
             return result;
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         // listener autoryzujący dostep do powłoki
         private static void HandleKeyEvent(object sender, AuthenticationPromptEventArgs eventArgs)
         {
