@@ -58,7 +58,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         {
             Person findPerson = await _context.Persons
                 .Include(p => p.Role)
-                .FirstOrDefaultAsync(p => p.Login == user.Login);
+                .FirstOrDefaultAsync(p => p.Login == user.Login || p.Email == user.Login);
 
             if (findPerson == null) {
                 throw new BasicServerException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
