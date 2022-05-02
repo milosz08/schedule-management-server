@@ -91,6 +91,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             response.BearerToken = _manager.BearerHandlingService(findPerson);
             response.TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp);
             response.RefreshBearerToken = bearerRefreshToken;
+            response.tokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds;
             return response;
         }
         
@@ -144,6 +145,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 BearerToken = _manager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
                 RefreshBearerToken = bearerRefreshToken,
                 TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp),
+                tokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds,
             };
         }
 

@@ -21,6 +21,8 @@ namespace asp_net_po_schedule_management_server.Dto.Responses
         
         public DateTime TokenExpirationDate { get; set; }
         
+        public double tokenRefreshInSeconds { get; set; }
+        
         public bool FirstAccess { get; set; }
         
         public bool HasPicture { get; set; }
