@@ -19,6 +19,8 @@ namespace asp_net_po_schedule_management_server.Dto.Responses
         
         public string Password { get; set; }
         
+        public string EmailPassword { get; set; }
+        
         public string Shortcut { get; set; }
         
         public string Email { get; set; }

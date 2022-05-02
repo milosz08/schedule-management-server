@@ -159,11 +159,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
             string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator();
             string generatedFirstPassword = ApplicationUtils.GenerateUserFirstPassword();
+            string generatedFirstEmailPassword = ApplicationUtils.GenerateUserFirstPassword();
             string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}" +
                                     $"{ApplicationUtils.RandomNumberGenerator()}@" +
                                     $"{GlobalConfigurer.UserEmailDomain}";
             
-            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstPassword);
+            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
 
             Role findRoleId = await _context.Roles
                 .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER));
@@ -181,6 +182,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             
             RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
             response.Password = generatedFirstPassword;
+            response.EmailPassword = generatedFirstEmailPassword;
             response.Role = nameof(AvailableRoles.TEACHER);
             return response;
         }
