@@ -134,16 +134,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             if (findRefreshToken == null) {
                 throw new BasicServerException("Nie znaleziono tokenu odświeżającego.", HttpStatusCode.Forbidden);
             }
-            
-            // stworzenie nowego tokenu odświeżającego oraz JWT i wysyłka do klienta
-            string bearerRefreshToken = _manager.RefreshTokenGenerator();
-            findRefreshToken.TokenValue = bearerRefreshToken;
-            await _context.SaveChangesAsync();
-            
+
             return new RefreshTokenResponseDto()
             {
                 BearerToken = _manager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
-                RefreshBearerToken = bearerRefreshToken,
+                RefreshBearerToken = findRefreshToken.TokenValue,
                 TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp),
                 tokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds,
             };
