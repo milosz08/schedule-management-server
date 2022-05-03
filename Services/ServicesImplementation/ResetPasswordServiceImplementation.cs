@@ -139,11 +139,16 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 // sprawdzenie, czy użytkownik istnieje
                 findResetOtp = await _context.ResetPasswordOpts
                     .Include(p => p.Person)
-                    .FirstOrDefaultAsync(otp => otp.Otp == resetToken.Value && otp.Person.Login == userLogin.Value);
+                    .FirstOrDefaultAsync(otp => otp.Otp == resetToken.Value 
+                                                && otp.Person.Login == userLogin.Value && !otp.IfUsed);
             
                 // jeśli token nie istnieje rzuć wyjątek 403 forbidden
                 if (findResetOtp == null) {
                     throw new BasicServerException("Nieprawidłowy token.", HttpStatusCode.Forbidden);
+                }
+                // jeśli token został już wykorzystany
+                if (findResetOtp.IfUsed) {
+                    throw new BasicServerException("Token został już wykorzystany.", HttpStatusCode.Forbidden);
                 }
                 // jeśli token uległ przedawnieniu, rzuć wyjątek 403 forbidden
                 if (findResetOtp.OtpExpired < DateTime.UtcNow) {
@@ -160,11 +165,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             if (findPerson == null) {
                 throw new BasicServerException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
             }
-            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.Password);
+            
+            // zapisz jako wykorzystane i zapisz nowe hasło
+            findResetOtp.IfUsed = true;
+            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.newPassword);
             _context.Persons.Update(findPerson);
-
-            // usuń pole z bazy danych
-            _context.ResetPasswordOpts.Remove(findResetOtp);
+            
             await _context.SaveChangesAsync();
 
             return new PseudoNoContentResponseDto()
