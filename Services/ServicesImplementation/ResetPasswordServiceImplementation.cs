@@ -78,18 +78,9 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     new KeyValuePair<string, string>("{{serverTime}}", serverTime),
                 },
             });
-            
-            ResetPasswordOtp findResetPasswordOtp = await _context.ResetPasswordOpts
-                .AsNoTracking()
-                .FirstOrDefaultAsync(otp => otp.Email == findUser.Email);
-            
-            // sprawdź, czy rekord istnieje, jeśli tak to zaktualizuj, jeśli nie to stwórz
-            if (findResetPasswordOtp != null) {
-                resetPasswordOpt.Id = findResetPasswordOtp.Id;
-                _context.ResetPasswordOpts.Update(resetPasswordOpt);
-            } else {
-                await _context.ResetPasswordOpts.AddAsync(resetPasswordOpt);
-            }
+
+            // dodaj token do bazy danych
+            await _context.ResetPasswordOpts.AddAsync(resetPasswordOpt);
 
             await _context.SaveChangesAsync();
             return new PseudoNoContentResponseDto()
