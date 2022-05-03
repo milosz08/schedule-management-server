@@ -63,6 +63,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 OtpExpired = DateTime.UtcNow.Add(GlobalConfigurer.OptExpired),
                 PersonId = findUser.Id,
             };
+
+            string serverTime = $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
             
             // konfiguracja wysyłanej wiadomości email i wysłanie jej do klienta
             await _stmpEmailService.SendResetPassword(new UserEmailOptions()
@@ -72,20 +74,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 {
                     new KeyValuePair<string, string>("{{userName}}", $"{findUser.Name} {findUser.Surname}"),
                     new KeyValuePair<string, string>("{{token}}", otpToken),
+                    new KeyValuePair<string, string>("{{expiredInMinutes}}", GlobalConfigurer.OptExpired.Minutes.ToString()),
+                    new KeyValuePair<string, string>("{{serverTime}}", serverTime),
                 },
             });
-            
-            ResetPasswordOtp findResetPasswordOtp = await _context.ResetPasswordOpts
-                .AsNoTracking()
-                .FirstOrDefaultAsync(otp => otp.Email == findUser.Email);
-            
-            // sprawdź, czy rekord istnieje, jeśli tak to zaktualizuj, jeśli nie to stwórz
-            if (findResetPasswordOtp != null) {
-                resetPasswordOpt.Id = findResetPasswordOtp.Id;
-                _context.ResetPasswordOpts.Update(resetPasswordOpt);
-            } else {
-                await _context.ResetPasswordOpts.AddAsync(resetPasswordOpt);
-            }
+
+            // dodaj token do bazy danych
+            await _context.ResetPasswordOpts.AddAsync(resetPasswordOpt);
 
             await _context.SaveChangesAsync();
             return new PseudoNoContentResponseDto()
@@ -139,11 +134,16 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 // sprawdzenie, czy użytkownik istnieje
                 findResetOtp = await _context.ResetPasswordOpts
                     .Include(p => p.Person)
-                    .FirstOrDefaultAsync(otp => otp.Otp == resetToken.Value && otp.Person.Login == userLogin.Value);
+                    .FirstOrDefaultAsync(otp => otp.Otp == resetToken.Value 
+                                                && otp.Person.Login == userLogin.Value && !otp.IfUsed);
             
                 // jeśli token nie istnieje rzuć wyjątek 403 forbidden
                 if (findResetOtp == null) {
                     throw new BasicServerException("Nieprawidłowy token.", HttpStatusCode.Forbidden);
+                }
+                // jeśli token został już wykorzystany
+                if (findResetOtp.IfUsed) {
+                    throw new BasicServerException("Token został już wykorzystany.", HttpStatusCode.Forbidden);
                 }
                 // jeśli token uległ przedawnieniu, rzuć wyjątek 403 forbidden
                 if (findResetOtp.OtpExpired < DateTime.UtcNow) {
@@ -160,13 +160,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             if (findPerson == null) {
                 throw new BasicServerException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
             }
-            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.Password);
+            
+            // zapisz jako wykorzystane i zapisz nowe hasło
+            findResetOtp.IfUsed = true;
+            findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.newPassword);
             _context.Persons.Update(findPerson);
-
-            // usuń pole z bazy danych
-            _context.ResetPasswordOpts.Remove(findResetOtp);
+            
             await _context.SaveChangesAsync();
-
             return new PseudoNoContentResponseDto()
             {
                 Message = $"Nowe hasło dla użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione.",
