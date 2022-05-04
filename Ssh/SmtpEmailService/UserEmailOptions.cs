@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace asp_net_po_schedule_management_server.Ssh.StmpEmailService
+namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
 {
     public class UserEmailOptions
     {
