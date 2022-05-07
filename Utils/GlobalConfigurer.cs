@@ -37,5 +37,13 @@ namespace asp_net_po_schedule_management_server.Utils
         public static string DbDriverVersion { get; set; }
         public static byte UserEmailMaxSizeMb { get; set; }
         public static TimeSpan OptExpired { get; set; }
+        public static InitialUserAccount InitialCredentials { get; set; }
+    }
+
+    public class InitialUserAccount
+    {
+        public string AccountName { get; set; }
+        public string AccountSurname { get; set; }
+        public string AccountPassword { get; set; }
     }
 }

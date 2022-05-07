@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 
 
-namespace asp_net_po_schedule_management_server.Ssh.StmpEmailService
+namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
 {
-    public interface IStmpEmailService
+    public interface ISmtpEmailService
     {
         Task SendResetPassword(UserEmailOptions userEmailOptions);
     }

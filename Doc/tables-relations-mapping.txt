@@ -1,0 +1,104 @@
+﻿encja "group-selectiver":                   <- grupa
+    primary-key: BIG_INT (autoincrement)
+    group-name: VARCHAR(50)
+    group-alias: VARCHAR(5)
+    
+    
+encja "semester-selectiver":                <- semestr
+    primary-key: BIG_INT (autoincrement)
+    sem-name: VARCHAR(50)
+    sem-alias: VARCHAR(4)
+    sem-number: INT
+    sem-type: ENUM(SUMMER, WINTER)
+    
+    
+encja "department-selectiver"               <- wydział
+    primary-key: BIG_INT (autoincrement)
+    dept-name: VARCHAR(150)
+    dept-alias: VARCHAR(3)
+    
+    
+encja "summary-top-level-classes":          <- tabela zbiorcza (wydziały)           (1 stopień drzewa - góra)
+    primary-key: BIG_INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    department-info: relacja one-to-one (encja "department-selectiver") <- jeden wydział może mieć tylko jedne szczegółowe informacje
+    all-majors: relacja one-to-many (encja "major-selectiver") <- jeden wydział może mieć wiele kierunków studiów
+
+
+encja "major-selectiver":                   <- kierunek studiów                     (2 stopień drzewa)
+    primary-key: BIG-INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    major-name: VARCHAR(150)
+    major-alias: VARCHAR(10)
+    teaching-type: ENUM("FULL_TIME, WEEKENDS")
+    semester: relacja one-to-many (encja "semester-selectiver") <- jeden kierunek może mieć wiele semestrów
+    
+    
+encja "semester-details":                   <- detale semestru                      (3 stopień drzewa)
+    primary-key: BIG_INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    semester: relacja one-to-one (encja "semester-selectiver") <- jedne semestr może mieć tylko jedne detale
+    groups: relacja one-to-many (encja "group-details") <- jeden semestr może mieć wiele grup
+    
+    
+encja "group-details":                      <- detale grupy                         (4 stopień drzewa - dół)
+    primary-key: BIG_INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    group: relacja one-to-one (encja "group-selectiver") <- jedna grupa może mieć jedną specyfikację
+    all-classes: relacja one-to-many (encja "classes-subject-details") <- jedna grupa może mieć wiele przedmiotów
+    
+
+encja "classes-subject-details"             <- przedmiot ze specyfikacjami
+    primary-key: BIG_INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    day-number: BYTE(0-6)
+    start-time: VARCHAR(5)
+    end-time: VARCHAR(5)
+    subject: relacja one-to-one (encja "classes-subject") <- jedna specyfikacja może mieć jeden przedmiot
+    subject-type: relacja one-to-one (encja "classes-type") <- jeden przedmiot ma jeden typ
+    all-dates: relacja one-to-many (encja "classes-date-elm") <- jeden przedmiot ma wiele dat w których jest odbywany
+    subject-teacher: relacja many-to-many (encja "person") <- wiele nauczycieli może być przypisana do wielu przedmiotów, subencja łączona
+        
+        
+encja "classes-date-elm"                    <- tabela daty
+    primary-key: BIG_INT (autoincrement)
+    date_object: DATE
+
+        
+encja "classes-subject"                     <- pojedynczy przedmiot
+    primary-key: BIG_INT (autoincrement)
+    subject-name: VARCHAR(150)
+    subject-alias: VARCHAR(10)
+
+
+encja "classes-type"                        <- typ zajęć
+    primary-key: BIG_INT (autoincrement)
+    type-fullname: VARCHAR(50)
+    type-shortname: VARCHAR(3)
+
+
+encja "person"                              <- osoba (zawiera również informacje o logowaniu)
+    primary-key: BIG_INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    person-identifier: VARCHAR(50)
+    person-shortcut: VARCHAR(10)
+    app-login: VARCHAR(20)
+    app-password: VARCHAR(20)
+    person-auth-level: ENUM(ADMINISTRATOR, EDITOR, TEACHER)
+    
+
+encja "room"                                <- sala wydziałowa
+    primary-key: BIG_INT (autoincrement)
+    artifician-index: VARCHAR(20)
+    room-name: VARCHAR(10)
+    classes-type: relacja one-to-one (encja "classes-type") <- jedna sala może mieć jeden przydział typu zajęć
+    room-in-department: relacja one-to-one (encja "department-selectiver") <- jeden pokój może być tylko na jednym wydziale
+
+
+struktura treeview w aplikacji klienta:
+
+nazwa wydziału
+    typ zajęć (stacjo/niestacjo)
+        nazwa kierunku
+            semestr
+                grupa

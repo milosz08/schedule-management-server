@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Hosting;
 using asp_net_po_schedule_management_server.Utils;
 
 
-namespace asp_net_po_schedule_management_server.Ssh.StmpEmailService
+namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
 {
-    public class StmpEmailServiceImplementation : IStmpEmailService
+    public class SmtpEmailServiceImplementation : ISmtpEmailService
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
         
@@ -22,7 +22,7 @@ namespace asp_net_po_schedule_management_server.Ssh.StmpEmailService
 
         //--------------------------------------------------------------------------------------------------------------
         
-        public StmpEmailServiceImplementation(IWebHostEnvironment hostingEnvironment)
+        public SmtpEmailServiceImplementation(IWebHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }

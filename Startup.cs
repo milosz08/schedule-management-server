@@ -22,7 +22,7 @@ using asp_net_po_schedule_management_server.Services.ServicesImplementation;
 
 using asp_net_po_schedule_management_server.Ssh.SshInterceptor;
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
-using asp_net_po_schedule_management_server.Ssh.StmpEmailService;
+using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
 
 
 namespace asp_net_po_schedule_management_server
@@ -71,7 +71,7 @@ namespace asp_net_po_schedule_management_server
             // serwisy dla poczty i socketów SSH
             services.AddScoped<ISshInterceptor, SshInterceptorImplementation>();
             services.AddScoped<ISshEmailService, SshEmailServiceImplementation>();
-            services.AddScoped<IStmpEmailService, StmpEmailServiceImplementation>();
+            services.AddScoped<ISmtpEmailService, SmtpEmailServiceImplementation>();
             
             // Dodawanie kontekstu bazy danych
             services.AddDbContext<ApplicationDbContext>(options =>

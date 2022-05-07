@@ -12,7 +12,7 @@ using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Exceptions;
-using asp_net_po_schedule_management_server.Ssh.StmpEmailService;
+using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
 
 using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
@@ -23,7 +23,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
     public class ResetPasswordServiceImplementation : IResetPasswordService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IStmpEmailService _stmpEmailService;
+        private readonly ISmtpEmailService _smtpEmailService;
         private readonly IJwtAuthenticationManager _manager;
         private readonly IPasswordHasher<Person> _passwordHasher;
         
@@ -32,13 +32,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         public ResetPasswordServiceImplementation(
             ApplicationDbContext context,
             IJwtAuthenticationManager manager,
-            IStmpEmailService stmpEmailService,
+            ISmtpEmailService smtpEmailService,
             IPasswordHasher<Person> passwordHasher)
         {
             _context = context;
             _manager = manager;
             _passwordHasher = passwordHasher;
-            _stmpEmailService = stmpEmailService;
+            _smtpEmailService = smtpEmailService;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             string serverTime = $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
             
             // konfiguracja wysyłanej wiadomości email i wysłanie jej do klienta
-            await _stmpEmailService.SendResetPassword(new UserEmailOptions()
+            await _smtpEmailService.SendResetPassword(new UserEmailOptions()
             {
                 ToEmails = new List<string>() {findUser.Email},
                 Placeholders = new List<KeyValuePair<string, string>>()
