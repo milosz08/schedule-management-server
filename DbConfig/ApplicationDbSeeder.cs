@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
+using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Entities;
+using asp_net_po_schedule_management_server.Services;
+using asp_net_po_schedule_management_server.Utils;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace asp_net_po_schedule_management_server.DbConfig
@@ -10,12 +13,17 @@ namespace asp_net_po_schedule_management_server.DbConfig
     public sealed class ApplicationDbSeeder
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAuthService _authService;
+
+        private readonly string _name = GlobalConfigurer.InitialCredentials.AccountName;
+        private readonly string _surname = GlobalConfigurer.InitialCredentials.AccountSurname;
 
         //--------------------------------------------------------------------------------------------------------------
         
-        public ApplicationDbSeeder(ApplicationDbContext context)
+        public ApplicationDbSeeder(ApplicationDbContext context, IAuthService authService)
         {
             _context = context;
+            _authService = authService;
         }
         
         //--------------------------------------------------------------------------------------------------------------
@@ -29,6 +37,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     await _context.Roles.AddRangeAsync(InsertRoles());
                     await _context.SaveChangesAsync();
                 }
+                await InsertDefaultAdminData();
             }
         }
 
@@ -43,6 +52,26 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 allRoles.Add(new Role() { Name = singleRole });
             }
             return allRoles;
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        // dodawanie domyślnego użytkownika (jako administratora systemu, jeśli nie ma w tabeli na
+        // podstawie pliku appsettings.json)
+        private async Task InsertDefaultAdminData()
+        {
+            // dodaj domyślnego użytkownika (dane podane w pliku appsettings.json)
+            Person findPerson = await _context.Persons
+                .FirstOrDefaultAsync(p => p.Name == _name && p.Surname == _surname);
+            if (findPerson == null) {
+                await _authService.UserRegister(new RegisterNewUserRequestDto()
+                {
+                    Name = _name,
+                    Surname = _surname,
+                    Nationality = "Polska",
+                    City = "Gliwice",
+                }, GlobalConfigurer.InitialCredentials.AccountPassword, AvailableRoles.ADMINISTRATOR);
+            }
         }
     }
 }

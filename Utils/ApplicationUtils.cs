@@ -57,5 +57,19 @@ namespace asp_net_po_schedule_management_server.Utils
         {
             return date.ToString("yyyyMMddHHmmssffff");
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // funkcja zmieniajca wszystkie znaki diakretyczne języka polskiego na odpowiedniki w języku angielskim
+        public static string RemoveAccents(string text)
+        {
+            string[] diacretics = { "ą", "ć", "ę", "ł", "ń", "ó", "ś", "ź", "ż" };
+            string[] normalLetters = { "a", "c", "e", "l", "n", "o", "s", "z", "z" };
+            string output = text;
+            for (int i = 0; i < diacretics.Length; i++) {
+                output = output.Replace(diacretics[i], normalLetters[i]);
+            }
+            return output;
+        }
     }
 }

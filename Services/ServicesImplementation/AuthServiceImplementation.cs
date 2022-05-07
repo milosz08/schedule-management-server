@@ -151,21 +151,29 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Register
 
         // metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych
-        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user)
+        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user,
+            string customPassword = "", AvailableRoles defRole = AvailableRoles.TEACHER)
         {
-            string generatedShortcut = user.Name.Substring(0, 3) + user.Surname.Substring(0, 3);
-            string generatedLogin = generatedShortcut.ToLower() + ApplicationUtils.RandomNumberGenerator();
+            string nameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Name);
+            string surnameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Surname);
+            
+            string generatedShortcut = nameWithoutDiacritics.Substring(0, 3) + surnameWithoutDiacritics.Substring(0, 3);
+            string randomNumbers = ApplicationUtils.RandomNumberGenerator();
+            string generatedLogin = generatedShortcut.ToLower() + randomNumbers;
             string generatedFirstPassword = ApplicationUtils.GenerateUserFirstPassword();
             string generatedFirstEmailPassword = ApplicationUtils.GenerateUserFirstPassword();
-            string generatedEmail = $"{user.Name.ToLower()}.{user.Surname.ToLower()}" +
-                                    $"{ApplicationUtils.RandomNumberGenerator()}@" +
-                                    $"{GlobalConfigurer.UserEmailDomain}";
+            string generatedEmail = $"{nameWithoutDiacritics.ToLower()}.{surnameWithoutDiacritics.ToLower()}" +
+                                    $"{randomNumbers}@{GlobalConfigurer.UserEmailDomain}";
             
             _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
 
             Role findRoleId = await _context.Roles
-                .FirstOrDefaultAsync(role => role.Name == nameof(AvailableRoles.TEACHER));
+                .FirstOrDefaultAsync(role => role.Name == defRole.ToString());
 
+            if (customPassword != String.Empty) {
+                generatedFirstPassword = customPassword;
+            }
+            
             Person newPerson = _mapper.Map<Person>(user);
             newPerson.Shortcut = generatedShortcut;
             newPerson.Email = generatedEmail;
@@ -180,7 +188,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
             response.Password = generatedFirstPassword;
             response.EmailPassword = generatedFirstEmailPassword;
-            response.Role = nameof(AvailableRoles.TEACHER);
+            response.Role = nameof(defRole);
             return response;
         }
 
