@@ -13,8 +13,14 @@
      
         //--------------------------------------------------------------------------------------------------------------
         
-        // kontroller FileController
+        // kontroler FileController
         public const string GET_AVATAR = "get-avatar";
         public const string ADD_AVATAR = "add-avatar";
+        public const string GET_ALL_AVATARS = "user-avatars";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // kontroler UsersController
+        public const string GET_ALL_USERS = "all-users";
     }
 }

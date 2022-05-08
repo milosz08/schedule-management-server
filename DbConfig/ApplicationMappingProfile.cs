@@ -17,6 +17,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
             CreateMap<Person, LoginResponseDto>()
                 .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
                 .ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir => $"{dir.Name} {dir.Surname}"));
+            CreateMap<Person, UserResponseDto>()
+                .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
+                .ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir => $"{dir.Surname} {dir.Name}"));
         }
     }
 }
