@@ -38,6 +38,7 @@ namespace asp_net_po_schedule_management_server.Utils
         public static byte UserEmailMaxSizeMb { get; set; }
         public static TimeSpan OptExpired { get; set; }
         public static InitialUserAccount InitialCredentials { get; set; }
+        public static string ClientOrigin { get; set; }
     }
 
     public class InitialUserAccount
