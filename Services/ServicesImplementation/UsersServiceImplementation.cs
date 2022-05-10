@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 
 using System.Linq;
 using System.Collections.Generic;
-
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.DbConfig;
@@ -38,10 +39,22 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Include(p => p.Role)
                 .Where(p => query.SearchPhrase == null || p.Surname.ToLower().Contains(query.SearchPhrase.ToLower()));
 
-            // sortowanie użytkowników (rosnąco/malejąco)
-            usersBaseQuery = query.SortDirection == SortDirection.ASC
-                ? usersBaseQuery.OrderBy(p => p.Id)
-                : usersBaseQuery.OrderByDescending(p => p.Id);
+            // sortowanie (rosnąco/malejąco) dla kolumn
+            if (!string.IsNullOrEmpty(query.SortBy)) {
+                var colSelectors = new Dictionary<string, Expression<Func<Person, object>>>
+                {
+                    { nameof(Person.Id), p => p.Id },
+                    { nameof(Person.Surname), p => p.Surname },
+                    { nameof(Person.Login), p => p.Login },
+                    { nameof(Person.Role), p => p.Role.Name },
+                };
+
+                Expression<Func<Person,object>> selectColumn = colSelectors[query.SortBy];
+                
+                usersBaseQuery = query.SortDirection == SortDirection.ASC
+                    ? usersBaseQuery.OrderBy(selectColumn)
+                    : usersBaseQuery.OrderByDescending(selectColumn);
+            }
             
             // paginacja i dodatkowe filtrowanie
             List<Person> findAllUsers = usersBaseQuery

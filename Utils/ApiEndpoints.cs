@@ -22,5 +22,6 @@
         
         // kontroler UsersController
         public const string GET_ALL_USERS = "all-users";
+        public const string GET_AVAILABLE_PAGINATIONS = "available-paginations";
     }
 }
