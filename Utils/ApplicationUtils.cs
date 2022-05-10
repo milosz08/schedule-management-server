@@ -11,6 +11,8 @@ namespace asp_net_po_schedule_management_server.Utils
         private static readonly string SPECIAL_CHARS = "@#%&$";
         private static readonly Random _random = new Random();
         
+        public static readonly int[] _allowedPageSizes = new[] { 5, 10, 15, 30 };
+        
         //--------------------------------------------------------------------------------------------------------------
         
         // generowanie hasza słownikowego (głównie na potrzeby frontu)

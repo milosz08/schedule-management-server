@@ -8,7 +8,9 @@ using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.CustomDecorators;
+
 using asp_net_po_schedule_management_server.Dto.Requests;
+using asp_net_po_schedule_management_server.Dto.Responses;
 
 
 namespace asp_net_po_schedule_management_server.Controllers
@@ -31,7 +33,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         //--------------------------------------------------------------------------------------------------------------
 
         [HttpGet(ApiEndpoints.GET_ALL_USERS)]
-        public ActionResult GetAllUsers([FromQuery] UserQueryRequestDto searchQuery)
+        public ActionResult<UserResponseDto> GetAllUsers([FromQuery] UserQueryRequestDto searchQuery)
         {
             return StatusCode((int) HttpStatusCode.OK, _service.GetAllUsers(searchQuery));
         }

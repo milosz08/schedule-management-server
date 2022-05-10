@@ -3,7 +3,6 @@
     public class SetNewPasswordViaEmailResponse
     {
         public string Email { get; set; }
-
         public string BearerToken { get; set; }
     }
 }

@@ -6,5 +6,6 @@
         public string NameWithSurname { get; set; }
         public string Login { get; set; }
         public string Role { get; set; }
+        public bool IfRemovable { get; set; }
     }
 }

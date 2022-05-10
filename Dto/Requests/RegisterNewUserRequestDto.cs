@@ -23,5 +23,7 @@ namespace asp_net_po_schedule_management_server.Dto.Requests
         [MinLength(3, ErrorMessage = "Miasto musi być dłuższe od 3 znaków")]
         [MaxLength(100, ErrorMessage = "Miasto musi być krótsze od 100 znaków")]
         public string City { get; set; }
+
+        public bool IfRemovable { get; set; } = true;
     }
 }

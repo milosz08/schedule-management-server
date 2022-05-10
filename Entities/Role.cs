@@ -16,6 +16,7 @@ namespace asp_net_po_schedule_management_server.Entities
 
     public enum AvailableRoles
     {
+        STUDENT,
         TEACHER,
         EDITOR,
         ADMINISTRATOR,

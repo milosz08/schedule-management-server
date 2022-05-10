@@ -53,6 +53,9 @@ namespace asp_net_po_schedule_management_server.Entities
         [Column("has-picture")]
         public bool HasPicture { get; set; }
         
+        [Column("if-removable")]
+        public bool IfRemovable { get; set; }
+        
         [ForeignKey(nameof(Role))]
         [Column("role-key")]
         public long RoleId { get; set; }
