@@ -28,7 +28,6 @@
     <ItemGroup>
       <Folder Include="Migrations" />
       <Folder Include="wwwroot\cdn\images" />
-      <Folder Include="_StaticPrivateContent\UserImages" />
     </ItemGroup>
 
 </Project>
