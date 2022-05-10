@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using asp_net_po_schedule_management_server.Dto.Requests;
+
+using Microsoft.EntityFrameworkCore;
+
+using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
-using asp_net_po_schedule_management_server.Utils;
-using Microsoft.EntityFrameworkCore;
+using asp_net_po_schedule_management_server.Dto.Requests;
 
 
 namespace asp_net_po_schedule_management_server.DbConfig
@@ -70,6 +72,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     Surname = _surname,
                     Nationality = "Polska",
                     City = "Gliwice",
+                    IfRemovable = false,
                 }, GlobalConfigurer.InitialCredentials.AccountPassword, AvailableRoles.ADMINISTRATOR);
             }
         }

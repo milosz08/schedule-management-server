@@ -53,6 +53,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("has-picture");
 
+                    b.Property<bool>("IfRemovable")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("if-removable");
+
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(50)
