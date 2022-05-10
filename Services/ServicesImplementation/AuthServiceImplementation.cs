@@ -188,7 +188,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
             response.Password = generatedFirstPassword;
             response.EmailPassword = generatedFirstEmailPassword;
-            response.Role = nameof(defRole);
+            response.Role = defRole.ToString();
             return response;
         }
 
