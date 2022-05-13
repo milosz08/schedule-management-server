@@ -20,24 +20,58 @@ namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
         // skrót do folderu z szablonami wiadomości email
         private const string _templatePath = @"EmailTemplates/{0}.html";
 
+        private const string _resetPasswordTempl = "ResetPassword";
+        private const string _addUserPassUserTempl = "NewUserToUser";
+        
         //--------------------------------------------------------------------------------------------------------------
         
         public SmtpEmailServiceImplementation(IWebHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }
-        
+
         //--------------------------------------------------------------------------------------------------------------
         
-        // metoda odpowiedzialna za wysyłanie adresu email z kodem w celu zresetowania hasła
+        #region Emails senders
+
+        /// <summary>
+        /// Metoda odpowiedzialna za wysyłanie adresu email z kodem w celu zresetowania hasła.
+        /// </summary>
+        /// <param name="userEmailOptions">parametry przesyłane do ciała wiadomości email</param>
         public async Task SendResetPassword(UserEmailOptions userEmailOptions)
         {
-            userEmailOptions.Subject = CreatePlaceholders("Resetowanie hasła: {{userName}}", 
-                userEmailOptions.Placeholders);
-            userEmailOptions.Body = CreatePlaceholders(GetEmailBody("ResetPassword"), userEmailOptions.Placeholders);
-            await SendEmail(userEmailOptions);
+            await SendEmailTemplate(userEmailOptions, _resetPasswordTempl, "Resetowanie hasła: {{userName}}");
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda odpowiedzialna za wysyłanie wiadomości email do nowo dodanego użytkownika z podstawowymi informacjami
+        /// o systemie oraz nowo wygenerowanymi hasłami i kluczami dostępu.
+        /// </summary>
+        /// <param name="userEmailOptions">parametry przesyłane do ciała wiadomości email</param>
+        public async Task SendCreatedUserAuthUser(UserEmailOptions userEmailOptions)
+        {
+            await SendEmailTemplate(userEmailOptions, _addUserPassUserTempl, "Witamy w Systemie Zarządzania Planem");
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Metoda szkielet odpowiedzialna za specyzowanie wiadomości email i wypełnianie jej treścią.
+        /// </summary>
+        /// <param name="userEmailOptions">parametry przesyłane do ciała wiadomości email</param>
+        /// <param name="template">szablon emailu HTML</param>
+        /// <param name="title">tytuł emailu</param>
+        private async Task SendEmailTemplate(UserEmailOptions userEmailOptions, string template, string title)
+        {
+            userEmailOptions.Subject = CreatePlaceholders(title, userEmailOptions.Placeholders);
+            userEmailOptions.Body = CreatePlaceholders(GetEmailBody(template), userEmailOptions.Placeholders);
+            await SendEmail(userEmailOptions);
+        }
+        
+        #endregion
+        
         //--------------------------------------------------------------------------------------------------------------
         
         // metoda odpowiadająca za konfigurację wysyłanego adresu email (możliwość wysyłki do większej

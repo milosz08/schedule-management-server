@@ -10,6 +10,7 @@
         public const string SEND_RESET_PASSWORD_TOKEN = "reset-password-email";
         public const string CONFIRM_RESET_TOKEN = "confirm-reset-password";
         public const string RESET_PASSWORD = "reset-password";
+        public const string SEND_EMAIL_REGISTER = "send-emails-register";
      
         //--------------------------------------------------------------------------------------------------------------
         

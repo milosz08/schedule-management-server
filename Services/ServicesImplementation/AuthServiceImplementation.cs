@@ -166,30 +166,51 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                                     $"{randomNumbers}@{GlobalConfigurer.UserEmailDomain}";
             
             _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
-
+            
             Role findRoleId = await _context.Roles
-                .FirstOrDefaultAsync(role => role.Name == defRole.ToString());
+                .FirstOrDefaultAsync(role => role.Name == user.Role);
 
             if (customPassword != String.Empty) {
                 generatedFirstPassword = customPassword;
             }
             
-            Person newPerson = _mapper.Map<Person>(user);
-            newPerson.Shortcut = generatedShortcut;
-            newPerson.Email = generatedEmail;
-            newPerson.Login = generatedLogin;
-            newPerson.Password = generatedFirstPassword;
-            newPerson.RoleId = findRoleId.Id;
+            Person newPerson = new Person()
+            {
+                Name =  ApplicationUtils.CapitalisedLetter(user.Name),
+                Surname = ApplicationUtils.CapitalisedLetter(user.Surname),
+                Nationality = ApplicationUtils.CapitalisedLetter(user.Nationality),
+                City = ApplicationUtils.CapitalisedLetter(user.City),
+                Shortcut = generatedShortcut,
+                Email = generatedEmail,
+                Login = generatedLogin,
+                Password = generatedFirstPassword,
+                EmailPassword = generatedFirstEmailPassword,
+                RoleId = findRoleId.Id,
+                IfRemovable = user.IfRemovable,
+            };
             
             newPerson.Password = _passwordHasher.HashPassword(newPerson, generatedFirstPassword);
             await _context.Persons.AddAsync(newPerson);
             await _context.SaveChangesAsync();
-            
-            RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
-            response.Password = generatedFirstPassword;
-            response.EmailPassword = generatedFirstEmailPassword;
-            response.Role = defRole.ToString();
-            return response;
+
+            // wysłanie do użytkownika emailu zawierającego wszystkie niezbędne dane do logowania (pomijanie
+            // użytkownika domyślnego)
+            if (customPassword == String.Empty) {
+                await _smtpEmailService.SendCreatedUserAuthUser(new UserEmailOptions()
+                {
+                    ToEmails = new List<string>() {newPerson.Email},
+                    Placeholders = new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("{{userName}}", $"{newPerson.Name} {newPerson.Surname}"),
+                        new KeyValuePair<string, string>("{{login}}", newPerson.Login),
+                        new KeyValuePair<string, string>("{{password}}", generatedFirstPassword),
+                        new KeyValuePair<string, string>("{{role}}", newPerson.Role.Name),
+                        new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
+                        new KeyValuePair<string, string>("{{dictionaryHash}}", newPerson.DictionaryHash),
+                    },
+                });    
+            }
+            return _mapper.Map<RegisterNewUserResponseDto>(newPerson);
         }
 
         #endregion
