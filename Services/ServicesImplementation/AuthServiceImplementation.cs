@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 using System.Security.Claims;
@@ -21,32 +22,36 @@ using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
 
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
+using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 {
     public class AuthServiceImplementation : IAuthService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IJwtAuthenticationManager _manager;
-        private readonly IPasswordHasher<Person> _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly ApplicationDbContext _context;
         private readonly ISshEmailService _emailService;
+        private readonly IJwtAuthenticationManager _manager;
+        private readonly ISmtpEmailService _smtpEmailService;
+        private readonly IPasswordHasher<Person> _passwordHasher;
         
         //--------------------------------------------------------------------------------------------------------------
         
         public AuthServiceImplementation(
-            ApplicationDbContext context,
-            IJwtAuthenticationManager manager,
-            IPasswordHasher<Person> passwordHasher,
             IMapper mapper,
-            ISshEmailService emailService)
+            ApplicationDbContext context,
+            ISshEmailService emailService,
+            IJwtAuthenticationManager manager,
+            ISmtpEmailService smtpEmailService,
+            IPasswordHasher<Person> passwordHasher)
         {
+            _mapper = mapper;
             _context = context;
             _manager = manager;
-            _mapper = mapper;
-            _passwordHasher = passwordHasher;
             _emailService = emailService;
+            _passwordHasher = passwordHasher;
+            _smtpEmailService = smtpEmailService;
         }
         
         //--------------------------------------------------------------------------------------------------------------
@@ -151,8 +156,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Register
 
         // metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych
-        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user,
-            string customPassword = "", AvailableRoles defRole = AvailableRoles.TEACHER)
+        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user, string customPassword)
         {
             string nameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Name);
             string surnameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Surname);

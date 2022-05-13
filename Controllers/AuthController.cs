@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -48,7 +49,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         public async Task<ActionResult<RegisterNewUserResponseDto>> UserRegister([FromBody] RegisterNewUserRequestDto user)
         {
-            return StatusCode((int) HttpStatusCode.Created, await _service.UserRegister(user));
+            return StatusCode((int) HttpStatusCode.Created, await _service.UserRegister(user, String.Empty));
         }
 
         //--------------------------------------------------------------------------------------------------------------

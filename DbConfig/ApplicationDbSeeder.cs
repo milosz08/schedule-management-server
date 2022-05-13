@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Utils;
@@ -73,7 +72,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     Nationality = "Polska",
                     City = "Gliwice",
                     IfRemovable = false,
-                }, GlobalConfigurer.InitialCredentials.AccountPassword, AvailableRoles.ADMINISTRATOR);
+                    Role = AvailableRoles.ADMINISTRATOR.ToString()
+                }, GlobalConfigurer.InitialCredentials.AccountPassword);
             }
         }
     }
