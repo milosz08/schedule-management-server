@@ -8,7 +8,6 @@ namespace asp_net_po_schedule_management_server.Utils
     {
         private static readonly string RANDOM_CHARS = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUWXYZ0123456789";
         private static readonly string RANDOM_NUMBERS = "0123456789";
-        private static readonly string SPECIAL_CHARS = "@#%&$";
         private static readonly Random _random = new Random();
         
         public static readonly int[] _allowedPageSizes = new[] { 5, 10, 15, 30 };
@@ -47,7 +46,6 @@ namespace asp_net_po_schedule_management_server.Utils
             StringBuilder builder = new StringBuilder();
             builder.Append(DictionaryHashGenerator(6));
             builder.Append(RandomNumberGenerator());
-            builder.Append(SPECIAL_CHARS[_random.Next(SPECIAL_CHARS.Length)]);
             builder.Append(DictionaryHashGenerator(6));
             return builder.ToString();
         }
@@ -72,6 +70,21 @@ namespace asp_net_po_schedule_management_server.Utils
                 output = output.Replace(diacretics[i], normalLetters[i]);
             }
             return output;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // ustawianie pierwszej litery słowa na wielką literę (capitalization)
+        public static string CapitalisedLetter(string text)
+        {
+            return char.ToUpper(text[0]) + text.Substring(1);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        public static string GetCurrentUTCdateString()
+        {
+            return $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
         }
     }
 }

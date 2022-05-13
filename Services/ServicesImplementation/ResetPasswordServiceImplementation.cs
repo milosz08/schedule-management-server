@@ -63,8 +63,6 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 OtpExpired = DateTime.UtcNow.Add(GlobalConfigurer.OptExpired),
                 PersonId = findUser.Id,
             };
-
-            string serverTime = $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
             
             // konfiguracja wysyłanej wiadomości email i wysłanie jej do klienta
             await _smtpEmailService.SendResetPassword(new UserEmailOptions()
@@ -75,7 +73,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     new KeyValuePair<string, string>("{{userName}}", $"{findUser.Name} {findUser.Surname}"),
                     new KeyValuePair<string, string>("{{token}}", otpToken),
                     new KeyValuePair<string, string>("{{expiredInMinutes}}", GlobalConfigurer.OptExpired.Minutes.ToString()),
-                    new KeyValuePair<string, string>("{{serverTime}}", serverTime),
+                    new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
                 },
             });
 
