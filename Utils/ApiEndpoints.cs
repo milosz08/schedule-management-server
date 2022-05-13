@@ -23,5 +23,7 @@
         // kontroler UsersController
         public const string GET_ALL_USERS = "all-users";
         public const string GET_AVAILABLE_PAGINATIONS = "available-paginations";
+        public const string DELETE_MASSIVE_USERS = "delete-massive";
+        public const string DELETE_ALL_USERS = "delete";
     }
 }
