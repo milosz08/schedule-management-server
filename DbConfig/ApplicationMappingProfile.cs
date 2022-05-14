@@ -8,6 +8,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
 {
     public sealed class ApplicationMappingProfile : Profile
     {
+        /// <summary>
+        /// Konstruktor odpowiadający za stworzenie map obiektów (przepisania wartości). 
+        /// </summary>
         public ApplicationMappingProfile()
         {
             CreateMap<Person, RegisterNewUserResponseDto>()

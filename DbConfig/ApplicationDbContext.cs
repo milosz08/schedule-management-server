@@ -53,6 +53,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
         
+        /// <summary>
+        /// Asynchroniczne wywoływanie metod przed zapisaniem każdej encji do bazy danych.
+        /// </summary>
+        /// <param name="cancellationToken">default</param>
+        /// <returns>wywołanie metody bazowej</returns>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             AddAutoInjectionSeqelDates();
@@ -62,7 +67,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji)
+        /// <summary>
+        /// Autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji).
+        /// </summary>
         private void AddAutoInjectionSeqelDates()
         {
             DateTime d = DateTime.Now;
@@ -83,8 +90,10 @@ namespace asp_net_po_schedule_management_server.DbConfig
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // automatyczne wstawianie pola sztucznego indeksu (potrzebny do front-endu,
-        // generowany w metodzie statycznej klasy "ApplicationUtils")
+        /// <summary>
+        /// Automatyczne wstawianie pola sztucznego indeksu (potrzebny do front-endu,
+        /// generowany w metodzie statycznej klasy "ApplicationUtils").
+        /// </summary>
         private void AddAutoInjectionSequelArtificianIndex()
         {
             // znazienie encji ze statusem dodane dziedziczących klucz główny oraz indeks sztuczny

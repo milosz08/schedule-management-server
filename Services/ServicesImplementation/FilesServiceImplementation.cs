@@ -32,6 +32,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         //--------------------------------------------------------------------------------------------------------------
         
+        /// <summary>
+        /// Metoda odpowiedzialna za pobieranie osoby z bazy danych.
+        /// </summary>
+        /// <param name="userLogin">login użytkownika</param>
+        /// <returns>znaleziona osoba w postaci obiektu</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia osoby</exception>
         private async Task<Person> GetPersonFromDb(Claim userLogin)
         {
             // jeśli JWT jest nieprawidłowy, rzuć wyjątek dostępu (forbidden 403)
@@ -50,7 +56,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Get Custom Avatar
 
-        // metoda zwraca obraz w postaci tupli reprezentującej tablicę bajtów (zdjęcie) oraz rozszerzenie
+        /// <summary>
+        /// Metoda zwraca obraz w postaci tupli reprezentującej tablicę bajtów (zdjęcie) oraz rozszerzenie.
+        /// </summary>
+        /// <param name="userId">id użytkownika</param>
+        /// <param name="userLogin">login użytkownika</param>
+        /// <returns>tupla w postaci tablicy bajtów (dane) oraz typu pliku (image/jpeg)</returns>
+        /// <exception cref="BasicServerException">dostęp do nieistniejącego lub zabronionego zasobu</exception>
         public async Task<(byte[], string)> UserGetCustomAvatar(string userId, Claim userLogin)
         {
             Person findPerson = await GetPersonFromDb(userLogin);
@@ -73,7 +85,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Add Custom Avatar
 
-        // metoda odpowiada za zmianę avataru użytkownika (na podstawie claimu w tokenie JWT)
+        /// <summary>
+        /// Metoda odpowiada za zmianę avataru użytkownika (na podstawie claimu w tokenie JWT).
+        /// </summary>
+        /// <param name="image">obrazek</param>
+        /// <param name="userLogin">login użytkownika (wartość typu Claim)</param>
+        /// <returns>obiekt z wiadomością serwera</returns>
+        /// <exception cref="BasicServerException">brak zasobu lub problem z dodaniem zasobu</exception>
         public async Task<PseudoNoContentResponseDto> UserAddCustomAvatar(IFormFile image, Claim userLogin)
         {
             Person findPerson = await GetPersonFromDb(userLogin);

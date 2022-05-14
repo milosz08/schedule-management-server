@@ -4,8 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace asp_net_po_schedule_management_server.CustomDecorators
 {
-    // klasa nadpisująca domyślny dekorator do walidacji na dekorator przyjmujący wiele parametrów
-    // w postaci tablicy stringów (tablica musi być pre-kompilowana, czyli albo const albo na stałe zapisana)
     public class ValidValuesAttribute : ValidationAttribute
     {
         private string[] _args;
@@ -15,6 +13,13 @@ namespace asp_net_po_schedule_management_server.CustomDecorators
             _args = args;
         }
 
+        /// <summary>
+        /// Metoda nadpisująca domyślny dekorator do walidacji na dekorator przyjmujący wiele parametrów
+        /// w postaci tablicy stringów (tablica musi być pre-kompilowana, czyli albo const albo na stałe zapisana).
+        /// </summary>
+        /// <param name="value">wartość sprawdzana</param>
+        /// <param name="validationContext">kontekst walidacji</param>
+        /// <returns></returns>
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (_args.Contains(value as string)) {

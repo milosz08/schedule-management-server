@@ -45,7 +45,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         #region Get all users
 
-        // metoda zwracająca wszystkich użytkowników na podstawie wyszukiwanej frazy (oraz paginacji rezultatów)
+        /// <summary>
+        /// Metoda zwracająca wszystkich użytkowników na podstawie wyszukiwanej frazy (oraz paginacji rezultatów).
+        /// </summary>
+        /// <param name="query">zapytanie w postaci obiektu przechowującego wszystkie parametry sortowania</param>
+        /// <returns>właściwości paginacji rezultatu (ilość stron, wyników na stronę itp.)</returns>
         public PaginationResponseDto<UserResponseDto> GetAllUsers(UserQueryRequestDto query)
         {
             // wyszukiwanie użytkowników przy pomocy parametru SearchPhrase
@@ -87,7 +91,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Delete massive users
 
-        // usuwanie masywne (na podstawie identyfikatorów z tablicy)
+        /// <summary>
+        /// Usuwanie masywne (na podstawie identyfikatorów z tablicy).
+        /// </summary>
+        /// <param name="deleteUsers">tablica z id użytkowników do usunięcia</param>
+        /// <param name="credentials">obiekt przechowujący dane autentykacji operacji na danych</param>
         public async Task DeleteMassiveUsers(MassiveDeleteRequestDto deleteUsers, UserCredentialsHeaderDto credentials)
         {
             await CheckIfUserCredentialsAreValid(credentials);
@@ -122,7 +130,10 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         #region Delete all users
 
-        // usuwanie wszystkich użytkowników z bazy danych (oprócz użytkownika domyślnego)
+        /// <summary>
+        /// Usuwanie wszystkich użytkowników z bazy danych (oprócz użytkownika domyślnego).
+        /// </summary>
+        /// <param name="credentials">obiekt przechowujący dane autentykacji operacji na danych</param>
         public async Task DeleteAllUsers(UserCredentialsHeaderDto credentials)
         {
             IQueryable<Person> findAllRemovingPersons = _context.Persons.Where(p => !p.IfRemovable);

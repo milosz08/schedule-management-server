@@ -15,7 +15,11 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // dodawanie nowej skrzynki pocztowej i ustawianie jej pojemności
+        /// <summary>
+        /// Dodawanie nowej skrzynki pocztowej i ustawianie jej pojemności.
+        /// </summary>
+        /// <param name="emailAddress">adres email</param>
+        /// <param name="emailPassword">hasło do adresu email</param>
         public void AddNewEmailAccount(string emailAddress, string emailPassword)
         {
             _sshInterceptor.ExecuteCommand(
@@ -31,7 +35,11 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // aktualizacja hasła na podstawie adresu email
+        /// <summary>
+        /// Zmiana hasła stworzonej skrzynki pocztowej na to przekazywane w parametrze.
+        /// </summary>
+        /// <param name="emailAddress">adres email</param>
+        /// <param name="newEmailPassword">nowe hasło do adresu email</param>
         public void UpdateEmailPassword(string emailAddress, string newEmailPassword)
         {
             _sshInterceptor.ExecuteCommand(
@@ -43,7 +51,10 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // usuwanie skrzynki pocztowej
+        /// <summary>
+        /// Usuwanie skrzynki pocztowej.
+        /// </summary>
+        /// <param name="emailAddress">adres email który ma zostać usunięty</param>
         public void DeleteEmailAccount(string emailAddress)
         {
             _sshInterceptor.ExecuteCommand(

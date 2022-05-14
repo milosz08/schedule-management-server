@@ -58,7 +58,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Login
 
-        // metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek)
+        /// <summary>
+        /// Metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek).
+        /// </summary>
+        /// <param name="user">r</param>
+        /// <returns>zwraca odpowiedni status zalogowania lub status błędu (brak autoryzacji)</returns>
+        /// <exception cref="BasicServerException">w przypadku braku znalezienia zasobu / dozwolonej operacji</exception>
         public async Task<LoginResponseDto> UserLogin(LoginRequestDto user)
         {
             Person findPerson = await _context.Persons
@@ -106,7 +111,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Refresh Token
         
-        // metoda odpowiadająca za odświeżanie JWT na podstawie tokenu odświeżającego
+        /// <summary>
+        /// Metoda odpowiadająca za odświeżanie JWT na podstawie tokenu odświeżającego.
+        /// </summary>
+        /// <param name="dto">reprezentacja danych od klienta w postaci zapytania z JWT i tokenem odświeżającym</param>
+        /// <returns>nowy token JWT i token odświeżający</returns>
+        /// <exception cref="BasicServerException">w przypadku braku znalezienia zasobu / dozwolonej operacji</exception>
         public async Task<RefreshTokenResponseDto> UserRefreshToken(RefreshTokenRequestDto dto)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -155,7 +165,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Register
 
-        // metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych
+        /// <summary>
+        /// Metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych.
+        /// </summary>
+        /// <param name="user">reprezentacja obiektowa użytkownika</param>
+        /// <param name="customPassword">domyślne hasło (używane tylko dla domyślnego użytkownika)</param>
+        /// <returns>informacje o zarejestrowanym użytkowniku</returns>
         public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user, string customPassword)
         {
             string nameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Name);

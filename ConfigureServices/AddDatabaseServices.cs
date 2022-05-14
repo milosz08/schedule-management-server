@@ -10,7 +10,12 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
 {
     public static class AddDatabaseServices
     {
-        // separacja serwisów odpowiedzialnych za usługi łączenia z bazą danych
+        /// <summary>
+        /// Separacja serwisów odpowiedzialnych za usługi łączenia z bazą danych.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IServiceCollection AddDatabaseServicesCollection(
             this IServiceCollection services, IConfiguration configuration)
         {

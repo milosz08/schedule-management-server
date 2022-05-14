@@ -11,8 +11,10 @@ using asp_net_po_schedule_management_server.Exceptions;
 
 namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
 {
-    // klasa odpowiadająca za połączenie się poprzez SSH z serwerem w celu wykonywania na nim komend
-    // w konsoli (używana głównie do tworzenia/usuwania adresów email).
+    /// <summary>
+    /// Klasa odpowiadająca za połączenie się poprzez SSH z serwerem w celu wykonywania na nim komend
+    /// w konsoli (używana głównie do tworzenia/usuwania adresów email).
+    /// </summary>
     public sealed class SshInterceptorImplementation : ISshInterceptor
     {
         private static readonly string PASS_FIELDNAME = GlobalConfigurer.SshPasswordFieldName;
@@ -31,7 +33,9 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // initializacja połączenia z serwerem poprzez połączenie SSH
+        /// <summary>
+        /// Initializacja połączenia z serwerem poprzez połączenie SSH.
+        /// </summary>
         private void Initialise()
         {
             KeyboardInteractiveAuthenticationMethod keyAuth = new KeyboardInteractiveAuthenticationMethod(USR_NAME);
@@ -42,7 +46,12 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // wywołanie customowej komendy (na podstawie parametru w commandParameter)
+        /// <summary>
+        /// Wywołanie niestandardowej komendy (na podstawie parametru w commandParameter).
+        /// </summary>
+        /// <param name="commandParameter">komenda</param>
+        /// <returns>rezultat wykonanej komendy</returns>
+        /// <exception cref="BasicServerException">problem z nawiązaniem połączenia przez SSH/TELNET</exception>
         public string ExecuteCommand(string commandParameter)
         {
             string result;
@@ -71,7 +80,11 @@ namespace asp_net_po_schedule_management_server.Ssh.SshInterceptor
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // listener autoryzujący dostep do powłoki
+        /// <summary>
+        /// Listener autoryzujący dostep do powłoki.
+        /// </summary>
+        /// <param name="sender">nieużywane</param>
+        /// <param name="eventArgs">argumenty wywołania</param>
         private static void HandleKeyEvent(object sender, AuthenticationPromptEventArgs eventArgs)
         {
             foreach (AuthenticationPrompt prompt in eventArgs.Prompts) {
