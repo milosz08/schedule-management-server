@@ -12,7 +12,12 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
 {
     public static class AddMiddlewareServices
     {
-        // separacja serwisów odpowiedzialnych za usługi middleware
+        /// <summary>
+        /// Separacja serwisów odpowiedzialnych za usługi middleware.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
         public static IServiceCollection AddMiddlewareServicesCollection(
             this IServiceCollection services, Assembly assembly)
         {

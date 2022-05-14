@@ -9,7 +9,11 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
 {
     public static class AddSshAndSmtpServices
     {
-        // separacja serwisów odpowiedzialnych za usługi socketu SSH i obsługę protokołu SMTP
+        /// <summary>
+        /// Separacja serwisów odpowiedzialnych za usługi socketu SSH i obsługę protokołu SMTP.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddSshAndSmtpServicesCollection(this IServiceCollection services)
         {
             // serwis dla socketu SSH

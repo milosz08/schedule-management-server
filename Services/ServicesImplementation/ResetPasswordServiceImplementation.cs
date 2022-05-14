@@ -45,8 +45,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Send Password Reset Token Via Email
 
-        // metoda wysyłająca token resetujący hasło na podany adres email (w parametrach zapytania) oraz dodająca
-        // token do bazy danych (token ważny przez X minut).
+        /// <summary>
+        /// Metoda wysyłająca token resetujący hasło na podany adres email (w parametrach zapytania) oraz dodająca
+        /// token do bazy danych (token ważny przez X minut).
+        /// </summary>
+        /// <param name="userEmail">adres email użytkownika</param>
+        /// <returns>podstawowa wiadomość serwera</returns>
+        /// <exception cref="BasicServerException">brak odnalezienia szukanego zasobu (użytkownika)</exception>
         public async Task<PseudoNoContentResponseDto> SendPasswordResetTokenViaEmail(string userEmail)
         {
             Person findUser = await _context.Persons.FirstOrDefaultAsync(person => person.Email == userEmail);
@@ -63,8 +68,6 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 OtpExpired = DateTime.UtcNow.Add(GlobalConfigurer.OptExpired),
                 PersonId = findUser.Id,
             };
-
-            string serverTime = $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
             
             // konfiguracja wysyłanej wiadomości email i wysłanie jej do klienta
             await _smtpEmailService.SendResetPassword(new UserEmailOptions()
@@ -75,7 +78,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     new KeyValuePair<string, string>("{{userName}}", $"{findUser.Name} {findUser.Surname}"),
                     new KeyValuePair<string, string>("{{token}}", otpToken),
                     new KeyValuePair<string, string>("{{expiredInMinutes}}", GlobalConfigurer.OptExpired.Minutes.ToString()),
-                    new KeyValuePair<string, string>("{{serverTime}}", serverTime),
+                    new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
                 },
             });
 
@@ -95,7 +98,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Reset Password Via Email Token
 
-        // metoda walidująca wysłany token resetujący hasło na adres email (na podstawie parametru zapytania)
+        /// <summary>
+        /// Metoda walidująca wysłany token resetujący hasło na adres email (na podstawie parametru zapytania).
+        /// </summary>
+        /// <param name="emailToken">wartość tokenu otrzymanego w wiadomości email</param>
+        /// <returns>bearer token i adres email z którego dokonano zmiany hasła</returns>
+        /// <exception cref="BasicServerException">nieprawidłowy token/przedawniony token</exception>
         public async Task<SetNewPasswordViaEmailResponse> ResetPasswordViaEmailToken(string emailToken)
         {
             ResetPasswordOtp findResetOtp = await _context.ResetPasswordOpts
@@ -125,7 +133,14 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region User Reset Password
 
-        // metoda umożliwiająca zresetowanie hasła na podstawie parametrów wygenerowanego tokena JWT
+        /// <summary>
+        /// Metoda umożliwiająca zresetowanie hasła na podstawie parametrów wygenerowanego tokena JWT.
+        /// </summary>
+        /// <param name="dto">reprezentacja danych od klienta (hasło, token itp.)</param>
+        /// <param name="resetToken">token służący do odświeżania JWT</param>
+        /// <param name="userLogin">login użytkownika</param>
+        /// <returns>prosta wiadomość serwera</returns>
+        /// <exception cref="BasicServerException">brak poświadczeń/brak zasobu w bazie danych</exception>
         public async Task<PseudoNoContentResponseDto> UserResetPassword(
             SetResetPasswordRequestDto dto, Claim resetToken, Claim userLogin)
         {
@@ -179,7 +194,14 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region ChangePassword
 
-        // metoda odpowiadająca za zmianę hasła przez użytkownika
+        /// <summary>
+        /// Metoda odpowiadająca za zmianę hasła przez użytkownika.
+        /// </summary>
+        /// <param name="dto">reprezentacja danych od klienta (hasło, token itp.)</param>
+        /// <param name="userId">id użytkownika</param>
+        /// <param name="userLogin">login użytkownika (pobierane z JWT claimów)</param>
+        /// <returns>prosta wiadomość serwera</returns>
+        /// <exception cref="BasicServerException">brak poświadczeń/brak zasobu w bazie danych</exception>
         public async Task<PseudoNoContentResponseDto> UserChangePassword(
             ChangePasswordRequestDto dto, string userId, Claim userLogin)
         {

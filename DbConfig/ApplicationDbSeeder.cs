@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Utils;
@@ -30,7 +29,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // funkcja seedująca dane do bazy danych
+        /// <summary>
+        /// Funkcja seedująca (wstrzykująca) dane do bazy danych.
+        /// </summary>
         public async Task Seed()
         {
             if (_context.Database.CanConnect()) {
@@ -45,7 +46,10 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // umieszczanie wszystkich możliwych ról (na podstawie enuma) w liście.
+        /// <summary>
+        /// Umieszczanie wszystkich możliwych ról (na podstawie enuma) w liście.
+        /// </summary>
+        /// <returns>wszystkie możliwe role jakie znajdują się w enumie</returns>
         private IEnumerable<Role> InsertRoles()
         {
             List<Role> allRoles = new List<Role>();
@@ -58,8 +62,10 @@ namespace asp_net_po_schedule_management_server.DbConfig
         
         //--------------------------------------------------------------------------------------------------------------
 
-        // dodawanie domyślnego użytkownika (jako administratora systemu, jeśli nie ma w tabeli na
-        // podstawie pliku appsettings.json)
+        /// <summary>
+        /// Dodawanie domyślnego użytkownika (jako administratora systemu, jeśli nie ma w tabeli na
+        /// podstawie pliku appsettings.json).
+        /// </summary>
         private async Task InsertDefaultAdminData()
         {
             // dodaj domyślnego użytkownika (dane podane w pliku appsettings.json)
@@ -73,7 +79,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     Nationality = "Polska",
                     City = "Gliwice",
                     IfRemovable = false,
-                }, GlobalConfigurer.InitialCredentials.AccountPassword, AvailableRoles.ADMINISTRATOR);
+                    Role = AvailableRoles.ADMINISTRATOR.ToString()
+                }, GlobalConfigurer.InitialCredentials.AccountPassword);
             }
         }
     }

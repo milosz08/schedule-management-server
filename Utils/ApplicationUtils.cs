@@ -8,14 +8,17 @@ namespace asp_net_po_schedule_management_server.Utils
     {
         private static readonly string RANDOM_CHARS = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUWXYZ0123456789";
         private static readonly string RANDOM_NUMBERS = "0123456789";
-        private static readonly string SPECIAL_CHARS = "@#%&$";
         private static readonly Random _random = new Random();
         
         public static readonly int[] _allowedPageSizes = new[] { 5, 10, 15, 30 };
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // generowanie hasza słownikowego (głównie na potrzeby frontu)
+        /// <summary>
+        /// Generowanie hasza słownikowego (głównie na potrzeby front-endu).
+        /// </summary>
+        /// <param name="hashSize">rozmiar (ilość) hasza słownikowego</param>
+        /// <returns>stworzony hasz słownikowy</returns>
         public static string DictionaryHashGenerator(int hashSize = 20)
         {
             StringBuilder builder = new StringBuilder();
@@ -28,7 +31,11 @@ namespace asp_net_po_schedule_management_server.Utils
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // generowanie randomowego zestawu cyfr (o długości na podstawie parametru)
+        /// <summary>
+        /// Generowanie randomowego zestawu cyfr (o długości na podstawie parametru).
+        /// </summary>
+        /// <param name="randomSize">rozmiar (ilość) zestawu cyfr</param>
+        /// <returns>stworzony string z pseudolosowych znaków</returns>
         public static string RandomNumberGenerator(int randomSize = 3)
         {
             StringBuilder builder = new StringBuilder();
@@ -41,20 +48,26 @@ namespace asp_net_po_schedule_management_server.Utils
 
         //--------------------------------------------------------------------------------------------------------------
         
-        // generowanie początkowego hasła dla użytkowników (możliwośc zmiany na własne)
+        /// <summary>
+        /// Generowanie początkowego hasła dla użytkowników (możliwośc zmiany na własne).
+        /// </summary>
+        /// <returns>wygenerowane hasło</returns>
         public static string GenerateUserFirstPassword()
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(DictionaryHashGenerator(6));
             builder.Append(RandomNumberGenerator());
-            builder.Append(SPECIAL_CHARS[_random.Next(SPECIAL_CHARS.Length)]);
             builder.Append(DictionaryHashGenerator(6));
             return builder.ToString();
         }
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // funkcja konwertująca obiekt Date na chwilę czasową
+        /// <summary>
+        /// Metoda konwertująca obiekt Date na chwilę czasową.
+        /// </summary>
+        /// <param name="date">obiekt typu Date</param>
+        /// <returns>data w formie stringa</returns>
         public static String GetTimestamp(DateTime date)
         {
             return date.ToString("yyyyMMddHHmmssffff");
@@ -62,7 +75,11 @@ namespace asp_net_po_schedule_management_server.Utils
         
         //--------------------------------------------------------------------------------------------------------------
         
-        // funkcja zmieniajca wszystkie znaki diakretyczne języka polskiego na odpowiedniki w języku angielskim
+        /// <summary>
+        /// Metoda zmieniajca wszystkie znaki diakretyczne języka polskiego na odpowiedniki w języku angielskim.
+        /// </summary>
+        /// <param name="text">ciąg pierwotny</param>
+        /// <returns>ciąg wynikowy bez znaków diakrytycznych</returns>
         public static string RemoveAccents(string text)
         {
             string[] diacretics = { "ą", "ć", "ę", "ł", "ń", "ó", "ś", "ź", "ż" };
@@ -72,6 +89,29 @@ namespace asp_net_po_schedule_management_server.Utils
                 output = output.Replace(diacretics[i], normalLetters[i]);
             }
             return output;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Ustawianie pierwszej litery słowa na wielką literę (capitalization).
+        /// </summary>
+        /// <param name="text">ciąg do przerobienia</param>
+        /// <returns>ciąg wynikowy</returns>
+        public static string CapitalisedLetter(string text)
+        {
+            return char.ToUpper(text[0]) + text.Substring(1);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Pobieranie i zwracanie dzisiejszej sformwatowanej daty (używane głównie w wiadomościach email).
+        /// </summary>
+        /// <returns>sformatowana data</returns>
+        public static string GetCurrentUTCdateString()
+        {
+            return $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
         }
     }
 }

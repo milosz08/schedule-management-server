@@ -50,11 +50,15 @@ namespace asp_net_po_schedule_management_server.Entities
         [StringLength(100)]
         public string City { get; set; }
         
+        [Required]
+        [Column("email-password")]
+        public string EmailPassword { get; set; }
+        
         [Column("has-picture")]
         public bool HasPicture { get; set; }
         
         [Column("if-removable")]
-        public bool IfRemovable { get; set; }
+        public bool IfRemovable { get; set; } = true;
         
         [ForeignKey(nameof(Role))]
         [Column("role-key")]

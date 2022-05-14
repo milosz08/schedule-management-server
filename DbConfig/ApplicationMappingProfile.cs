@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 
 using asp_net_po_schedule_management_server.Entities;
-
-using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
 
 
@@ -10,10 +8,13 @@ namespace asp_net_po_schedule_management_server.DbConfig
 {
     public sealed class ApplicationMappingProfile : Profile
     {
+        /// <summary>
+        /// Konstruktor odpowiadający za stworzenie map obiektów (przepisania wartości). 
+        /// </summary>
         public ApplicationMappingProfile()
         {
-            CreateMap<Person, RegisterNewUserResponseDto>();
-            CreateMap<RegisterNewUserRequestDto, Person>();
+            CreateMap<Person, RegisterNewUserResponseDto>()
+                .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name));
             CreateMap<Person, LoginResponseDto>()
                 .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
                 .ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir => $"{dir.Name} {dir.Surname}"));

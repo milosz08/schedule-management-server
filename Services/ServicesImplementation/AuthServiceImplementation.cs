@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 using System.Security.Claims;
@@ -21,39 +22,48 @@ using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Responses;
 
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
+using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 {
     public class AuthServiceImplementation : IAuthService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IJwtAuthenticationManager _manager;
-        private readonly IPasswordHasher<Person> _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly ApplicationDbContext _context;
         private readonly ISshEmailService _emailService;
+        private readonly IJwtAuthenticationManager _manager;
+        private readonly ISmtpEmailService _smtpEmailService;
+        private readonly IPasswordHasher<Person> _passwordHasher;
         
         //--------------------------------------------------------------------------------------------------------------
         
         public AuthServiceImplementation(
-            ApplicationDbContext context,
-            IJwtAuthenticationManager manager,
-            IPasswordHasher<Person> passwordHasher,
             IMapper mapper,
-            ISshEmailService emailService)
+            ApplicationDbContext context,
+            ISshEmailService emailService,
+            IJwtAuthenticationManager manager,
+            ISmtpEmailService smtpEmailService,
+            IPasswordHasher<Person> passwordHasher)
         {
+            _mapper = mapper;
             _context = context;
             _manager = manager;
-            _mapper = mapper;
-            _passwordHasher = passwordHasher;
             _emailService = emailService;
+            _passwordHasher = passwordHasher;
+            _smtpEmailService = smtpEmailService;
         }
         
         //--------------------------------------------------------------------------------------------------------------
         
         #region Login
 
-        // metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek)
+        /// <summary>
+        /// Metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek).
+        /// </summary>
+        /// <param name="user">r</param>
+        /// <returns>zwraca odpowiedni status zalogowania lub status błędu (brak autoryzacji)</returns>
+        /// <exception cref="BasicServerException">w przypadku braku znalezienia zasobu / dozwolonej operacji</exception>
         public async Task<LoginResponseDto> UserLogin(LoginRequestDto user)
         {
             Person findPerson = await _context.Persons
@@ -101,7 +111,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Refresh Token
         
-        // metoda odpowiadająca za odświeżanie JWT na podstawie tokenu odświeżającego
+        /// <summary>
+        /// Metoda odpowiadająca za odświeżanie JWT na podstawie tokenu odświeżającego.
+        /// </summary>
+        /// <param name="dto">reprezentacja danych od klienta w postaci zapytania z JWT i tokenem odświeżającym</param>
+        /// <returns>nowy token JWT i token odświeżający</returns>
+        /// <exception cref="BasicServerException">w przypadku braku znalezienia zasobu / dozwolonej operacji</exception>
         public async Task<RefreshTokenResponseDto> UserRefreshToken(RefreshTokenRequestDto dto)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -150,9 +165,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #region Register
 
-        // metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych
-        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user,
-            string customPassword = "", AvailableRoles defRole = AvailableRoles.TEACHER)
+        /// <summary>
+        /// Metoda odpowiadająca za stworzenie nowego użytkownika i dodanie go do bazy danych.
+        /// </summary>
+        /// <param name="user">reprezentacja obiektowa użytkownika</param>
+        /// <param name="customPassword">domyślne hasło (używane tylko dla domyślnego użytkownika)</param>
+        /// <returns>informacje o zarejestrowanym użytkowniku</returns>
+        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user, string customPassword)
         {
             string nameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Name);
             string surnameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Surname);
@@ -166,30 +185,51 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                                     $"{randomNumbers}@{GlobalConfigurer.UserEmailDomain}";
             
             _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
-
+            
             Role findRoleId = await _context.Roles
-                .FirstOrDefaultAsync(role => role.Name == defRole.ToString());
+                .FirstOrDefaultAsync(role => role.Name == user.Role);
 
             if (customPassword != String.Empty) {
                 generatedFirstPassword = customPassword;
             }
             
-            Person newPerson = _mapper.Map<Person>(user);
-            newPerson.Shortcut = generatedShortcut;
-            newPerson.Email = generatedEmail;
-            newPerson.Login = generatedLogin;
-            newPerson.Password = generatedFirstPassword;
-            newPerson.RoleId = findRoleId.Id;
+            Person newPerson = new Person()
+            {
+                Name =  ApplicationUtils.CapitalisedLetter(user.Name),
+                Surname = ApplicationUtils.CapitalisedLetter(user.Surname),
+                Nationality = ApplicationUtils.CapitalisedLetter(user.Nationality),
+                City = ApplicationUtils.CapitalisedLetter(user.City),
+                Shortcut = generatedShortcut,
+                Email = generatedEmail,
+                Login = generatedLogin,
+                Password = generatedFirstPassword,
+                EmailPassword = generatedFirstEmailPassword,
+                RoleId = findRoleId.Id,
+                IfRemovable = user.IfRemovable,
+            };
             
             newPerson.Password = _passwordHasher.HashPassword(newPerson, generatedFirstPassword);
             await _context.Persons.AddAsync(newPerson);
             await _context.SaveChangesAsync();
-            
-            RegisterNewUserResponseDto response = _mapper.Map<RegisterNewUserResponseDto>(newPerson);
-            response.Password = generatedFirstPassword;
-            response.EmailPassword = generatedFirstEmailPassword;
-            response.Role = defRole.ToString();
-            return response;
+
+            // wysłanie do użytkownika emailu zawierającego wszystkie niezbędne dane do logowania (pomijanie
+            // użytkownika domyślnego)
+            if (customPassword == String.Empty) {
+                await _smtpEmailService.SendCreatedUserAuthUser(new UserEmailOptions()
+                {
+                    ToEmails = new List<string>() {newPerson.Email},
+                    Placeholders = new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("{{userName}}", $"{newPerson.Name} {newPerson.Surname}"),
+                        new KeyValuePair<string, string>("{{login}}", newPerson.Login),
+                        new KeyValuePair<string, string>("{{password}}", generatedFirstPassword),
+                        new KeyValuePair<string, string>("{{role}}", newPerson.Role.Name),
+                        new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
+                        new KeyValuePair<string, string>("{{dictionaryHash}}", newPerson.DictionaryHash),
+                    },
+                });    
+            }
+            return _mapper.Map<RegisterNewUserResponseDto>(newPerson);
         }
 
         #endregion

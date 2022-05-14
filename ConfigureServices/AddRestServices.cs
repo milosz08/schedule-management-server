@@ -8,7 +8,11 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
 {
     public static class AddRestServices
     {
-        // separacja serwisów odpowiedzialnych za usługi restowe
+        /// <summary>
+        /// Separacja serwisów odpowiedzialnych za usługi restowe.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddRestServicesCollection(this IServiceCollection services)
         {
             services.AddScoped<IAuthService, AuthServiceImplementation>();

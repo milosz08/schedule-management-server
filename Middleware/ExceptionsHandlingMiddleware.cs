@@ -13,9 +13,12 @@ namespace asp_net_po_schedule_management_server.Middleware
 {
     public sealed class ExceptionsHandlingMiddleware : IMiddleware
     {
-        
-        // Middleware przechwytujący wszystkie złapane wyjątki do odpowiednich klauzur catch i wysyłających
-        // do użytkownika obiekt JSON z informacją o błędzie
+        /// <summary>
+        /// Middleware przechwytujący wszystkie złapane wyjątki do odpowiednich klauzur catch i wysyłających
+        /// do użytkownika obiekt JSON z informacją o błędzie.
+        /// </summary>
+        /// <param name="context">kontekst zapytania</param>
+        /// <param name="next">wywołanie następnej instrukcji w potoku głównym aplikacji</param>
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try {
@@ -35,6 +38,12 @@ namespace asp_net_po_schedule_management_server.Middleware
 
         //--------------------------------------------------------------------------------------------------------------
         
+        /// <summary>
+        /// Metoda pomocnicza tworząca i zwracająca obiekt informacji o stanie serwera.
+        /// </summary>
+        /// <param name="statusCode">kod statusu serwera</param>
+        /// <param name="message">wiadomosć</param>
+        /// <returns>wyjątek sparsowany na stringa</returns>
         private string ResponseJsonValue(int statusCode, string message)
         {
             return new ServerExceptionResponseDto()

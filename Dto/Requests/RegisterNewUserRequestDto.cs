@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+using asp_net_po_schedule_management_server.CustomDecorators;
+
 
 namespace asp_net_po_schedule_management_server.Dto.Requests
 {
@@ -20,10 +22,15 @@ namespace asp_net_po_schedule_management_server.Dto.Requests
         [MaxLength(100, ErrorMessage = "Narowodowść musi być krótsza od 100 znaków")]
         public string Nationality { get; set; }
 
+        [Required]
         [MinLength(3, ErrorMessage = "Miasto musi być dłuższe od 3 znaków")]
         [MaxLength(100, ErrorMessage = "Miasto musi być krótsze od 100 znaków")]
         public string City { get; set; }
 
+        [Required]
+        [ValidValues("ADMINISTRATOR", "EDITOR", "TEACHER", "STUDENT")]
+        public string Role { get; set; }
+        
         public bool IfRemovable { get; set; } = true;
     }
 }

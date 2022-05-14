@@ -11,8 +11,11 @@ namespace asp_net_po_schedule_management_server.CustomDecorators
 {
     public class AuthorizeRolesAttribute : AuthorizeAttribute
     {
-        // metoda zmieniająca działanie domyślnego dekoratora Authorize, umożliwiając przesłanie
-        // wartości innych niż stringi (w tym wypadku enumy) w jednym ciągu
+        /// <summary>
+        /// Metoda zmieniająca działanie domyślnego dekoratora Authorize, umożliwiając przesłanie
+        /// wartości innych niż stringi (w tym wypadku enumy) w jednym ciągu.
+        /// </summary>
+        /// <param name="allowedRoles">tablica parametrów dozwolonych ról</param>
         public AuthorizeRolesAttribute(params AvailableRoles[] allowedRoles)
         {
             IEnumerable<string> allowedRolesAsStrings = allowedRoles

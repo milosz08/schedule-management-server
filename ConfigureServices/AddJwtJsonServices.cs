@@ -5,13 +5,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 using asp_net_po_schedule_management_server.Jwt;
 using asp_net_po_schedule_management_server.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 
 namespace asp_net_po_schedule_management_server.ConfigureServices
 {
     public static class AddJwtJsonServices
     {
-        // separacja serwisów odpowiedzialnych za tokeny JWT i obsługę formatu JSON
+        /// <summary>
+        /// Separacja serwisów odpowiedzialnych za tokeny JWT i obsługę formatu JSON.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddJwtJsonServiceCollection(this IServiceCollection services)
         {
             services.AddControllers()
@@ -23,7 +28,18 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             
             // strefa autentykacji i blokowania tras oraz odblokowywania przez JWT
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManagerImplementation());
-            JwtAuthenticationManagerImplementation.ImplementsJwtOnStartup(services);
+            
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options => {
+                options.RequireHttpsMetadata = false; // na developmencie false, na produkcji true <- ważne!!
+                options.SaveToken = true; // czy klucz ma być przechowywany
+                options.TokenValidationParameters = JwtAuthenticationManagerImplementation
+                    .GetBasicTokenValidationParameters();
+            });
+            
             services.AddScoped<IPasswordHasher<Person>, PasswordHasher<Person>>();
             
             return services;
