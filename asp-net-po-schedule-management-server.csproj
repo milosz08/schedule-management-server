@@ -30,4 +30,10 @@
       <Folder Include="wwwroot\cdn\images" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="wwwroot\cdn\mocked\study-room.mocked.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

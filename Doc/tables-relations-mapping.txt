@@ -3,7 +3,6 @@
     group-name: VARCHAR(50)
     group-alias: VARCHAR(5)
     
-    
 encja "semester-selectiver":                <- semestr
     primary-key: BIG_INT (autoincrement)
     sem-name: VARCHAR(50)
@@ -11,17 +10,11 @@ encja "semester-selectiver":                <- semestr
     sem-number: INT
     sem-type: ENUM(SUMMER, WINTER)
     
-    
-encja "department-selectiver"               <- wydział
-    primary-key: BIG_INT (autoincrement)
-    dept-name: VARCHAR(150)
-    dept-alias: VARCHAR(3)
-    
-    
 encja "summary-top-level-classes":          <- tabela zbiorcza (wydziały)           (1 stopień drzewa - góra)
     primary-key: BIG_INT (autoincrement)
     artifician-index: VARCHAR(20)
-    department-info: relacja one-to-one (encja "department-selectiver") <- jeden wydział może mieć tylko jedne szczegółowe informacje
+    dept-name: VARCHAR(150)
+    dept-alias: VARCHAR(3)
     all-majors: relacja one-to-many (encja "major-selectiver") <- jeden wydział może mieć wiele kierunków studiów
 
 

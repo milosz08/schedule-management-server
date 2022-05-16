@@ -3,7 +3,6 @@
     public sealed class RefreshTokenRequestDto
     {
         public string BearerToken { get; set; }
-        
         public string RefreshBearerToken { get; set; }
     }
 }

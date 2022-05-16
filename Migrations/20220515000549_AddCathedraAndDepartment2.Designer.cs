@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asp_net_po_schedule_management_server.DbConfig;
 
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220515000549_AddCathedraAndDepartment2")]
+    partial class AddCathedraAndDepartment2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,185 +293,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.ToTable("role");
                 });
 
-            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.RoomType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("primary-key");
-
-                    b.Property<string>("Alias")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("room-type-alias");
-
-                    b.Property<string>("Color")
-                        .HasMaxLength(6)
-                        .HasColumnType("varchar(6)")
-                        .HasColumnName("room-type-color");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created-date");
-
-                    b.Property<string>("DictionaryHash")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("dictionary-hash");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("room-type-name");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated-date");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("room-types");
-                });
-
-            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyRoom", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("primary-key");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int")
-                        .HasColumnName("study-room-capacity");
-
-                    b.Property<long>("CathedralId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("cathedral-key");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created-date");
-
-                    b.Property<long>("DepartmentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("department-key");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)")
-                        .HasColumnName("study-room-desc");
-
-                    b.Property<string>("DictionaryHash")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("dictionary-hash");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("study-room-name");
-
-                    b.Property<long>("RoomTypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("room-type-key");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated-date");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CathedralId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("RoomTypeId");
-
-                    b.ToTable("study-rooms");
-                });
-
-            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudySpecialization", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("primary-key");
-
-                    b.Property<string>("Alias")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("study-spec-alias");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created-date");
-
-                    b.Property<long>("DepartmentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("dept-key");
-
-                    b.Property<string>("DictionaryHash")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("dictionary-hash");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("study-spec-name");
-
-                    b.Property<long>("StudyTypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("study-type-key");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated-date");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("StudyTypeId");
-
-                    b.ToTable("study-specializations");
-                });
-
-            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("primary-key");
-
-                    b.Property<string>("Alias")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("study-type-alias");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created-date");
-
-                    b.Property<string>("DictionaryHash")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("dictionary-hash");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("study-type-name");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated-date");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("study-types");
-                });
-
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Cathedral", b =>
                 {
                     b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
@@ -512,52 +335,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyRoom", b =>
-                {
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.Cathedral", "Cathedral")
-                        .WithMany()
-                        .HasForeignKey("CathedralId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.RoomType", "RoomType")
-                        .WithMany()
-                        .HasForeignKey("RoomTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cathedral");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("RoomType");
-                });
-
-            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudySpecialization", b =>
-                {
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudyType", "StudyType")
-                        .WithMany()
-                        .HasForeignKey("StudyTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-
-                    b.Navigation("StudyType");
                 });
 #pragma warning restore 612, 618
         }

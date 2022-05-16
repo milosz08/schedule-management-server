@@ -20,7 +20,7 @@ using asp_net_po_schedule_management_server.Dto.Responses;
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 {
-    public class ResetPasswordServiceImplementation : IResetPasswordService
+    public sealed class ResetPasswordServiceImplementation : IResetPasswordService
     {
         private readonly ApplicationDbContext _context;
         private readonly ISmtpEmailService _smtpEmailService;

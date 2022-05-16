@@ -19,6 +19,11 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             services.AddScoped<IFilesService, FilesServiceImplementation>();
             services.AddScoped<IResetPasswordService, ResetPasswordServiceImplementation>();
             services.AddScoped<IUsersService, UsersServiceImplementation>();
+            services.AddScoped<IDepartmentsService, DepartmentsServiceImplementation>();
+            services.AddScoped<ICathedralService, CathedralsServiceImplementation>();
+            services.AddScoped<IHelperService, HelperServiceImplementation>();
+            services.AddScoped<IStudySpecService, StudySpecServiceImplementation>();
+            services.AddScoped<IStudyRoomsService, StudyRoomsServiceImplementation>();
             
             return services;
         }

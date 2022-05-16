@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asp_net_po_schedule_management_server.DbConfig;
 
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220516111503_AddRoomsAndRoomTypes")]
+    partial class AddRoomsAndRoomTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,10 +340,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("primary-key");
 
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int")
-                        .HasColumnName("study-room-capacity");
-
                     b.Property<long>("CathedralId")
                         .HasColumnType("bigint")
                         .HasColumnName("cathedral-key");
@@ -349,10 +347,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created-date");
-
-                    b.Property<long>("DepartmentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("department-key");
 
                     b.Property<string>("Description")
                         .HasMaxLength(150)
@@ -380,8 +374,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CathedralId");
-
-                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("RoomTypeId");
 
@@ -522,12 +514,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("asp_net_po_schedule_management_server.Entities.RoomType", "RoomType")
                         .WithMany()
                         .HasForeignKey("RoomTypeId")
@@ -535,8 +521,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("Cathedral");
-
-                    b.Navigation("Department");
 
                     b.Navigation("RoomType");
                 });
