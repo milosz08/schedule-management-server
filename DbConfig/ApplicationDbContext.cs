@@ -25,6 +25,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public DbSet<Role> Roles { get; set; }
         public DbSet<RefreshToken> Tokens { get; set; }
         public DbSet<ResetPasswordOtp> ResetPasswordOpts { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Cathedral> Cathedrals { get; set; }
+        public DbSet<StudyType> StudyTypes { get; set; }
+        public DbSet<StudySpecialization> StudySpecializations { get; set; }
+        public DbSet<RoomType> RoomTypes { get; set; }
+        public DbSet<StudyRoom> StudyRooms { get; set; }
+
+        #endregion
 
         //--------------------------------------------------------------------------------------------------------------
         
