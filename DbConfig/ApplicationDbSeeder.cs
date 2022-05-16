@@ -1,30 +1,43 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Net;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Dto.Requests;
+using asp_net_po_schedule_management_server.Exceptions;
 
 
 namespace asp_net_po_schedule_management_server.DbConfig
 {
     public sealed class ApplicationDbSeeder
     {
-        private readonly ApplicationDbContext _context;
         private readonly IAuthService _authService;
+        private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         private readonly string _name = GlobalConfigurer.InitialCredentials.AccountName;
         private readonly string _surname = GlobalConfigurer.InitialCredentials.AccountSurname;
 
+        private const string _studyRoomsTypes = "study-room.mocked.json";
+
         //--------------------------------------------------------------------------------------------------------------
         
-        public ApplicationDbSeeder(ApplicationDbContext context, IAuthService authService)
+        public ApplicationDbSeeder(
+            ApplicationDbContext context,
+            IAuthService authService,
+            IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
             _authService = authService;
+            _hostingEnvironment = hostingEnvironment;
         }
         
         //--------------------------------------------------------------------------------------------------------------
@@ -41,6 +54,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     await _context.SaveChangesAsync();
                 }
                 await InsertDefaultAdminData();
+                await InsertDefaultStudyTypes();
+                await InsertStudyRoomsTypes();
             }
         }
 
@@ -85,5 +100,54 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 }, GlobalConfigurer.InitialCredentials.AccountPassword);
             }
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda dodająca domyślne typy studiów do bazy danych (jeśli takowe się w niej jeszcze nie znajdują).
+        /// </summary>
+        private async Task InsertDefaultStudyTypes()
+        {
+            if (!_context.StudyTypes.Any()) {
+                StudyType[] studyType = new StudyType[]
+                {
+                    new StudyType()
+                    {
+                        Name = "stacjonarne",
+                        Alias = "ST",
+                    },
+                    new StudyType()
+                    {
+                        Name = "niestacjonarne",
+                        Alias = "NS/Z",
+                    },
+                };
+                await _context.StudyTypes.AddRangeAsync(studyType);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="BasicServerException"></exception>
+        private async Task InsertStudyRoomsTypes()
+        {
+            if (!_context.RoomTypes.Any()) {
+                string roomTypesPath = Path.Combine(_hostingEnvironment.WebRootPath, "cdn/mocked", _studyRoomsTypes);
+                string jsonString = File.ReadAllText(roomTypesPath);
+                List<RoomType> allRoomTypes = JsonSerializer.Deserialize<List<RoomType>>(jsonString);
+                if (allRoomTypes == null || allRoomTypes.Count < 0) {
+                    throw new BasicServerException($"Nieprawidłowy format pliku json: {_studyRoomsTypes}",
+                        HttpStatusCode.InternalServerError);
+                }
+                await _context.RoomTypes.AddRangeAsync(allRoomTypes);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        #endregion
     }
 }
