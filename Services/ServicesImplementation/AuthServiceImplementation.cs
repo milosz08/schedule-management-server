@@ -27,7 +27,7 @@ using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 {
-    public class AuthServiceImplementation : IAuthService
+    public sealed class AuthServiceImplementation : IAuthService
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
@@ -186,8 +186,10 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             
             _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
             
-            Role findRoleId = await _context.Roles
-                .FirstOrDefaultAsync(role => role.Name == user.Role);
+            Role findRoleId = await _context.Roles.FirstOrDefaultAsync(role => role.Name == user.Role);
+            if (findRoleId == null) {
+                throw new BasicServerException("Podana rola nie istnieje w systemie", HttpStatusCode.NotFound);
+            }
 
             if (customPassword != String.Empty) {
                 generatedFirstPassword = customPassword;
