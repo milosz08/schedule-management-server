@@ -1,26 +1,28 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 
+using System;
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Dto.Misc;
 using asp_net_po_schedule_management_server.Entities;
-using asp_net_po_schedule_management_server.Dto.Requests;
-using asp_net_po_schedule_management_server.Dto.Responses;
 using asp_net_po_schedule_management_server.Exceptions;
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
+
+using asp_net_po_schedule_management_server.Dto.Requests;
+using asp_net_po_schedule_management_server.Dto.Responses;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 {
-    public class UsersServiceImplementation : IUsersService
+    public sealed class UsersServiceImplementation : IUsersService
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
