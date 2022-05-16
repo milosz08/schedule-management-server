@@ -46,6 +46,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
         
+        #region Seeders
+
         /// <summary>
         /// Umieszczanie wszystkich możliwych ról (na podstawie enuma) w liście.
         /// </summary>
@@ -61,7 +63,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
         }
         
         //--------------------------------------------------------------------------------------------------------------
-
+        
         /// <summary>
         /// Dodawanie domyślnego użytkownika (jako administratora systemu, jeśli nie ma w tabeli na
         /// podstawie pliku appsettings.json).

@@ -20,6 +20,10 @@ namespace asp_net_po_schedule_management_server.DbConfig
     {
         private IConfiguration _configuration;
 
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Database entities mapping
+
         // zmapowane tabele bazy danych
         public DbSet<Person> Persons { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -74,7 +78,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
         }
 
         //--------------------------------------------------------------------------------------------------------------
-        
+
+        #region Sequel injectors
+
         /// <summary>
         /// Autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji).
         /// </summary>
@@ -113,5 +119,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     ApplicationUtils.DictionaryHashGenerator();
             }
         }
+
+        #endregion
     }
 }
