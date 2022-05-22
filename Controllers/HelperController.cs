@@ -28,6 +28,48 @@ namespace asp_net_po_schedule_management_server.Controllers
         }
 
         //--------------------------------------------------------------------------------------------------------------
+
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_STUDY_TYPES)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudyTypes()
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudyTypes());
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_STUDY_DEGREES)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudyDegreeTypes()
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudyDegreeTypes());
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_STUDY_SPECS_BASE_DEPT)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySpecsBaseDept(
+            [FromQuery] string deptName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudySpecsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_SUBJECTS_BASE_DEPT)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySubjectsBaseDept(
+            [FromQuery] string deptName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_SEMESTERS)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableSemesters()
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSemesters());
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [HttpGet(ApiEndpoints.GET_AVAILABLE_PAGINATIONS)]
         public ActionResult<AvailablePaginationSizes> GetAvailablePaginationSizes()

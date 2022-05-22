@@ -7,8 +7,13 @@ namespace asp_net_po_schedule_management_server.Services
 {
     public interface IHelperService
     {
-        AvailableStudyTypesResponseDto GetAvailableStudyTypes();
         AvailablePaginationSizes GetAvailablePaginationTypes();
-        AvailableRoomTypesResponseDto GetAvailableRoomTypes();
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableStudyTypes();
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableStudyDegreeTypes();
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSemesters();
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableStudySpecsBaseDept(string deptName);
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSubjectsBaseDept(string deptName);
+        Task<AvailableDataResponseDto<string>> GetAvailableRoomTypes();
+        Task<AvailableDataResponseDto<string>> GetAvailableRoles();
     }
 }
