@@ -142,6 +142,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             CreateMap<StudyRoom, NameWithDbIdElement>();
             CreateMap<Department, NameWithDbIdElement>();
             CreateMap<Cathedral, NameWithDbIdElement>();
+            CreateMap<StudyDegree, NameWithDbIdElement>();
         }
     }
 }
