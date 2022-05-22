@@ -131,37 +131,5 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
-        
-        //--------------------------------------------------------------------------------------------------------------
-
-        #region Helper methods
-
-        /// <summary>
-        /// Metoda walidująca użytkownika na podstawie wprowadzonego hasła oraz loginu pozyskanego z tokenu JWT
-        /// oraz podanego przez użytkownika.
-        /// </summary>
-        /// <param name="credentials">obiekt przechowujący wartości autoryzacji</param>
-        /// <returns>Zwróci true, jeśli autoryzacja przebiegła prawidłowo.</returns>
-        /// <exception cref="BasicServerException">W przypadku błędu serwera wyrzuci wyjątek</exception>
-        private async Task CheckIfUserCredentialsAreValid(UserCredentialsHeaderDto credentials)
-        {
-            Person findPerson = await _context.Persons
-                .FirstOrDefaultAsync(p => p.Login == credentials.Login && p.Login == credentials.Username);
-
-            // jeśli użytkownik nie istnieje w systemie
-            if (findPerson == null) {
-                throw new BasicServerException("Użytkownik z podanym loginem/nazwą nie istnieje w systemie.", 
-                    HttpStatusCode.Forbidden);
-            }
-            
-            // weryfikacja hasła
-            PasswordVerificationResult verificatrionRes = _passwordHasher
-                .VerifyHashedPassword(findPerson, findPerson.Password, credentials.Password);
-            if (verificatrionRes == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Nieprawidłowe hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
-            }
-        }
-
-        #endregion
     }
 }

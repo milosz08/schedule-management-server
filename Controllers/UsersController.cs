@@ -64,33 +64,5 @@ namespace asp_net_po_schedule_management_server.Controllers
             await _service.DeleteAllUsers(ExtractedUserCredentialsFromHeader());
             return StatusCode((int) HttpStatusCode.NoContent);
         }
-
-        //--------------------------------------------------------------------------------------------------------------
-        
-        #region Helper methods
-        
-        /// <summary>
-        /// Metoda eksportująca nagłówki autoryzacji i wartość claim reprezentującą login użytkownika (zaszytą w
-        /// JWT) i opakowująca wszystkie dane w obiekt.
-        /// </summary>
-        /// <returns>Obiekt z danymi autoryzacji: login, nazwa użytkownika i hasło</returns>
-        /// <exception cref="BasicServerException">Brak nagłówków autoryzacji</exception>
-        private UserCredentialsHeaderDto ExtractedUserCredentialsFromHeader()
-        {
-            Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
-            IHeaderDictionary headers = this.Request.Headers;
-            if (headers.TryGetValue("User-Name", out var username) 
-                && headers.TryGetValue("User-Password", out var password)) {
-                return new UserCredentialsHeaderDto()
-                {
-                    Login = userLogin?.Value,
-                    Username = username.First(),
-                    Password = password.First(),
-                };
-            }
-            throw new BasicServerException("Brak nagłówków autoryzacji!", HttpStatusCode.Forbidden);
-        }
-
-        #endregion
     }
 }
