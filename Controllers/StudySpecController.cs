@@ -46,5 +46,53 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.AddNewStudySpecialization(dto));
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_All_STUDY_SPEC_BASE_DEPT)]
+        public ActionResult<SearchQueryResponseDto> GetAllStudySpecializationsBaseDept(
+            [FromQuery] string specQuery,
+            [FromQuery] string deptQuery)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service
+                .GetAllStudySpecializationsInDepartment(specQuery, deptQuery));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_ALL_STUDY_SPECS)]
+        public ActionResult<StudySpecQueryResponseDto> GetAllStudySpecializations(
+            [FromQuery] SearchQueryRequestDto searchSearchQuery)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service.GetAllStudySpecializations(searchSearchQuery));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_STUDY_SPECS_SCHEDULE)]
+        public async Task<ActionResult<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept([FromQuery] long deptId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllStudySpecsScheduleBaseDept(deptId));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
+        public async Task<ActionResult> DeleteMassiveStudySpecs([FromBody] MassiveDeleteRequestDto deleteSpecs)
+        {
+            await _service.DeleteMassiveStudySpecs(deleteSpecs, _helper
+                .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpDelete(ApiEndpoints.DELETE_ALL)]
+        public async Task<ActionResult> DeleteAllStudySpecs()
+        {
+            await _service.DeleteAllStudySpecs(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
     }
 }
