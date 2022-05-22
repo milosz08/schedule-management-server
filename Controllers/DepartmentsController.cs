@@ -54,5 +54,41 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.OK, _service.GetAllDepartmentsList(deptQuerySearch));
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_ALL_DEPARTMENTS_PAGINATION)]
+        public ActionResult<UserResponseDto> GetDepartments([FromQuery] SearchQueryRequestDto searchSearchQuery)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service.GetAllDepartments(searchSearchQuery));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_DEPARTMENTS_SCHEDULE)]
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllDepartmentsSchedule()
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllDepartmentsSchedule());
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
+        public async Task<ActionResult> DeleteMassiveDepartments([FromBody] MassiveDeleteRequestDto deleteDepartments)
+        {
+            await _service.DeleteMassiveDepartments(deleteDepartments, _helper
+                .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpDelete(ApiEndpoints.DELETE_ALL)]
+        public async Task<ActionResult> DeleteAllDepartments()
+        {
+            await _service.DeleteAllDepartments(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
     }
 }
