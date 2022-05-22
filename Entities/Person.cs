@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using asp_net_po_schedule_management_server.Entities.Shared;
@@ -71,5 +72,21 @@ namespace asp_net_po_schedule_management_server.Entities
         public long RoleId { get; set; }
         
         public virtual Role Role { get; set; }
+        
+        [ForeignKey(nameof(Department))]
+        [Column("dept-key")]
+        public long? DepartmentId { get; set; }
+        
+        public virtual Department Department { get; set; }
+        
+        [ForeignKey(nameof(Cathedral))]
+        [Column("cath-key")]
+        public long? CathedralId { get; set; }
+        
+        public virtual Cathedral Cathedral { get; set; }
+
+        public virtual ICollection<StudySpecialization> StudySpecializations { get; set; }
+        
+        public virtual ICollection<StudySubject> Subjects { get; set; }
     }
 }

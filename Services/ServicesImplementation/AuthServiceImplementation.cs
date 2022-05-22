@@ -180,7 +180,17 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             if (customPassword != String.Empty) {
                 defValues.Password = customPassword;
             }
-            
+
+            // wyszukaj pasującego wydziału, jeśli nie znajdzie dodaj bez wydziału
+            Department findDepartment = await _context.Departments
+                .FirstOrDefaultAsync(d => d.Name.Equals(user.DepartmentName, StringComparison.OrdinalIgnoreCase));
+
+            // wyszukaj pasującą katedrę (na podstawie wydziału), jeśli nie znajdzie dodaj bez katedry
+            Cathedral findCathedral = await _context.Cathedrals
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(c => c.Name.Equals(user.CathedralName, StringComparison.OrdinalIgnoreCase) &&
+                                          c.Department.Name.Equals(findDepartment.Name, StringComparison.OrdinalIgnoreCase));
+
             Person newPerson = new Person()
             {
                 Name =  ApplicationUtils.CapitalisedLetter(user.Name),
@@ -198,7 +208,23 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 CathedralId = findCathedral == null ? null : findCathedral.Id,
             };
             
-            newPerson.Password = _passwordHasher.HashPassword(newPerson, generatedFirstPassword);
+            // mapowanie relacyjne przedmiotów i kierunków
+            if (user.Role != AvailableRoles.ADMINISTRATOR) {
+                if (user.Role == AvailableRoles.STUDENT) { // kierunki dla studentów
+                    IEnumerable<StudySpecialization> findAllSpecializations = _context.StudySpecializations
+                        .Include(s => s.StudyType)
+                        .Where(s => user.StudySpecsOrSubjects.Any(id => id == s.Id))
+                        .AsEnumerable();
+                    newPerson.StudySpecializations = findAllSpecializations.ToList();
+                } else { // przedmioty dla nauczycieli i edytorów
+                    IEnumerable<StudySubject> findAllStudySubjects = _context.StudySubjects
+                        .Where(b => user.StudySpecsOrSubjects.Any(id => id == b.Id))
+                        .AsEnumerable();
+                    newPerson.Subjects = findAllStudySubjects.ToList();
+                }
+            }
+            
+            newPerson.Password = _passwordHasher.HashPassword(newPerson, defValues.Password);
             await _context.Persons.AddAsync(newPerson);
             await _context.SaveChangesAsync();
 
