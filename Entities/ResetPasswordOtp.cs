@@ -11,10 +11,12 @@ namespace asp_net_po_schedule_management_server.Entities
     public class ResetPasswordOtp : PrimaryKeyEntityInjection
     {
         [Required]
+        [StringLength(50)]
         [Column("user-email")]
         public string Email { get; set; }
         
         [Required]
+        [StringLength(8)]
         [Column("user-otp")]
         public string Otp { get; set; }
         

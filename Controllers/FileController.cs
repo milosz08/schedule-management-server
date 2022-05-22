@@ -7,14 +7,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Services;
-
-using asp_net_po_schedule_management_server.Dto.Responses;
 
 
 namespace asp_net_po_schedule_management_server.Controllers
 {
+    /// <summary>
+    /// Kontroler przechowujący akcje do zarządzania plikami w systemie. Obsługuje przede wszystkim dodawanie oraz
+    /// usuwanie zdjęcia użytkownika.
+    /// </summary>
     [ApiController]
     [Route("/api/v1/dotnet/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

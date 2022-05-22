@@ -42,6 +42,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("dictionary-hash");
 
+                    b.Property<bool>("IfRemovable")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("if-removable");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext")
@@ -79,6 +83,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("dictionary-hash");
 
+                    b.Property<bool>("IfRemovable")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("if-removable");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext")
@@ -100,6 +108,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("primary-key");
 
+                    b.Property<long?>("CathedralId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("cath-key");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -109,6 +121,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created-date");
+
+                    b.Property<long?>("DepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("dept-key");
 
                     b.Property<string>("DictionaryHash")
                         .HasMaxLength(20)
@@ -157,6 +173,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("nationality");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)")
                         .HasColumnName("password");
@@ -166,6 +183,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("role-key");
 
                     b.Property<string>("Shortcut")
+                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)")
                         .HasColumnName("shortcut");
@@ -181,6 +199,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("updated-date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CathedralId");
+
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("RoleId");
 
@@ -203,6 +225,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("person-key");
 
                     b.Property<string>("TokenValue")
+                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("token-value");
 
@@ -278,6 +301,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("dictionary-hash");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("name");
@@ -299,11 +323,13 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("primary-key");
 
                     b.Property<string>("Alias")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)")
                         .HasColumnName("room-type-alias");
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasMaxLength(6)
                         .HasColumnType("varchar(6)")
                         .HasColumnName("room-type-color");
@@ -318,6 +344,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("dictionary-hash");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("room-type-name");
@@ -329,6 +356,133 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("room-types");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Semester", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("primary-key");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("sem-alias");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created-date");
+
+                    b.Property<string>("DictionaryHash")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("dictionary-hash");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("sem-name");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated-date");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("semesters");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyDegree", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("primary-key");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("degree-alias");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created-date");
+
+                    b.Property<string>("DictionaryHash")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("dictionary-hash");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int")
+                        .HasColumnName("degree-level");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("degree-name");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated-date");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("study-degrees");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyGroup", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("primary-key");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created-date");
+
+                    b.Property<long>("DepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("dept-key");
+
+                    b.Property<string>("DictionaryHash")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("dictionary-hash");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("group-name");
+
+                    b.Property<long>("SemesterId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("sem-key");
+
+                    b.Property<long>("StudySpecializationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("study-spec-key");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated-date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("SemesterId");
+
+                    b.HasIndex("StudySpecializationId");
+
+                    b.ToTable("study-groups");
                 });
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyRoom", b =>
@@ -355,6 +509,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("department-key");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)")
                         .HasColumnName("study-room-desc");
@@ -365,6 +520,7 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnName("dictionary-hash");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("study-room-name");
@@ -418,6 +574,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("study-spec-name");
 
+                    b.Property<long>("StudyDegreeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("degree-key");
+
                     b.Property<long>("StudyTypeId")
                         .HasColumnType("bigint")
                         .HasColumnName("study-type-key");
@@ -430,9 +590,58 @@ namespace asp_net_po_schedule_management_server.Migrations
 
                     b.HasIndex("DepartmentId");
 
+                    b.HasIndex("StudyDegreeId");
+
                     b.HasIndex("StudyTypeId");
 
                     b.ToTable("study-specializations");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudySubject", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("primary-key");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("study-spec-alias");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created-date");
+
+                    b.Property<long>("DepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("dept-key");
+
+                    b.Property<string>("DictionaryHash")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("dictionary-hash");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("study-spec-name");
+
+                    b.Property<long>("StudySpecializationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("study-spec-key");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated-date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("StudySpecializationId");
+
+                    b.ToTable("study-subjects");
                 });
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyType", b =>
@@ -470,6 +679,36 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.ToTable("study-types");
                 });
 
+            modelBuilder.Entity("students-specs-binding", b =>
+                {
+                    b.Property<long>("student-key")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("study-spec-key")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("student-key", "study-spec-key");
+
+                    b.HasIndex("study-spec-key");
+
+                    b.ToTable("students-specs-binding");
+                });
+
+            modelBuilder.Entity("users-subjects-binding", b =>
+                {
+                    b.Property<long>("study-subject-key")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("user-key")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("study-subject-key", "user-key");
+
+                    b.HasIndex("user-key");
+
+                    b.ToTable("users-subjects-binding");
+                });
+
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Cathedral", b =>
                 {
                     b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
@@ -483,11 +722,23 @@ namespace asp_net_po_schedule_management_server.Migrations
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.Person", b =>
                 {
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Cathedral", "Cathedral")
+                        .WithMany()
+                        .HasForeignKey("CathedralId");
+
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
                     b.HasOne("asp_net_po_schedule_management_server.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Cathedral");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Role");
                 });
@@ -512,6 +763,33 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyGroup", b =>
+                {
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Semester", "Semester")
+                        .WithMany()
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudySpecialization", "StudySpecialization")
+                        .WithMany()
+                        .HasForeignKey("StudySpecializationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Semester");
+
+                    b.Navigation("StudySpecialization");
                 });
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudyRoom", b =>
@@ -549,6 +827,12 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudyDegree", "StudyDegree")
+                        .WithMany()
+                        .HasForeignKey("StudyDegreeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("asp_net_po_schedule_management_server.Entities.StudyType", "StudyType")
                         .WithMany()
                         .HasForeignKey("StudyTypeId")
@@ -557,7 +841,58 @@ namespace asp_net_po_schedule_management_server.Migrations
 
                     b.Navigation("Department");
 
+                    b.Navigation("StudyDegree");
+
                     b.Navigation("StudyType");
+                });
+
+            modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.StudySubject", b =>
+                {
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudySpecialization", "StudySpecialization")
+                        .WithMany()
+                        .HasForeignKey("StudySpecializationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+
+                    b.Navigation("StudySpecialization");
+                });
+
+            modelBuilder.Entity("students-specs-binding", b =>
+                {
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("student-key")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudySpecialization", null)
+                        .WithMany()
+                        .HasForeignKey("study-spec-key")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("users-subjects-binding", b =>
+                {
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudySubject", null)
+                        .WithMany()
+                        .HasForeignKey("study-subject-key")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("user-key")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -9,16 +9,17 @@ namespace asp_net_po_schedule_management_server.Entities
     [Table("role")]
     public sealed class Role : PrimaryKeyWithClientIdentifierInjection
     {
+        [Required]
         [Column("name")]
         [MaxLength(50)]
         public string Name { get; set; }
     }
 
-    public enum AvailableRoles
+    public static class AvailableRoles
     {
-        STUDENT,
-        TEACHER,
-        EDITOR,
-        ADMINISTRATOR,
+        public const string STUDENT = "student";
+        public const string TEACHER = "nauczyciel";
+        public const string EDITOR = "edytor";
+        public const string ADMINISTRATOR = "administrator";
     }
 }

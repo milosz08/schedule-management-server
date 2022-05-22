@@ -10,8 +10,6 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
         /// <summary>
         /// Separacja serwisów odpowiedzialnych za usługi routingu w aplikacji.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
         public static IServiceCollection AddRoutingServicesCollection(this IServiceCollection services)
         {
             // zmienia ścieżki routingu z wielkich liter na małe

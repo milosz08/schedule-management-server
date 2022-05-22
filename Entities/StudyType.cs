@@ -10,10 +10,12 @@ namespace asp_net_po_schedule_management_server.Entities
     public sealed class StudyType : PrimaryKeyWithClientIdentifierInjection
     {
         [Required]
+        [StringLength(50)]
         [Column("study-type-name")]
         public string Name { get; set; }
         
         [Required]
+        [StringLength(20)]
         [Column("study-type-alias")]
         public string Alias { get; set; }
     }

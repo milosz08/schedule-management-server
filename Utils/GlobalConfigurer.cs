@@ -3,6 +3,9 @@
 
 namespace asp_net_po_schedule_management_server.Utils
 {
+    /// <summary>
+    /// Klasa mapująca wszystkie property z pliku konfiguracyjnego JSON.
+    /// </summary>
     public class GlobalConfigurer
     {
         // obsługa JWT

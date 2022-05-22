@@ -13,6 +13,9 @@ using asp_net_po_schedule_management_server.Utils;
 
 namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
 {
+    /// <summary>
+    /// Klasa odpowiedzialna za wysyłanie wiadomości email do klientów poprzez protokół SMTP
+    /// </summary>
     public class SmtpEmailServiceImplementation : ISmtpEmailService
     {
         private readonly IWebHostEnvironment _hostingEnvironment;

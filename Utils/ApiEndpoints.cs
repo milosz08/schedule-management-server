@@ -1,5 +1,8 @@
 ﻿namespace asp_net_po_schedule_management_server.Utils
 {
+    /// <summary>
+    /// Klasa przechowująca wszystkie endpointy (punkty końcowe z treścią) aplikacji do komunikacji z web klientem.
+    /// </summary>
     public static class ApiEndpoints
     {
         // kontroler AuthController
@@ -22,37 +25,69 @@
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler UsersController
-        public const string GET_ALL_USERS = "all-users";
-        public const string DELETE_MASSIVE_USERS = "delete-massive";
-        public const string DELETE_ALL_USERS = "delete";
-        
+        public const string GET_ALL_USERS_PAGINATION = "all-users";
+        public const string GET_ALL_EMPLOYEERS_SCHEDULE = "all-employeers-schedule";
+
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler HelperController
         public const string GET_AVAILABLE_PAGINATIONS = "available-paginations";
         public const string GET_AVAILABLE_STUDY_TYPES = "available-study-types";
         public const string GET_AVAILABLE_ROOM_TYPES = "available-room-types";
+        public const string GET_AVAILABLE_STUDY_DEGREES = "available-study-degrees";
+        public const string GET_AVAILABLE_SUBJECTS_BASE_DEPT = "available-subjects-base-dept";
+        public const string GET_AVAILABLE_STUDY_SPECS_BASE_DEPT = "available-study-specs-base-dept";
+        public const string GET_AVAILABLE_ROLES = "available-roles";
+        public const string GET_AVAILABLE_SEMESTERS = "available-semesters";
         
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler DepartmentsController
         public const string ADD_DEPARTMENT = "add-department";
         public const string GET_ALL_DEPARTMENTS_LIST = "all-departments-list";
+        public const string GET_ALL_DEPARTMENTS_PAGINATION = "all-departments";
+        public const string GET_ALL_DEPARTMENTS_SCHEDULE = "all-departments-schedule";
         
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler CathedralsController
         public const string ADD_CATHEDRAL = "add-cathedral";
         public const string GET_ALL_CATHEDRALS_BASE_DEPT = "all-cathedrals-dept";
+        public const string GET_ALL_CATHEDRALS_PAGINATION = "all-cathedrals";
+        public const string GET_ALL_CATHEDRALS_SCHEDULE = "all-cathedrals-schedule";
         
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler StudySpecController
         public const string ADD_STUDY_SPECIALIZATION = "add-study-spec";
+        public const string GET_All_STUDY_SPEC_BASE_DEPT = "all-study-specs-dept";
+        public const string GET_ALL_STUDY_SPECS = "all-study-specs";
+        public const string GET_ALL_STUDY_SPECS_SCHEDULE = "all-study-specs-schedule";
         
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler StudyRoomsController
         public const string ADD_STUDY_ROOM = "add-study-room";
+        public const string GET_ALL_STUDY_ROOMS = "all-study-rooms";
+        public const string GET_ALL_STUDY_ROOMS_SCHEDULE = "all-study-rooms-schedule";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // kontroler StudySubjectController
+        public const string ADD_STUDY_SUBJECT = "add-study-subject";
+        public const string GET_ALL_STUDY_SUBJECTS = "all-study-subjects";
+        public const string GET_ALL_STUDY_SUBJECT_BASE_DEPT = "all-study-subjects-dept";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // kontroler StudyGroupController
+        public const string ADD_STUDY_GROUP = "add-study-group";
+        public const string GET_ALL_STUDY_GROUPS_PAGINATION = "all-study-groups";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // wspólne
+        public const string DELETE_MASSIVE = "delete-massive";
+        public const string DELETE_ALL = "delete";
     }
 }

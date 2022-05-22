@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ using asp_net_po_schedule_management_server.Entities.Shared;
 
 namespace asp_net_po_schedule_management_server.DbConfig
 {
+    /// <summary>
+    /// Klasa konfiguracji bazy danych i metod "invokerów" wywołujących się przy/przed zapisem encji do bazy danych.
+    /// Skonfigurowane jest tutaj między innymi mapowanie relacji MANY-TO-MANY oraz wstawianie wartości przy tworzeniu/
+    /// aktualizowaniu encji.
+    /// </summary>
     public sealed class ApplicationDbContext : DbContext
     {
         private IConfiguration _configuration;
@@ -35,17 +41,24 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public DbSet<StudySpecialization> StudySpecializations { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<StudyRoom> StudyRooms { get; set; }
+        public DbSet<StudySubject> StudySubjects { get; set; }
+        public DbSet<StudyDegree> StudyDegrees { get; set; }
+        public DbSet<Semester> Semesters { get; set; }
+        public DbSet<StudyGroup> StudyGroups { get; set; }
 
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------
         
-        public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options,
-            IConfiguration configuration) : base(options) {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
+            : base(options) {
             _configuration = configuration;
         }
+
+        //--------------------------------------------------------------------------------------------------------------
         
+        #region MySequel invokers
+
         //--------------------------------------------------------------------------------------------------------------
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -66,6 +79,32 @@ namespace asp_net_po_schedule_management_server.DbConfig
         //--------------------------------------------------------------------------------------------------------------
         
         /// <summary>
+        /// Mapowanie relacji MANY-TO-MANY.
+        /// </summary>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // mapowanie modelu osoby (studenta) z kierunkami studiów w relacji MANY-TO-MANY
+            modelBuilder.Entity<Person>()
+                .HasMany(p => p.StudySpecializations)
+                .WithMany(p => p.Students)
+                .UsingEntity<Dictionary<string, object>>("students-specs-binding",
+                    b => b.HasOne<StudySpecialization>().WithMany().HasForeignKey("study-spec-key"),
+                    b => b.HasOne<Person>().WithMany().HasForeignKey("student-key"));
+           
+            // mapowanie modelu osoby (studenta lub nauczyciela) z przedmiotami na studiach w relacji MANY-TO-MANY
+            modelBuilder.Entity<Person>()
+                .HasMany(p => p.Subjects)
+                .WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>("users-subjects-binding",
+                    b => b.HasOne<StudySubject>().WithMany().HasForeignKey("study-subject-key"),
+                    b => b.HasOne<Person>().WithMany().HasForeignKey("user-key"));
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
         /// Asynchroniczne wywoływanie metod przed zapisaniem każdej encji do bazy danych.
         /// </summary>
         /// <param name="cancellationToken">default</param>
@@ -79,7 +118,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
 
-        #region Sequel injectors
+        #region MySequel injectors
 
         /// <summary>
         /// Autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji).

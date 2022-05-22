@@ -13,9 +13,6 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
         /// <summary>
         /// Separacja serwisów odpowiedzialnych za usługi łączenia z bazą danych.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
         public static IServiceCollection AddDatabaseServicesCollection(
             this IServiceCollection services, IConfiguration configuration)
         {
@@ -23,7 +20,11 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     configuration.GetConnectionString("MySequelConnection"),
-                    new MySqlServerVersion(GlobalConfigurer.DbDriverVersion)
+                    new MySqlServerVersion(GlobalConfigurer.DbDriverVersion),
+                    opt => {
+                        // zezwolenie na dynamiczną translację zapytań do bazy
+                        opt.EnableStringComparisonTranslations();
+                    }
                 ));
             
             // dodawanie seedera jako serwisu

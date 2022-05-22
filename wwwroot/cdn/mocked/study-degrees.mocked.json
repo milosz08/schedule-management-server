@@ -1,0 +1,12 @@
+﻿[
+    {
+        "Name": "I stopień",
+        "Alias": "ST I",
+        "Level": 1
+    },
+    {
+        "Name": "II stopień",
+        "Alias": "ST II",
+        "Level": 2
+    }
+]

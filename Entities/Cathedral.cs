@@ -10,12 +10,18 @@ namespace asp_net_po_schedule_management_server.Entities
     public class Cathedral : PrimaryKeyWithClientIdentifierInjection
     {
         [Required]
+        [StringLength(100)]
         [Column("cath-name")]
         public string Name { get; set; }
         
         [Required]
+        [StringLength(20)]
         [Column("cath-alias")]
         public string Alias { get; set; }
+        
+        [Required]
+        [Column("if-removable")]
+        public bool IfRemovable { get; set; } = true;
         
         [ForeignKey(nameof(Department))]
         [Column("dept-key")]

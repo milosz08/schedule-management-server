@@ -1,16 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 
 using Microsoft.EntityFrameworkCore;
 
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Exceptions;
-using asp_net_po_schedule_management_server.Dto.RequestResponseMerged;
+using asp_net_po_schedule_management_server.Services.Helpers;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -18,12 +21,14 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
     public class StudySpecServiceImplementation : IStudySpecService
     {
         private readonly IMapper _mapper;
+        private readonly ServiceHelper _helper;
         private readonly ApplicationDbContext _context;
-        
+
         //--------------------------------------------------------------------------------------------------------------
 
-        public StudySpecServiceImplementation(IMapper mapper, ApplicationDbContext context)
+        public StudySpecServiceImplementation(ServiceHelper helper, IMapper mapper, ApplicationDbContext context)
         {
+            _helper = helper;
             _mapper = mapper;
             _context = context;
         }
@@ -40,63 +45,208 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="dto">obiekt transferowy z danymi odnośnie nowego kierunku studiów</param>
         /// <returns>utworzone kierunek/kierunki studiów</returns>
         /// <exception cref="BasicServerException">nieistniejący wydział/duplikat kierunku/brak typu kierunku</exception>
-        public async Task<IEnumerable<StudySpecResponseDto>> AddNewStudySpecialization(StudySpecRequestDto dto)
+        public async Task<IEnumerable<CreateStudySpecResponseDto>> AddNewStudySpecialization(CreateStudySpecRequestDto dto)
         {
             //wyszukanie wydziału pasującego do kierunku, jeśli nie znajdzie wyrzuci wyjątek
             Department findDepartment = await _context.Departments
-                .FirstOrDefaultAsync(d => d.Name.ToLower() == dto.DepartmentName.ToLower());
+                .FirstOrDefaultAsync(d => d.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
             if (findDepartment == null) {
                 throw new BasicServerException("Nie znaleziono wydziału z podaną nazwą", HttpStatusCode.NotFound);
+            }
+
+            List<StudyType> findAllStudyTypes = _context.StudyTypes
+                .Where(t => dto.StudyType.Any(id => id == t.Id)).ToList();
+            if (findAllStudyTypes.Count == 0) {
+                throw new BasicServerException("Nie znaleziono podanych id typów kierunków", HttpStatusCode.NotFound);
+            }
+
+            List<StudyDegree> findAllStudyDegrees = _context.StudyDegrees
+                .Where(d => dto.StudyDegree.Any(id => id == d.Id)).ToList();
+            if (findAllStudyDegrees.Count == 0) {
+                throw new BasicServerException("Nie znaleziono podanych id stopni studiów", HttpStatusCode.NotFound);
             }
             
             // przy próbie wprowadzeniu duplikatu kierunku studiów, wyrzuć wyjątek
             StudySpecialization findSpecialization = await _context.StudySpecializations
                 .Include(s => s.Department)
                 .Include(s => s.StudyType)
-                .FirstOrDefaultAsync(s => (s.Name.ToLower() == dto.Name.ToLower() 
-                                           || s.Alias.ToLower() == dto.Alias.ToLower()) 
-                                          && s.Department.Name.ToLower() == dto.DepartmentName.ToLower()
-                                          && s.StudyType.Alias.ToLower() == dto.StudyType.ToLower());
+                .Include(s => s.StudyDegree)
+                .FirstOrDefaultAsync(s => (s.Name.Equals(dto.Name, StringComparison.OrdinalIgnoreCase) ||
+                                           s.Alias.Equals(dto.Alias, StringComparison.OrdinalIgnoreCase)) &&
+                                          s.Department.Name.Equals(dto.DepartmentName, StringComparison.Ordinal) &&
+                                          dto.StudyType.Any(v => v == s.StudyType.Id) &&
+                                          dto.StudyDegree.Any(v => v == s.StudyDegree.Id));
+            
             if (findSpecialization != null) {
                 throw new BasicServerException(
                     "Podany kierunek studiów istnieje już w wybranej jednostce.", HttpStatusCode.ExpectationFailed);
             }
             
             List<StudySpecialization> createdSpecializations = new List<StudySpecialization>();
-            
-            if (dto.StudyType == StudySpecTypes.ALL) {
-                List<long> allStudyTypes = _context.StudyTypes.Select(t => t.Id).ToList();
-                if (allStudyTypes.Count == 0) {
-                    throw new BasicServerException("Nie znaleziono żadnych typów kierunków.", HttpStatusCode.NotFound);
-                }
-                foreach (long typeId in allStudyTypes) {
+
+            foreach (StudyType studyType in findAllStudyTypes) {
+                foreach (StudyDegree studyDegree in findAllStudyDegrees) {
                     createdSpecializations.Add(new StudySpecialization()
                     {
                         Name = dto.Name,
                         Alias = dto.Alias,
                         DepartmentId = findDepartment.Id,
-                        StudyTypeId = typeId,
+                        StudyTypeId = studyType.Id,
+                        StudyDegreeId = studyDegree.Id,
                     });
                 }
-            } else {
-                StudyType studyType = await _context.StudyTypes.FirstOrDefaultAsync(t => t.Alias == dto.StudyType);
-                if (studyType == null) {
-                    throw new BasicServerException("Nie znaleziono podanego typu kierunku.", HttpStatusCode.NotFound);
-                }
-                createdSpecializations.Add(new StudySpecialization()
-                {
-                    Name = dto.Name,
-                    Alias = dto.Alias,
-                    DepartmentId = findDepartment.Id,
-                    StudyTypeId = studyType.Id,
-                });
             }
 
             // zapis do bazy danych
             await _context.StudySpecializations.AddRangeAsync(createdSpecializations);
             await _context.SaveChangesAsync();
+            return createdSpecializations.Select(s => _mapper.Map<CreateStudySpecResponseDto>(s));
+        }
 
-            return createdSpecializations.Select(s => _mapper.Map<StudySpecResponseDto>(s));
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get all available study types based department
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="specName"></param>
+        /// <param name="deptName"></param>
+        /// <returns></returns>
+        public SearchQueryResponseDto GetAllStudySpecializationsInDepartment(string specName, string deptName)
+        {
+            // jeśli parametr jest nullem to przypisz wartość pustego stringa
+            if (deptName == null) {
+                deptName = string.Empty;
+            }
+            if (specName == null) {
+                specName = string.Empty;
+            }
+            
+            // wyszukaj i wypłaszcz rezultat do tablicy stringów z nazwami katedr
+            List<string> findAllStudySpecializations = _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Include(s => s.StudyDegree)
+                .Where(s => s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase) 
+                            && s.Name.Contains(specName, StringComparison.OrdinalIgnoreCase))
+                .Select(s => $"{s.Name} ({s.StudyType.Alias} {s.StudyDegree.Alias})")
+                .ToList();
+            findAllStudySpecializations.Sort();
+            
+            if (findAllStudySpecializations.Count > 0) {
+                return new SearchQueryResponseDto(findAllStudySpecializations);
+            }
+
+            List<string> findAllElements = _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Include(s => s.StudyDegree)
+                .Where(s => s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .Select(s => $"{s.Name} ({s.StudyType.Alias} {s.StudyDegree.Alias}")
+                .ToList();
+            findAllElements.Sort();
+            
+            // jeśli nie znalazło pasujących rezultatów, zwróć wszystkie elementy
+            return new SearchQueryResponseDto(findAllStudySpecializations);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get all study specializations
+
+        /// <summary>
+        /// Metoda zwracająca wszystkie kierunku studiów opakowane w obiekt paginacji i fitrowania rezultatów na podstawie
+        /// przekazywanych parametrów zapytania. Umożliwia sortowanie po kolumnach (kluczach) w trybach ASC/DES.
+        /// </summary>
+        /// <param name="searchQuery">parametry zapytania (filtrowania wyników)</param>
+        /// <returns>opakowane dane wynikowe w obiekt paginacji</returns>
+        public PaginationResponseDto<StudySpecQueryResponseDto> GetAllStudySpecializations(SearchQueryRequestDto searchQuery)
+        {
+            // wyszukiwanie użytkowników przy pomocy parametru SearchPhrase
+            IQueryable<StudySpecialization> studySpecsBaseQuery = _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Include(s => s.StudyDegree)
+                .Where(s => searchQuery.SearchPhrase == null ||
+                            s.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
+
+            // sortowanie (rosnąco/malejąco) dla kolumn
+            if (!string.IsNullOrEmpty(searchQuery.SortBy)) {
+                _helper.PaginationSorting(new Dictionary<string, Expression<Func<StudySpecialization, object>>>
+                {
+                    { nameof(StudySpecialization.Id), s => s.Id },
+                    { nameof(StudySpecialization.Name), s => s.Name },
+                    { "DepartmentAlias", s => s.Department.Alias },
+                    { "SpecTypeAlias", s => s.StudyType.Alias },
+                    { "SpecDegree", s => s.StudyDegree.Alias },
+                }, searchQuery, ref studySpecsBaseQuery);
+            }
+            
+            List<StudySpecQueryResponseDto> allDepts = _mapper.Map<List<StudySpecQueryResponseDto>>(_helper
+                .PaginationAndAdditionalFiltering(studySpecsBaseQuery, searchQuery));
+            
+            return new PaginationResponseDto<StudySpecQueryResponseDto>(
+                allDepts, studySpecsBaseQuery.Count(), searchQuery.PageSize, searchQuery.PageNumber);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get all study specializations for selected department on schedule page
+        
+        /// <summary>
+        /// Metoda zwracająca wszystkie kierunku studiów w postaci tupli (name, id) na podstawie id wydziału. Używana
+        /// dla punktu końcowego niechronionego, przy wyświetlaniu planu.
+        /// </summary>
+        /// <returns>wszystkie znalezione kierunki studiów</returns>
+        public async Task<List<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(long deptId)
+        {
+            List<StudySpecialization> studySpecsBaseDept = await _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Where(s => s.Department.Id == deptId)
+                .ToListAsync();
+            studySpecsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
+            return studySpecsBaseDept.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Delete content
+
+        /// <summary>
+        /// Metoda usuwająca wybrane kierunki studiów z bazy danych (na podstawie wartości id w ciele zapytania).
+        /// </summary>
+        /// <param name="studySpecs">wszystkie numery ID elementów do usunięcia</param>
+        /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
+        public async Task DeleteMassiveStudySpecs(MassiveDeleteRequestDto studySpecs, UserCredentialsHeaderDto credentials)
+        {
+            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // filtrowanie kierunków studiów po ID znajdujących się w tablicy
+            _context.StudySpecializations.RemoveRange(_context.StudySpecializations
+                .Where(s => studySpecs.ElementsIds.Any(id => id == s.Id)));
+            await _context.SaveChangesAsync();
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Metoda usuwająca z bazy danych wszystkie kierunki studiów.
+        /// </summary>
+        /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
+        public async Task DeleteAllStudySpecs(UserCredentialsHeaderDto credentials)
+        {
+            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            _context.StudySpecializations.RemoveRange();
+            await _context.SaveChangesAsync();
         }
 
         #endregion

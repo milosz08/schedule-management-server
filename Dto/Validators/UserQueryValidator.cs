@@ -1,20 +1,22 @@
 ﻿using System.Linq;
+
 using FluentValidation;
 
-using asp_net_po_schedule_management_server.Dto.Requests;
-using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Utils;
 
 
 namespace asp_net_po_schedule_management_server.Dto.Validators
 {
-    // walidator odpowiedzialny za walidację elementów paginacji
-    public class UserQueryValidator : AbstractValidator<UserQueryRequestDto>
+    /// <summary>
+    /// Walidator odpowiedzialny za walidację elementów paginacji
+    /// </summary>
+    public class UserQueryValidator : AbstractValidator<SearchQueryRequestDto>
     {
         // możliwe sortowania elementów (do wybory przez użytkownika)
         private string[] _allowedSortings =
         {
-            nameof(Person.Id), nameof(Person.Surname), nameof(Person.Login), nameof(Person.Role)
+            "Id", "Surname", "Login", "Role", "Name", "Alias", "DepartmentName", "DepartmentAlias", "CathedralAlias",
+            "Capacity", "RoomTypeAlias", "SpecTypeName", "SpecDegree", "SpecTypeAlias"
         };
         
         public UserQueryValidator()

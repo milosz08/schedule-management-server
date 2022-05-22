@@ -8,14 +8,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Jwt;
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Exceptions;
 using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
-
-using asp_net_po_schedule_management_server.Dto.Requests;
-using asp_net_po_schedule_management_server.Dto.Responses;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -29,11 +27,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        public ResetPasswordServiceImplementation(
-            ApplicationDbContext context,
-            IJwtAuthenticationManager manager,
-            ISmtpEmailService smtpEmailService,
-            IPasswordHasher<Person> passwordHasher)
+        public ResetPasswordServiceImplementation(ApplicationDbContext context, IJwtAuthenticationManager manager,
+            ISmtpEmailService smtpEmailService, IPasswordHasher<Person> passwordHasher)
         {
             _context = context;
             _manager = manager;
