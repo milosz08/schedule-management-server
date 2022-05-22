@@ -2,7 +2,7 @@
 
 namespace asp_net_po_schedule_management_server.Migrations
 {
-    public partial class AddCathedraAndDepartment : Migration
+    public partial class RefactorRoleEnityt : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
