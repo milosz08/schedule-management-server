@@ -138,6 +138,31 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get all groups base study specialization and semester 
+
+        /// <summary>
+        /// Metoda zwracająca wszystkie grupy dziekańskie na podstawie kierunku studiów i semestru (na podstawie
+        /// parametrów zapytania).
+        /// </summary>
+        /// <param name="studySpecId">id kierunku studiów w bazie danych</param>
+        /// <param name="semId">id semestru w bazie danych</param>
+        /// <returns>lista przefiltrowanych grup dziekańskich</returns>
+        public async Task<List<NameWithDbIdElement>> GetAvailableGroupsBaseStudySpecAndSem(long studySpecId, long semId)
+        {
+            List<StudyGroup> findAllStudyGroups = await _context.StudyGroups
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization)
+                .Include(s => s.Semester)
+                .Where(s => s.StudySpecialization.Id == studySpecId && s.Semester.Id == semId)
+                .ToListAsync();
+
+            return findAllStudyGroups.Select(s => new NameWithDbIdElement(s.Id, s.Name)).ToList();
+        }
+
+        #endregion
         
         //--------------------------------------------------------------------------------------------------------------
         
