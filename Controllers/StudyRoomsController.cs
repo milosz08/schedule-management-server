@@ -45,5 +45,43 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.CreateStudyRoom(dto));
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_ALL_STUDY_ROOMS)]
+        public ActionResult<StudyRoomQueryResponseDto> GetStudyRooms([FromQuery] SearchQueryRequestDto searchSearchQuery)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service.GetAllStudyRooms(searchSearchQuery));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_STUDY_ROOMS_SCHEDULE)]
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllStudyRoomsScheduleBaseCath(
+            [FromQuery] long deptId,
+            [FromQuery] long cathId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllStudyRoomsScheduleBaseCath(deptId, cathId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
+        public async Task<ActionResult> DeleteMassiveStudyRooms([FromBody] MassiveDeleteRequestDto deleteRooms)
+        {
+            await _service.DeleteMassiveStudyRooms(deleteRooms, _helper
+                .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpDelete(ApiEndpoints.DELETE_ALL)]
+        public async Task<ActionResult> DeleteAllStudyRooms()
+        {
+            await _service.DeleteAllStudyRooms(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
     }
 }
