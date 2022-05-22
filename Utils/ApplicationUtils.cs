@@ -1,5 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Collections.Generic;
+
+using Microsoft.AspNetCore.Hosting;
+
+using asp_net_po_schedule_management_server.Exceptions;
 
 
 namespace asp_net_po_schedule_management_server.Utils
@@ -115,6 +123,47 @@ namespace asp_net_po_schedule_management_server.Utils
         public static string GetCurrentUTCdateString()
         {
             return $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda umożliwiająca deserializację pliku JSON na sparametryzowany obiekt generyczny.
+        /// </summary>
+        /// <param name="fileName">nazwa pliku wejściowego</param>
+        /// <param name="hostEnvironment">ścieżka środowiskowa</param>
+        /// <typeparam name="T">parametr generyczny obiektu na który ma zostać zrobiona deserializacja</typeparam>
+        /// <returns>obiekt z deserializowanymi danymi</returns>
+        /// <exception cref="BasicServerException">nieprawidłowy plik JSON/brak pliku</exception>
+        public static List<T> ConvertJsonToList<T>(string fileName, IWebHostEnvironment hostEnvironment)
+        {
+            string roomTypesPath = Path.Combine(hostEnvironment.WebRootPath, "cdn/mocked", fileName);
+            string jsonString = File.ReadAllText(roomTypesPath);
+            List<T> deserialisedArray;
+            try {
+                deserialisedArray = JsonSerializer.Deserialize<List<T>>(jsonString);
+            } catch (JsonException ex) {
+                throw new BasicServerException("Nieprawidłowy format pliku json! Stacktrace: " + ex.Message,
+                    HttpStatusCode.InternalServerError);
+            }
+            return deserialisedArray;
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda tworząca alias przedmiotu.
+        /// </summary>
+        /// <param name="subjectName">pełna nazwa przedmiotu</param>
+        /// <returns>wynikowy alias w postaci "2 pierwsze litery/KIER/WYDZ"</returns>
+        public static string CreateSubjectAlias(string subjectName)
+        {
+            string[] namePieces = subjectName.Split(" ");
+            StringBuilder builder = new StringBuilder();
+            foreach (string piece in namePieces) {
+                builder.Append(piece.Substring(0, 1).ToUpper());
+            }
+            return builder.ToString();
         }
     }
 }
