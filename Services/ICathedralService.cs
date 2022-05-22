@@ -8,7 +8,11 @@ namespace asp_net_po_schedule_management_server.Services
 {
     public interface ICathedralService
     {
-        Task<CreatedCathedralResponseDto> CreateCathedral(CreateCathedralRequestDto dto);
-        Task<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName(string cathName, string deptName);
+        Task<CathedralResponseDto> CreateCathedral(CathedralRequestDto dto);
+        SearchQueryResponseDto GetAllCathedralsBasedDepartmentName(string cathName, string deptName);
+        PaginationResponseDto<CathedralQueryResponseDto> GetAllCathedrals(SearchQueryRequestDto searchQuery);
+        List<NameWithDbIdElement> GetAllCathedralsScheduleBaseDept(long deptId);
+        Task DeleteMassiveCathedrals(MassiveDeleteRequestDto cathedrals, UserCredentialsHeaderDto credentials);
+        Task DeleteAllCathedrals(UserCredentialsHeaderDto credentials);
     }
 }

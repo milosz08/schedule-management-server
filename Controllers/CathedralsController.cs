@@ -56,5 +56,41 @@ namespace asp_net_po_schedule_management_server.Controllers
             return StatusCode((int) HttpStatusCode.OK, _service
                 .GetAllCathedralsBasedDepartmentName(cathQuery, deptQuery));
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_CATHEDRALS_SCHEDULE)]
+        public ActionResult<List<NameWithDbIdElement>> GetAllCathedralsScheduleBaseDept(long deptId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service.GetAllCathedralsScheduleBaseDept(deptId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_ALL_CATHEDRALS_PAGINATION)]
+        public ActionResult<UserResponseDto> GetCathedrals([FromQuery] SearchQueryRequestDto searchSearchQuery)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service.GetAllCathedrals(searchSearchQuery));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
+        public async Task<ActionResult> DeleteMassiveCathedrals([FromBody] MassiveDeleteRequestDto deleteCathedrals)
+        {
+            await _service.DeleteMassiveCathedrals(deleteCathedrals, _helper
+                .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpDelete(ApiEndpoints.DELETE_ALL)]
+        public async Task<ActionResult> DeleteAllCathedrals()
+        {
+            await _service.DeleteAllCathedrals(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            return StatusCode((int) HttpStatusCode.NoContent);
+        }
     }
 }
