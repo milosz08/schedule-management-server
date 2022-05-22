@@ -71,9 +71,11 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SPECS_SCHEDULE)]
-        public async Task<ActionResult<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept([FromQuery] long deptId)
+        public async Task<ActionResult<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(
+            [FromQuery] long deptId,
+            [FromQuery] long degreeId)
         {
-            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllStudySpecsScheduleBaseDept(deptId));
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllStudySpecsScheduleBaseDept(deptId, degreeId));
         }
 
         //--------------------------------------------------------------------------------------------------------------

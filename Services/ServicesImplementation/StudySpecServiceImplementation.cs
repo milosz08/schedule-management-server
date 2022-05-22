@@ -205,12 +205,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// dla punktu końcowego niechronionego, przy wyświetlaniu planu.
         /// </summary>
         /// <returns>wszystkie znalezione kierunki studiów</returns>
-        public async Task<List<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(long deptId)
+        public async Task<List<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(long deptId, long degreeId)
         {
             List<StudySpecialization> studySpecsBaseDept = await _context.StudySpecializations
                 .Include(s => s.Department)
                 .Include(s => s.StudyType)
-                .Where(s => s.Department.Id == deptId)
+                .Include(s => s.StudyDegree)
+                .Where(s => s.Department.Id == deptId && s.StudyDegree.Id == degreeId)
                 .ToListAsync();
             studySpecsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
             return studySpecsBaseDept.Select(d => new NameWithDbIdElement(d.Id, $"{d.Name} ({d.StudyType.Alias})")).ToList();
