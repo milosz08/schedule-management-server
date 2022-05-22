@@ -8,8 +8,9 @@ namespace asp_net_po_schedule_management_server.Services
 {
     public interface IUsersService
     {
-        PaginationResponseDto<UserResponseDto> GetAllUsers(UserQueryRequestDto query);
-        Task DeleteMassiveUsers(MassiveDeleteRequestDto deleteUsers, UserCredentialsHeaderDto credentials);
+        PaginationResponseDto<UserResponseDto> GetAllUsers(SearchQueryRequestDto searchQuery);
+        List<NameWithDbIdElement> GetAllEmployeersScheduleBaseCath(long deptId, long cathId);
+        Task DeleteMassiveUsers(MassiveDeleteRequestDto users, UserCredentialsHeaderDto credentials);
         Task DeleteAllUsers(UserCredentialsHeaderDto credentials);
     }
 }

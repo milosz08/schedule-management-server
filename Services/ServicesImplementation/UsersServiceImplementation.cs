@@ -67,7 +67,34 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .PaginationAndAdditionalFiltering(usersBaseQuery, searchQuery));
             
             return new PaginationResponseDto<UserResponseDto>(
-                allUsers, usersBaseQuery.Count(), query.PageSize, query.PageNumber);
+                allUsers, usersBaseQuery.Count(), searchQuery.PageSize, searchQuery.PageNumber);
+        }
+        
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get all employeers base cathedral database id
+
+        /// <summary>
+        /// Metoda zwracająca wszystkich pracowników (wszystcy użytkownicy oprócz studentów) na podstawie wybranego
+        /// wydziału oraz katedry.
+        /// </summary>
+        /// <param name="deptId">id wydziału</param>
+        /// <param name="cathId">id katedry</param>
+        /// <returns>przefiltrowane oraz posortowane wyniki w postaci listy pracowników</returns>
+        public List<NameWithDbIdElement> GetAllEmployeersScheduleBaseCath(long deptId, long cathId)
+        {
+            List<Person> allUsersWithoutStudents = _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Department)
+                .Include(p => p.Cathedral)
+                .Where(p => p.Department.Id == deptId && p.Cathedral.Id == cathId &&
+                            p.Role.Name.ToLower() != AvailableRoles.STUDENT.ToLower()).ToList();
+            
+            allUsersWithoutStudents
+                .Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
+            return allUsersWithoutStudents.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
         }
         
         #endregion
