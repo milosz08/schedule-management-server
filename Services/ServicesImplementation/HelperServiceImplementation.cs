@@ -94,9 +94,72 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
         
+        #region Get available study degrees base study specializations in selected department
+
+        /// <summary>
+        /// Metoda zwracająca przefiltrowaną listę pozimów studiów (I lub II stopnia) na podstawie id wydziału
+        /// przekazywanego w parametrach zapytania.
+        /// </summary>
+        /// <param name="deptId">id wydziału w bazie danych</param>
+        /// <returns>lista przefiltrowanych poziomów studiów (usuwane duplikaty)</returns>
+        public async Task<List<NameWithDbIdElement>> GetAvailableStudyDegreeBaseAllSpecs(long deptId)
+        {
+            List<StudyDegree> findAllDegreesBaseAllSpecs = await _context.StudySpecializations
+                .Include(s => s.StudyDegree)
+                .Include(s => s.Department)
+                .Where(s => s.Department.Id == deptId)
+                .Select(r => r.StudyDegree)
+                .ToListAsync();
+            
+            // usuwanie duplikatów i sortowanie
+            List<StudyDegree> removeDuplicates = findAllDegreesBaseAllSpecs.Distinct().ToList();
+            removeDuplicates
+                .Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.OrdinalIgnoreCase));
+            
+            // wypłaszczanie i mapowanie na obiekt transferowy
+            return removeDuplicates.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+        }
+
+        #endregion
+
         //--------------------------------------------------------------------------------------------------------------
 
+        #region Get available semesters base study groups in selected study specializations
+        
+        /// <summary>
+        /// Metoda zwracająca przefiltrowaną listę semestrów na podstawie id wydziału i id kierunku studiów
+        /// przekazywanych w parametrach zapytania.
+        /// </summary>
+        /// <param name="deptId">id wydziału w bazie danych</param>
+        /// <param name="studySpecId">id kierunku studiów w bazie danych</param>
+        /// <returns>lista przefiltrowanych semestrów (usuwane duplikaty)</returns>
+        public async Task<List<NameWithDbIdElement>> GetAvailableSemBaseStudyGroups(
+            long deptId, long studySpecId)
+        {
+            List<Semester> findAllSemestersBaseSpec = await _context.StudyGroups
+                .Include(g => g.StudySpecialization)
+                .Include(g => g.Department)
+                .Include(g => g.Semester)
+                .Where(g => g.StudySpecialization.Id == studySpecId && g.Department.Id == deptId)
+                .Select(g => g.Semester)
+                .ToListAsync();
+            
+            // usuwanie duplikatów i sortowanie
+            List<Semester> removeDuplicates = findAllSemestersBaseSpec.Distinct().ToList();
+            removeDuplicates
+                .Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.OrdinalIgnoreCase));
+            
+            // wypłaszczanie i mapowanie na obiekt transferowy
+            return removeDuplicates.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+        }
+        
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Get available study specializations base department name
 
         /// <summary>

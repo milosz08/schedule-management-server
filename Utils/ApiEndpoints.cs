@@ -39,6 +39,8 @@
         public const string GET_AVAILABLE_STUDY_SPECS_BASE_DEPT = "available-study-specs-base-dept";
         public const string GET_AVAILABLE_ROLES = "available-roles";
         public const string GET_AVAILABLE_SEMESTERS = "available-semesters";
+        public const string GET_AVAILABLE_SEM_BASE_STUDY_GROUP = "available-sem-base-study-group";
+        public const string GET_AVAILABLE_DEGREES_BASE_STUDY_SPEC = "available-degrees-base-study-spec";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -83,6 +85,7 @@
         // kontroler StudyGroupController
         public const string ADD_STUDY_GROUP = "add-study-group";
         public const string GET_ALL_STUDY_GROUPS_PAGINATION = "all-study-groups";
+        public const string GET_AVAILABLE_GROUPS_BASE_SPEC_AND_SEM_SCHEDULE = "available-groups-base-study-spec-and-sem";
         
         //--------------------------------------------------------------------------------------------------------------
         

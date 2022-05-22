@@ -94,7 +94,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             
             allUsersWithoutStudents
                 .Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
-            return allUsersWithoutStudents.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+            return allUsersWithoutStudents.Select(d => new NameWithDbIdElement(d.Id, $"{d.Surname} {d.Name}")).ToList();
         }
         
         #endregion

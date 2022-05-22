@@ -10,6 +10,7 @@ namespace asp_net_po_schedule_management_server.Services
     {
         Task<List<CreateStudyGroupResponseDto>> CreateStudyGroup(CreateStudyGroupRequestDto dto);
         PaginationResponseDto<StudyGroupQueryResponseDto> GetAllStudyGroups(SearchQueryRequestDto searchQuery);
+        Task<List<NameWithDbIdElement>> GetAvailableGroupsBaseStudySpecAndSem(long studySpecId, long semId);
         Task DeleteMassiveStudyGroups(MassiveDeleteRequestDto studyGroups, UserCredentialsHeaderDto credentials);
         Task DeleteAllStudyGroups(UserCredentialsHeaderDto credentials);
     }

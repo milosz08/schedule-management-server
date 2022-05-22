@@ -158,7 +158,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Where(r => r.Department.Id == deptId && r.Cathedral.Id == cathId)
                 .ToListAsync();
             studyRoomBaseDeptAndCath.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
-            return studyRoomBaseDeptAndCath.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+            return studyRoomBaseDeptAndCath.Select(d => new NameWithDbIdElement(d.Id, d.Name)).ToList();
         }
 
         #endregion
