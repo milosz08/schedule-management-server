@@ -1,17 +1,16 @@
-﻿using System.IO;
-using System.Net;
+﻿using System;
+
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
-using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Exceptions;
 
 
@@ -36,6 +35,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
         #region Mocked data files
 
         private const string _studyRoomsTypes = "study-room.mocked.json";
+        private const string _studyTypes = "study-types.mocked.json";
+        private const string _departments = "departments.mocked.json";
+        private const string _cathedrals = "cathedrals.mocked.json";
+        private const string _studyDegrees = "study-degrees.mocked.json";
+        private const string _roles = "roles.mocked.json";
+        private const string _semesters = "semesters.mocked.json";
+
+        #endregion
 
         //--------------------------------------------------------------------------------------------------------------
         
@@ -55,14 +62,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public async Task Seed()
         {
             if (_context.Database.CanConnect()) {
-                // wywoływane jeśli przy migracji nie ma żadnych elementów w encji "roles" (auto-seedowanie)
-                if (!_context.Roles.Any()) {
-                    await _context.Roles.AddRangeAsync(InsertRoles());
-                    await _context.SaveChangesAsync();
-                }
+                await InsertAllRoles();
+                await InsertAllSemesters();
+                await InsertInitialDepartment();
+                await InsertInitialCathedral();
                 await InsertDefaultAdminData();
                 await InsertDefaultStudyTypes();
                 await InsertStudyRoomsTypes();
+                await InsertStudyDegreesTypes();
             }
         }
 
@@ -71,30 +78,53 @@ namespace asp_net_po_schedule_management_server.DbConfig
         #region Seeders
 
         /// <summary>
-        /// Umieszczanie wszystkich możliwych ról (na podstawie enuma) w liście.
+        /// Umieszczanie początkowego wydziału (na podstawie wartości w pliku json).
         /// </summary>
-        /// <returns>wszystkie możliwe role jakie znajdują się w enumie</returns>
-        private IEnumerable<Role> InsertRoles()
+        private async Task InsertInitialDepartment()
         {
-            List<Role> allRoles = new List<Role>();
-            IEnumerable<string> possibleRoles = System.Enum.GetNames(typeof(AvailableRoles));
-            foreach (var singleRole in possibleRoles) {
-                allRoles.Add(new Role() { Name = singleRole });
+            if (!_context.Departments.Any()) {
+                List<Department> initialDepartments = ApplicationUtils
+                    .ConvertJsonToList<Department>(_departments, _hostingEnvironment);
+                initialDepartments[0].IfRemovable = false;
+                await _context.Departments.AddAsync(initialDepartments[0]);
+                await _context.SaveChangesAsync();
             }
-            return allRoles;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Umieszczanie początkowej katedry i przypisanie do wcześniej stworzonego wydziału (na podstawie wartości
+        /// w pliku json).
+        /// </summary>
+        private async Task InsertInitialCathedral()
+        {
+            if (!_context.Cathedrals.Any()) {
+                List<Cathedral> initialCathedrals = ApplicationUtils
+                    .ConvertJsonToList<Cathedral>(_cathedrals, _hostingEnvironment);
+                initialCathedrals[0].DepartmentId = _context.Departments.First().Id;
+                initialCathedrals[0].IfRemovable = false;
+                await _context.Cathedrals.AddAsync(initialCathedrals[0]);
+                await _context.SaveChangesAsync();
+            }
         }
         
         //--------------------------------------------------------------------------------------------------------------
         
         /// <summary>
         /// Dodawanie domyślnego użytkownika (jako administratora systemu, jeśli nie ma w tabeli na
-        /// podstawie pliku appsettings.json).
+        /// podstawie pliku appsettings.json). Przypisuje mu również domyślny wydział wraz z katedrą.
         /// </summary>
         private async Task InsertDefaultAdminData()
         {
             // dodaj domyślnego użytkownika (dane podane w pliku appsettings.json)
             Person findPerson = await _context.Persons
                 .FirstOrDefaultAsync(p => p.Name == _name && p.Surname == _surname);
+            List<Cathedral> initialCathedrals = ApplicationUtils
+                .ConvertJsonToList<Cathedral>(_cathedrals, _hostingEnvironment);
+            Cathedral findCathedral = await _context.Cathedrals
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(c => c.Name.Equals(initialCathedrals[0].Name, StringComparison.OrdinalIgnoreCase));
             if (findPerson == null) {
                 await _authService.UserRegister(new RegisterNewUserRequestDto()
                 {
@@ -103,7 +133,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     Nationality = "Polska",
                     City = "Gliwice",
                     IfRemovable = false,
-                    Role = AvailableRoles.ADMINISTRATOR.ToString()
+                    Role = AvailableRoles.ADMINISTRATOR,
+                    DepartmentName = findCathedral.Department.Name,
+                    CathedralName = findCathedral.Name,
                 }, GlobalConfigurer.InitialCredentials.AccountPassword);
             }
         }
@@ -116,20 +148,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
         private async Task InsertDefaultStudyTypes()
         {
             if (!_context.StudyTypes.Any()) {
-                StudyType[] studyType = new StudyType[]
-                {
-                    new StudyType()
-                    {
-                        Name = "stacjonarne",
-                        Alias = "ST",
-                    },
-                    new StudyType()
-                    {
-                        Name = "niestacjonarne",
-                        Alias = "NS/Z",
-                    },
-                };
-                await _context.StudyTypes.AddRangeAsync(studyType);
+                await _context.StudyTypes.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<StudyType>(_studyTypes, _hostingEnvironment));
                 await _context.SaveChangesAsync();
             }
         }
@@ -137,24 +157,61 @@ namespace asp_net_po_schedule_management_server.DbConfig
         //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 
+        /// Umieszczanie wszystkich typów sal zajęciowych (pobierane z zamockowanych danych w formacie json).
         /// </summary>
         /// <exception cref="BasicServerException"></exception>
         private async Task InsertStudyRoomsTypes()
         {
             if (!_context.RoomTypes.Any()) {
-                string roomTypesPath = Path.Combine(_hostingEnvironment.WebRootPath, "cdn/mocked", _studyRoomsTypes);
-                string jsonString = File.ReadAllText(roomTypesPath);
-                List<RoomType> allRoomTypes = JsonSerializer.Deserialize<List<RoomType>>(jsonString);
-                if (allRoomTypes == null || allRoomTypes.Count < 0) {
-                    throw new BasicServerException($"Nieprawidłowy format pliku json: {_studyRoomsTypes}",
-                        HttpStatusCode.InternalServerError);
-                }
-                await _context.RoomTypes.AddRangeAsync(allRoomTypes);
+                await _context.RoomTypes.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<RoomType>(_studyRoomsTypes, _hostingEnvironment));
+                await _context.SaveChangesAsync();
+            }
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Umieszczanie wszystkich stopni studiów (pobierane z zamockowanych danych w formacie json).
+        /// </summary>
+        /// <exception cref="BasicServerException"></exception>
+        private async Task InsertStudyDegreesTypes()
+        {
+            if (!_context.StudyDegrees.Any()) {
+                await _context.StudyDegrees.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<StudyDegree>(_studyDegrees, _hostingEnvironment));
                 await _context.SaveChangesAsync();
             }
         }
 
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Umieszczanie wszystkich ról w systemie (pobierane z zamockowanych danych w formacie json).
+        /// </summary>
+        private async Task InsertAllRoles()
+        {
+            if (!_context.Roles.Any()) {
+                await _context.Roles.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<Role>(_roles, _hostingEnvironment));
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Umieszczanie wszystkich semstrów (pobierane z zamockowanych danych w formacie json).
+        /// </summary>
+        private async Task InsertAllSemesters()
+        {
+            if (!_context.Semesters.Any()) {
+                await _context.Semesters.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<Semester>(_semesters, _hostingEnvironment));
+                await _context.SaveChangesAsync();
+            }
+        }
+        
         #endregion
     }
 }

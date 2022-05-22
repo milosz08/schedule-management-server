@@ -1,0 +1,10 @@
+﻿[
+    {
+        "Name": "stacjonarne",
+        "Alias": "ST"
+    },
+    {
+        "Name": "niestacjonarne",
+        "Alias": "NS/Z"
+    }
+]
