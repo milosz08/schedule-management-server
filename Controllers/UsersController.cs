@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -48,8 +47,19 @@ namespace asp_net_po_schedule_management_server.Controllers
         }
         
         //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_EMPLOYEERS_SCHEDULE)]
+        public ActionResult<List<NameWithDbIdElement>> GetAllEmployeersScheduleBaseCath(
+            [FromQuery] long deptId,
+            [FromQuery] long cathId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, _service.GetAllEmployeersScheduleBaseCath(deptId, cathId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
 
-        [HttpDelete(ApiEndpoints.DELETE_MASSIVE_USERS)]
+        [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveUsers([FromBody] MassiveDeleteRequestDto deleteUsers)
         {
             await _service.DeleteMassiveUsers(deleteUsers, _helper
