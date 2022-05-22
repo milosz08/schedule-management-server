@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,25 @@ namespace asp_net_po_schedule_management_server.Controllers
             [FromQuery] string deptName)
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_DEGREES_BASE_STUDY_SPEC)]
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAvailableDegreesBaseStudySpec(
+            [FromQuery] long deptId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudyDegreeBaseAllSpecs(deptId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_SEM_BASE_STUDY_GROUP)]
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAvailableSemBaseStudyGroup(
+            [FromQuery] long deptId,
+            [FromQuery] long studySpecId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSemBaseStudyGroups(deptId, studySpecId));
         }
 
         //--------------------------------------------------------------------------------------------------------------
