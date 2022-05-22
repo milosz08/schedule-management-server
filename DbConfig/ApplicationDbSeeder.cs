@@ -17,22 +17,29 @@ using asp_net_po_schedule_management_server.Exceptions;
 
 namespace asp_net_po_schedule_management_server.DbConfig
 {
+    /// <summary>
+    /// Klasa odpowiadająca za wstawianie początkowych wartości do bazy danych (seedowanie). Wartości te są pobierane
+    /// z zamockowanych danych w formacie JSON, odpowiednio deserializowane na obiekty i mapowane obiektowo-relacyjnie
+    /// przez Entity Framework, po czym są wstawiane do bazy danych.
+    /// </summary>
     public sealed class ApplicationDbSeeder
     {
         private readonly IAuthService _authService;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
+        //--------------------------------------------------------------------------------------------------------------
+        
         private readonly string _name = GlobalConfigurer.InitialCredentials.AccountName;
         private readonly string _surname = GlobalConfigurer.InitialCredentials.AccountSurname;
+
+        #region Mocked data files
 
         private const string _studyRoomsTypes = "study-room.mocked.json";
 
         //--------------------------------------------------------------------------------------------------------------
         
-        public ApplicationDbSeeder(
-            ApplicationDbContext context,
-            IAuthService authService,
+        public ApplicationDbSeeder(ApplicationDbContext context, IAuthService authService,
             IWebHostEnvironment hostingEnvironment)
         {
             _context = context;

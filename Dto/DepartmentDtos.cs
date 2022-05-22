@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace asp_net_po_schedule_management_server.Dto.RequestResponseMerged
+namespace asp_net_po_schedule_management_server.Dto
 {
-    public sealed class CreateDepartmentRequestResponseDto
+    public class DepartmentRequestResponseDto
     {
         [Required(ErrorMessage = "Pole nazwy wydziału nie może być puste")]
         public string Name { get; set; }

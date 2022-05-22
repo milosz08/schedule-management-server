@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -7,17 +8,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.CustomDecorators;
 
-using asp_net_po_schedule_management_server.Dto.Requests;
-using asp_net_po_schedule_management_server.Dto.Responses;
-
 
 namespace asp_net_po_schedule_management_server.Controllers
 {
+    /// <summary>
+    /// Kontroler restowy przechowujący akcję dla autentykacji użytkowników. Składa się na to logowanie, rejestrowanie,
+    /// odświeżanie JWT oraz reset i zmiana hasła poprzez usługę SMTP.
+    /// </summary>
     [ApiController]
     [Route("/api/v1/dotnet/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

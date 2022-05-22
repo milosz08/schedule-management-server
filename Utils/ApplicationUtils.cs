@@ -4,6 +4,9 @@ using System.Text;
 
 namespace asp_net_po_schedule_management_server.Utils
 {
+    /// <summary>
+    /// Klasa przechowująca metody pomocnicze w serwisach oraz innych klasach aplikacji.
+    /// </summary>
     public static class ApplicationUtils
     {
         private static readonly string RANDOM_CHARS = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUWXYZ0123456789";
@@ -76,7 +79,7 @@ namespace asp_net_po_schedule_management_server.Utils
         //--------------------------------------------------------------------------------------------------------------
         
         /// <summary>
-        /// Metoda zmieniajca wszystkie znaki diakretyczne języka polskiego na odpowiedniki w języku angielskim.
+        /// Metoda zmieniajca wszystkie znaki diakrytyczne języka polskiego na odpowiedniki w języku angielskim.
         /// </summary>
         /// <param name="text">ciąg pierwotny</param>
         /// <returns>ciąg wynikowy bez znaków diakrytycznych</returns>

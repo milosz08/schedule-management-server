@@ -15,8 +15,6 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
         /// <summary>
         /// Separacja serwisów odpowiedzialnych za tokeny JWT i obsługę formatu JSON.
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
         public static IServiceCollection AddJwtJsonServiceCollection(this IServiceCollection services)
         {
             services.AddControllers()

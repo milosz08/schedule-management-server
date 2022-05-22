@@ -38,12 +38,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        public AuthServiceImplementation(
-            IMapper mapper,
-            ApplicationDbContext context,
-            ISshEmailService emailService,
-            IJwtAuthenticationManager manager,
-            ISmtpEmailService smtpEmailService,
+        public AuthServiceImplementation(IMapper mapper, ServiceHelper helper, ApplicationDbContext context,
+            ISshEmailService emailService, IJwtAuthenticationManager manager, ISmtpEmailService smtpEmailService,
             IPasswordHasher<Person> passwordHasher)
         {
             _mapper = mapper;
@@ -61,7 +57,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <summary>
         /// Metoda odpowiadająca za zalogowanie użytkownika (jeśli login niepoprawny, rzuci wyjątek).
         /// </summary>
-        /// <param name="user">r</param>
+        /// <param name="user">obiekt transferowy z danymi logowania</param>
         /// <returns>zwraca odpowiedni status zalogowania lub status błędu (brak autoryzacji)</returns>
         /// <exception cref="BasicServerException">w przypadku braku znalezienia zasobu / dozwolonej operacji</exception>
         public async Task<LoginResponseDto> UserLogin(LoginRequestDto user)

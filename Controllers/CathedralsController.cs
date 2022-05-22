@@ -16,6 +16,11 @@ using asp_net_po_schedule_management_server.Dto.RequestResponseMerged;
 
 namespace asp_net_po_schedule_management_server.Controllers
 {
+    /// <summary>
+    /// Kontroler przechowujący akcje do zarządzania encją katedr w systemie. Umożliwia stworzenie katedry, pobranie
+    /// wszystkich wyników oraz zaawanowaną filtrację wyników i paginację, pobieranie katedr konkretnych wydziałów,
+    /// pobieranie katedr wydziałów i dodatkowe filtrowanie oraz standardowe metody usuwające zawartość z bazy danych.
+    /// </summary>
     [ApiController]
     [Route("/api/v1/dotnet/[controller]")]
     [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
@@ -26,7 +31,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
-        public CathedralsController(ICathedralService service)
+        public CathedralsController(ICathedralService service, ServiceHelper helper)
         {
             _service = service;
         }

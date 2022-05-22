@@ -1,27 +1,23 @@
 ﻿using System.Collections.Generic;
 
+
 namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
 {
+    /// <summary>
+    /// Klasa przechowująca parametry wysyłanej wiadomości email.
+    /// </summary>
     public class UserEmailOptions
     {
-        /// <summary>
-        /// Lista adresów email do jakich system wyśle emaile.
-        /// </summary>
+        // Lista adresów email do jakich system wyśle emaile.
         public List<string> ToEmails { get; set; }
         
-        /// <summary>
-        /// Tytuł emailu.
-        /// </summary>
+        // Tytuł emailu.
         public string Subject { get; set; }
         
-        /// <summary>
-        /// Ciało emailu (szablon HTML).
-        /// </summary>
+        // Ciało emailu (szablon HTML).
         public string Body { get; set; }
         
-        /// <summary>
-        /// Literały szablonowe zastępowane przez zmienne.
-        /// </summary>
+        // Literały szablonowe zastępowane przez zmienne.
         public List<KeyValuePair<string, string>> Placeholders { get; set; }
     }
 }

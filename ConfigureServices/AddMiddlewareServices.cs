@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
-using FluentValidation;
 
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Middleware;
-using asp_net_po_schedule_management_server.Dto.Requests;
 using asp_net_po_schedule_management_server.Dto.Validators;
 
 
@@ -15,9 +15,6 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
         /// <summary>
         /// Separacja serwisów odpowiedzialnych za usługi middleware.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="assembly"></param>
-        /// <returns></returns>
         public static IServiceCollection AddMiddlewareServicesCollection(
             this IServiceCollection services, Assembly assembly)
         {
@@ -27,7 +24,7 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             services.AddAutoMapper(assembly);
             
             // strefa dodawania walidatorów modeli DTO
-            services.AddScoped<IValidator<UserQueryRequestDto>, UserQueryValidator>();
+            services.AddScoped<IValidator<SearchQueryRequestDto>, UserQueryValidator>();
             
             return services;
         }

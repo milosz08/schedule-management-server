@@ -1,38 +1,41 @@
 ﻿using System.Linq;
 using System.Net;
-using System.Security.Claims;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Services;
 using asp_net_po_schedule_management_server.Entities;
+using asp_net_po_schedule_management_server.Services.Helpers;
 using asp_net_po_schedule_management_server.CustomDecorators;
-using asp_net_po_schedule_management_server.Exceptions;
-
-using asp_net_po_schedule_management_server.Dto.Misc;
-using asp_net_po_schedule_management_server.Dto.Requests;
-using asp_net_po_schedule_management_server.Dto.Responses;
 
 
 namespace asp_net_po_schedule_management_server.Controllers
 {
+    /// <summary>
+    /// Kontroler przechowujący akcje do zarządzania encją użytkowników w systemie. Umożliwia pobranie wszystkich
+    /// użytkowników systemu oraz zaawanowaną filtrację wyników i paginację, pobieranie użytkowników na podstawie
+    /// wybranej roli i dodatkowe filtrowanie (po nazwie) oraz standardowe metody usuwające zawartość z bazy danych.
+    /// </summary>
     [ApiController]
     [Route("/api/v1/dotnet/[controller]")]
     [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class UsersController : ControllerBase
+    public sealed class UsersController : ControllerBase
     {
+        private readonly ServiceHelper _helper;
         private readonly IUsersService _service;
-        
+
         //--------------------------------------------------------------------------------------------------------------
         
-        public UsersController(IUsersService service)
+        public UsersController(ServiceHelper helper, IUsersService service)
         {
+            _helper = helper;
             _service = service;
         }
         

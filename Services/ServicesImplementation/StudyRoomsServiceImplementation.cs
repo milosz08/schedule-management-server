@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
+
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 
 using System.Net;
 using System.Threading.Tasks;
@@ -8,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Exceptions;
-using asp_net_po_schedule_management_server.Dto.RequestResponseMerged;
+using asp_net_po_schedule_management_server.Services.Helpers;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -16,14 +21,16 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
     public sealed class StudyRoomsServiceImplementation : IStudyRoomsService
     {
         private readonly IMapper _mapper;
+        private readonly ServiceHelper _helper;
         private readonly ApplicationDbContext _context;
 
         //--------------------------------------------------------------------------------------------------------------
 
-        public StudyRoomsServiceImplementation(ApplicationDbContext context, IMapper mapper)
+        public StudyRoomsServiceImplementation(ServiceHelper helper, ApplicationDbContext context, IMapper mapper)
         {
-            _context = context;
+            _helper = helper;
             _mapper = mapper;
+            _context = context;
         }
 
         //--------------------------------------------------------------------------------------------------------------
@@ -42,34 +49,32 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         public async Task<CreateStudyRoomResponseDto> CreateStudyRoom(CreateStudyRoomRequestDto dto)
         {
             //wyszukanie wydziału pasującego do katedry, jeśli nie znajdzie wyrzuci wyjątek
-            Department findDepartment = await _context.Departments
-                .FirstOrDefaultAsync(d => d.Name.ToLower() == dto.DepartmentName.ToLower());
-            if (findDepartment == null) {
-                throw new BasicServerException("Nie znaleziono wydziału z podaną nazwą", HttpStatusCode.NotFound);
-            }
-
-            //wyszukanie katedry pasującego do wyniku wyszukiwania, jeśli nie znajdzie wyrzuci wyjątek
             Cathedral findCathedral = await _context.Cathedrals
-                .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.CathedralName.ToLower());
+                .Include(c => c.Department)
+                .AsSingleQuery()
+                .FirstOrDefaultAsync(c => c.Name.Equals(dto.CathedralName, StringComparison.OrdinalIgnoreCase)
+                                          && c.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
             if (findCathedral == null) {
-                throw new BasicServerException("Nie znaleziono katedry z podaną nazwą.", HttpStatusCode.NotFound);
+                throw new BasicServerException("Nie znaleziono wydziału/katedry z podaną nazwą", HttpStatusCode.NotFound);
             }
-
+            
             //wyszukanie katedry pasującego do wyniku wyszukiwania, jeśli nie znajdzie wyrzuci wyjątek
             RoomType findRoomType = await _context.RoomTypes
-                .FirstOrDefaultAsync(r => r.Alias.ToLower() == dto.RoomType.ToLower());
+                .FirstOrDefaultAsync(r => string
+                    .Equals(r.Name + " (" + r.Alias + ")", dto.RoomTypeName, StringComparison.OrdinalIgnoreCase));
             if (findRoomType == null) {
                 throw new BasicServerException("Nie znaleziono typu sali z podanym aliasem.", HttpStatusCode.NotFound);
             }
 
+            // przy próbie dodania duplikatu, wyrzuć wyjątek
             StudyRoom findExistingRoom = await _context.StudyRooms
                 .Include(r => r.Department)
                 .Include(r => r.Cathedral)
                 .Include(r => r.RoomType)
-                .FirstOrDefaultAsync(r => r.Name.ToLower() == dto.Name.ToLower()
-                                          && r.Department.Name.ToLower() == dto.DepartmentName.ToLower()
-                                          && r.Cathedral.Name.ToLower() == dto.CathedralName.ToLower());
-
+                .FirstOrDefaultAsync(r => r.Name.Equals(dto.Name, StringComparison.OrdinalIgnoreCase) &&
+                                          r.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase) &&
+                                          r.Cathedral.Name.Equals(dto.CathedralName, StringComparison.OrdinalIgnoreCase));
+            
             if (findExistingRoom != null) {
                 throw new BasicServerException("Podana sala istnieje już w wybranej jednostce",
                     HttpStatusCode.ExpectationFailed);
@@ -81,7 +86,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 Description = dto.Description,
                 Capacity = dto.Capacity,
                 CathedralId = findCathedral.Id,
-                DepartmentId = findDepartment.Id,
+                DepartmentId = findCathedral.Department.Id,
                 RoomTypeId = findRoomType.Id,
             };
 

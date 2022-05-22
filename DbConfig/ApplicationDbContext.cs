@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,12 +41,15 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
         
-        public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options,
-            IConfiguration configuration) : base(options) {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
+            : base(options) {
             _configuration = configuration;
         }
+
+        //--------------------------------------------------------------------------------------------------------------
         
+        #region MySequel invokers
+
         //--------------------------------------------------------------------------------------------------------------
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -79,7 +83,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
 
         //--------------------------------------------------------------------------------------------------------------
 
-        #region Sequel injectors
+        #region MySequel injectors
 
         /// <summary>
         /// Autmatyczne wstawianie pól bazowych dla każdej tabeli (data stworzenia oraz aktualizacji).

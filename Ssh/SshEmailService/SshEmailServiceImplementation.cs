@@ -4,6 +4,9 @@ using asp_net_po_schedule_management_server.Ssh.SshInterceptor;
 
 namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
 {
+    /// <summary>
+    /// Klasa odpowiedzialna za wykonywanie komend serwera do tworzenia/usuwania skrzynek email.
+    /// </summary>
     public sealed class SshEmailServiceImplementation : ISshEmailService
     {
         private readonly ISshInterceptor _sshInterceptor;
