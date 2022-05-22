@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +13,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 using asp_net_po_schedule_management_server.Jwt;
+using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Exceptions;
-
-using asp_net_po_schedule_management_server.Dto.Requests;
-using asp_net_po_schedule_management_server.Dto.Responses;
-
+using asp_net_po_schedule_management_server.Services.Helpers;
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
 using asp_net_po_schedule_management_server.Ssh.SmtpEmailService;
 
@@ -30,6 +28,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
     public sealed class AuthServiceImplementation : IAuthService
     {
         private readonly IMapper _mapper;
+        private readonly ServiceHelper _helper;
         private readonly ApplicationDbContext _context;
         private readonly ISshEmailService _emailService;
         private readonly IJwtAuthenticationManager _manager;
@@ -43,6 +42,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             IPasswordHasher<Person> passwordHasher)
         {
             _mapper = mapper;
+            _helper = helper;
             _context = context;
             _manager = manager;
             _emailService = emailService;
@@ -169,26 +169,16 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <returns>informacje o zarejestrowanym użytkowniku</returns>
         public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user, string customPassword)
         {
-            string nameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Name);
-            string surnameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Surname);
-            
-            string generatedShortcut = nameWithoutDiacritics.Substring(0, 3) + surnameWithoutDiacritics.Substring(0, 3);
-            string randomNumbers = ApplicationUtils.RandomNumberGenerator();
-            string generatedLogin = generatedShortcut.ToLower() + randomNumbers;
-            string generatedFirstPassword = ApplicationUtils.GenerateUserFirstPassword();
-            string generatedFirstEmailPassword = ApplicationUtils.GenerateUserFirstPassword();
-            string generatedEmail = $"{nameWithoutDiacritics.ToLower()}.{surnameWithoutDiacritics.ToLower()}" +
-                                    $"{randomNumbers}@{GlobalConfigurer.UserEmailDomain}";
-            
-            _emailService.AddNewEmailAccount(generatedEmail, generatedFirstEmailPassword);
+            RegisterUserGeneratedValues defValues = _helper.GenerateUserDetails(user);
+            _emailService.AddNewEmailAccount(defValues.Email, defValues.EmailPassword);
             
             Role findRoleId = await _context.Roles.FirstOrDefaultAsync(role => role.Name == user.Role);
             if (findRoleId == null) {
-                throw new BasicServerException("Podana rola nie istnieje w systemie", HttpStatusCode.NotFound);
+                throw new BasicServerException("Podana rola nie istnieje w systemie.", HttpStatusCode.NotFound);
             }
 
             if (customPassword != String.Empty) {
-                generatedFirstPassword = customPassword;
+                defValues.Password = customPassword;
             }
             
             Person newPerson = new Person()
@@ -197,13 +187,15 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 Surname = ApplicationUtils.CapitalisedLetter(user.Surname),
                 Nationality = ApplicationUtils.CapitalisedLetter(user.Nationality),
                 City = ApplicationUtils.CapitalisedLetter(user.City),
-                Shortcut = generatedShortcut,
-                Email = generatedEmail,
-                Login = generatedLogin,
-                Password = generatedFirstPassword,
-                EmailPassword = generatedFirstEmailPassword,
+                Shortcut = defValues.Shortcut,
+                Email = defValues.Email,
+                Login = defValues.Login,
+                Password = defValues.Password,
+                EmailPassword = defValues.EmailPassword,
                 RoleId = findRoleId.Id,
                 IfRemovable = user.IfRemovable,
+                DepartmentId = findDepartment.Id,
+                CathedralId = findCathedral == null ? null : findCathedral.Id,
             };
             
             newPerson.Password = _passwordHasher.HashPassword(newPerson, generatedFirstPassword);
@@ -220,7 +212,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     {
                         new KeyValuePair<string, string>("{{userName}}", $"{newPerson.Name} {newPerson.Surname}"),
                         new KeyValuePair<string, string>("{{login}}", newPerson.Login),
-                        new KeyValuePair<string, string>("{{password}}", generatedFirstPassword),
+                        new KeyValuePair<string, string>("{{password}}", defValues.Password),
                         new KeyValuePair<string, string>("{{role}}", newPerson.Role.Name),
                         new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
                         new KeyValuePair<string, string>("{{dictionaryHash}}", newPerson.DictionaryHash),

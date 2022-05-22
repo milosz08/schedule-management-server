@@ -41,8 +41,8 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
 
-        [HttpGet(ApiEndpoints.GET_ALL_USERS)]
-        public ActionResult<UserResponseDto> GetAllUsers([FromQuery] UserQueryRequestDto searchQuery)
+        [HttpGet(ApiEndpoints.GET_ALL_USERS_PAGINATION)]
+        public ActionResult<UserResponseDto> GetAllUsers([FromQuery] SearchQueryRequestDto searchQuery)
         {
             return StatusCode((int) HttpStatusCode.OK, _service.GetAllUsers(searchQuery));
         }
@@ -52,16 +52,17 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE_USERS)]
         public async Task<ActionResult> DeleteMassiveUsers([FromBody] MassiveDeleteRequestDto deleteUsers)
         {
-            await _service.DeleteMassiveUsers(deleteUsers, ExtractedUserCredentialsFromHeader());
+            await _service.DeleteMassiveUsers(deleteUsers, _helper
+                .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
 
         //--------------------------------------------------------------------------------------------------------------
 
-        [HttpDelete(ApiEndpoints.DELETE_ALL_USERS)]
+        [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllUsers()
         {
-            await _service.DeleteAllUsers(ExtractedUserCredentialsFromHeader());
+            await _service.DeleteAllUsers(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
     }
