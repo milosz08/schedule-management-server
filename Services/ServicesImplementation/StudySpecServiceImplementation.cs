@@ -213,7 +213,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Where(s => s.Department.Id == deptId)
                 .ToListAsync();
             studySpecsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
-            return studySpecsBaseDept.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+            return studySpecsBaseDept.Select(d => new NameWithDbIdElement(d.Id, $"{d.Name} ({d.StudyType.Alias})")).ToList();
         }
 
         #endregion
