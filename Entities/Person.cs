@@ -19,6 +19,7 @@ namespace asp_net_po_schedule_management_server.Entities
         [StringLength(50)]
         public string Surname { get; set; }
         
+        [Required]
         [Column("shortcut")]
         [StringLength(8)]
         public string Shortcut { get; set; }
@@ -28,9 +29,11 @@ namespace asp_net_po_schedule_management_server.Entities
         [StringLength(50)]
         public string Login { get; set; }
         
+        [Required]
         [Column("first-access")]
         public bool FirstAccess { get; set; } = true;
         
+        [Required]
         [Column("password")]
         [StringLength(500)]
         public string Password { get; set; }
@@ -44,19 +47,22 @@ namespace asp_net_po_schedule_management_server.Entities
         [Column("nationality")]
         [StringLength(100)]
         public string Nationality { get; set; }
-        
+
         [Required]
         [Column("city")]
         [StringLength(100)]
         public string City { get; set; }
         
         [Required]
+        [StringLength(20)]
         [Column("email-password")]
         public string EmailPassword { get; set; }
         
+        [Required]
         [Column("has-picture")]
         public bool HasPicture { get; set; }
         
+        [Required]
         [Column("if-removable")]
         public bool IfRemovable { get; set; } = true;
         

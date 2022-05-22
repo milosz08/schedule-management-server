@@ -9,14 +9,17 @@ namespace asp_net_po_schedule_management_server.Entities
     [Table("study-rooms")]
     public class StudyRoom : PrimaryKeyWithClientIdentifierInjection
     {
+        [Required]
         [StringLength(50)]
         [Column("study-room-name")]
         public string Name { get; set; }
         
+        [Required]
         [StringLength(150)]
         [Column("study-room-desc")]
         public string Description { get; set; }
         
+        [Required]
         [Column("study-room-capacity")]
         public int Capacity { get; set; }
         

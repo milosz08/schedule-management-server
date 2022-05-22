@@ -8,6 +8,8 @@ namespace asp_net_po_schedule_management_server.Entities
     [Table("jwt-tokens")]
     public class RefreshToken : PrimaryKeyEntityInjection
     {
+        [Required]
+        [StringLength(200)]
         [Column("token-value")]
         public string TokenValue { get; set; }
         

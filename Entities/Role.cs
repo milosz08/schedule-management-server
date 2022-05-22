@@ -9,6 +9,7 @@ namespace asp_net_po_schedule_management_server.Entities
     [Table("role")]
     public sealed class Role : PrimaryKeyWithClientIdentifierInjection
     {
+        [Required]
         [Column("name")]
         [MaxLength(50)]
         public string Name { get; set; }

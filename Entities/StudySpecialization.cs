@@ -10,10 +10,12 @@ namespace asp_net_po_schedule_management_server.Entities
     public class StudySpecialization : PrimaryKeyWithClientIdentifierInjection
     {
         [Required]
+        [StringLength(50)]
         [Column("study-spec-name")]
         public string Name { get; set; }
         
         [Required]
+        [StringLength(20)]
         [Column("study-spec-alias")]
         public string Alias { get; set; }
         
