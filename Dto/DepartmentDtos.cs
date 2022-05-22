@@ -11,4 +11,12 @@ namespace asp_net_po_schedule_management_server.Dto
         [Required(ErrorMessage = "Pole aliasu nazwy wydziału nie może być puste")]
         public string Alias { get; set; }
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    
+    public sealed class DepartmentQueryResponseDto : DepartmentRequestResponseDto
+    {
+        public long Id { get; set; }
+        public bool IfRemovable { get; set; }
+    }
 }
