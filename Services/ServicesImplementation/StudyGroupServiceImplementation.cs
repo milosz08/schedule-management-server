@@ -68,9 +68,16 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             }
 
             List<StudyGroup> createdAllStudyGrops = new List<StudyGroup>();
-            
-            for (int i = 0; i < dto.CountOfGroups; i++) { // stwórz tyle grup ile przesłano w zapytaniu
-                foreach (Semester semester in findAllSemesters) { // i przypisz do tylu semestrów ile w zapytaniu
+
+            foreach (Semester semester in findAllSemesters) { // przypisz do tylu semestrów ile w zapytaniu
+                List<StudyGroup> findAllAlreadyCreated = await _context.StudyGroups
+                    .Include(g => g.Semester)
+                    .Include(g => g.StudySpecialization)
+                    .Where(g => g.Semester.Id == semester.Id && g.StudySpecialization.Id == findStudySpec.Id)
+                    .ToListAsync();
+                
+                // stwórz tyle grup ile przesłano w zapytaniu (pomiń już istniejące)
+                for (int i = findAllAlreadyCreated.Count; i < dto.CountOfGroups + findAllAlreadyCreated.Count; i++) {
                     StudyGroup createdStudyGroup = new StudyGroup()
                     {
                         Name = $"{findStudySpec.StudyDegree.Alias} {findStudySpec.Alias} " +

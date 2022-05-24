@@ -24,7 +24,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
     /// </summary>
     public sealed class ApplicationDbContext : DbContext
     {
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         //--------------------------------------------------------------------------------------------------------------
         
