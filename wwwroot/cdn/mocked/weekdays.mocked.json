@@ -1,0 +1,37 @@
+﻿[
+    {
+        "Name": "poniedziałek",
+        "Alias": "pn",
+        "Number": 1
+    },
+    {
+        "Name": "wtorek",
+        "Alias": "wt",
+        "Number": 2
+    },
+    {
+        "Name": "środa",
+        "Alias": "śr",
+        "Number": 3
+    },
+    {
+        "Name": "czwartek",
+        "Alias": "czw",
+        "Number": 4
+    },
+    {
+        "Name": "piątek",
+        "Alias": "pt",
+        "Number": 5
+    },
+    {
+        "Name": "sobota",
+        "Alias": "sb",
+        "Number": 6
+    },
+    {
+        "Name": "niedziela",
+        "Alias": "nd",
+        "Number": 7
+    }
+]
