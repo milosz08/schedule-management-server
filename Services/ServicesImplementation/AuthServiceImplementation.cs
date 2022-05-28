@@ -64,6 +64,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         {
             Person findPerson = await _context.Persons
                 .Include(p => p.Role)
+                .Include(p => p.Department)
                 .FirstOrDefaultAsync(p => p.Login == user.Login || p.Email == user.Login);
 
             if (findPerson == null) {
@@ -97,7 +98,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             response.BearerToken = _manager.BearerHandlingService(findPerson);
             response.TokenExpirationDate = DateTime.UtcNow.Add(GlobalConfigurer.JwtExpiredTimestamp);
             response.RefreshBearerToken = bearerRefreshToken;
-            response.tokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds;
+            response.TokenRefreshInSeconds = GlobalConfigurer.JwtExpiredTimestamp.TotalSeconds;
+            response.ConnectedWithDepartment = findPerson.Department.Name;
             return response;
         }
         

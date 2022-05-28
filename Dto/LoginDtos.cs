@@ -27,5 +27,6 @@ namespace asp_net_po_schedule_management_server.Dto
         public double TokenRefreshInSeconds { get; set; }
         public bool FirstAccess { get; set; }
         public bool HasPicture { get; set; }
+        public string ConnectedWithDepartment { get; set; }
     }
 }
