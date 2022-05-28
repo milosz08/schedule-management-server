@@ -135,27 +135,27 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Get all study subjects base department
 
         /// <summary>
-        /// Metoda zwracająca wszystkie wyszukane przedmioty na podstawie parametrów zapytania (nazwy przedmiotu i nazwy
-        /// przypisanego do niego wydziału). W przypadku braku znalezienia wyniku, zwraca wszystkie elementy z tabeli.
+        /// Metoda zwracająca wszystkie wyszukane przedmioty na podstawie parametrów zapytania (nazwy przedmiotu i id
+        /// przypisanego do niego wydziału oraz kierunku studiów). W przypadku braku znalezienia wyniku, zwraca
+        /// wszystkie elementy z tabeli.
         /// </summary>
-        /// <param name="subjcQuery">nazwa przedmiotu</param>
-        /// <param name="deptQuery">nazwa wydziału</param>
+        /// <param name="subjcName">nazwa przedmiotu</param>
+        /// <param name="deptId">id wydziału</param>
+        /// <param name="studySpecId">id kierunku studiów</param>
         /// <returns>wszystkie elementy z tablicy/przefiltrowane wyniki</returns>
-        public SearchQueryResponseDto GetAllStudySubjectsBaseDept(string subjcQuery, string deptQuery)
+        public SearchQueryResponseDto GetAllStudySubjectsBaseDeptAndSpec(string subjcName, long deptId, long studySpecId)
         {
             // jeśli parametr jest nullem to przypisz wartość pustego stringa
-            if (deptQuery == null) {
-                deptQuery = string.Empty;
+            if (subjcName == null) {
+                subjcName = string.Empty;
             }
-            if (subjcQuery == null) {
-                subjcQuery = string.Empty;
-            }
-            
+
             // wyszukaj i wypłaszcz rezultat do tablicy stringów z nazwami katedr
             List<string> findAllSubjects = _context.StudySubjects
                 .Include(s => s.Department)
-                .Where(s => s.Department.Name.Equals(deptQuery, StringComparison.OrdinalIgnoreCase) &&
-                            s.Name.Contains(subjcQuery, StringComparison.OrdinalIgnoreCase))
+                .Include(s => s.StudySpecialization)
+                .Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId &&
+                            s.Name.Contains(subjcName, StringComparison.OrdinalIgnoreCase))
                 .Select(s => s.Name)
                 .ToList();
             findAllSubjects.Sort();
@@ -166,7 +166,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
             List<string> findAllElements = _context.StudySubjects
                 .Include(s => s.Department)
-                .Where(s => s.Department.Name.Equals(deptQuery, StringComparison.OrdinalIgnoreCase))
+                .Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId)
                 .Select(s => s.Name)
                 .ToList();
             findAllElements.Sort();
