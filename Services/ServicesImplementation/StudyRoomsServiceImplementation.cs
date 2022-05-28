@@ -155,10 +155,32 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             List<StudyRoom> studyRoomBaseDeptAndCath = await _context.StudyRooms
                 .Include(r => r.Department)
                 .Include(r => r.Cathedral)
-                .Where(r => r.Department.Id == deptId && r.Cathedral.Id == cathId)
+                .Where(r => r.Department.Id == deptId && (r.Cathedral.Id == cathId))
                 .ToListAsync();
             studyRoomBaseDeptAndCath.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
             return studyRoomBaseDeptAndCath.Select(d => new NameWithDbIdElement(d.Id, d.Name)).ToList();
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get all study room base department id
+        
+        /// <summary>
+        /// Metoda zwracająca wszystkie sale zajęciowe w postaci tupli (name, id) na podstawie id wydziału.
+        /// </summary>
+        /// <param name="deptId">id wydziału</param>
+        /// <returns>wszystkie znalezione sale zajęciowe</returns>
+        public async Task<List<NameWithDbIdElement>> GetAllStudyRoomsScheduleBaseDeptName(long deptId)
+        {
+            List<NameWithDbIdElement> studyRoomBaseDeptAndCath = await _context.StudyRooms
+                .Include(r => r.Department)
+                .Where(r => r.Department.Id == deptId)
+                .Select(d => new NameWithDbIdElement(d.Id, d.Name))
+                .ToListAsync();
+            studyRoomBaseDeptAndCath.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
+            return studyRoomBaseDeptAndCath;
         }
 
         #endregion
