@@ -170,6 +170,63 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get all groups base study specialization name and department name
+
+        /// <summary>
+        /// Metoda zwracająca wszystkie grupy na podstawie kierunku studiów, nazwy grupy, nazwy wydziału oraz nazwy
+        /// samego kierunku studiów (filtrowanie dynamiczne).
+        /// </summary>
+        /// <param name="groupName">nazwa grupy</param>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <param name="studySpecName">nazwa kierunku studiów</param>
+        /// <returns></returns>
+        public async Task<SearchQueryResponseDto> GetGroupsBaseStudySpec(string groupName, string deptName, 
+            string studySpecName)
+        {
+            if (groupName == null) {
+                groupName = string.Empty;
+            }
+            if (deptName == null) {
+                deptName = string.Empty;
+            }
+            if (studySpecName == null) {
+                studySpecName = String.Empty;
+            }
+            
+            List<string> findAllMatchStudyGroups = await _context.StudyGroups
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization)
+                .Where(s => string.Equals(
+                                s.StudySpecialization.Name + " (" + s.StudySpecialization.StudyType.Alias + " " + 
+                                s.StudySpecialization.StudyDegree.Alias + ")", studySpecName, 
+                                StringComparison.OrdinalIgnoreCase) &&
+                            s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase) &&
+                            s.Name.Contains(groupName, StringComparison.OrdinalIgnoreCase))
+                .Select(s => s.Name)
+                .ToListAsync();
+            findAllMatchStudyGroups.Sort();
+            
+            if (findAllMatchStudyGroups.Count > 0) {
+                return new SearchQueryResponseDto(findAllMatchStudyGroups);
+            }
+
+            List<string> findAllElements = await _context.StudyGroups
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization)
+                .Where(s => s.StudySpecialization.Name.Equals(studySpecName, StringComparison.OrdinalIgnoreCase) &&
+                            s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .Select(s => s.Name)
+                .ToListAsync();
+            findAllElements.Sort();
+            
+            // jeśli nie znalazło pasujących rezultatów, zwróć wszystkie elementy
+            return new SearchQueryResponseDto(findAllElements);
+        }
+
+        #endregion
         
         //--------------------------------------------------------------------------------------------------------------
         
