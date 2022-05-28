@@ -36,8 +36,6 @@
         public const string GET_AVAILABLE_STUDY_TYPES = "available-study-types";
         public const string GET_AVAILABLE_ROOM_TYPES = "available-room-types";
         public const string GET_AVAILABLE_STUDY_DEGREES = "available-study-degrees";
-        public const string GET_AVAILABLE_SUBJECTS_BASE_DEPT = "available-subjects-base-dept";
-        public const string GET_AVAILABLE_STUDY_SPECS_BASE_DEPT = "available-study-specs-base-dept";
         public const string GET_AVAILABLE_ROLES = "available-roles";
         public const string GET_AVAILABLE_SEMESTERS = "available-semesters";
         public const string GET_AVAILABLE_SUBJECT_TYPES = "available-subject-types";
@@ -69,6 +67,7 @@
         public const string GET_All_STUDY_SPEC_BASE_DEPT = "all-study-specs-dept";
         public const string GET_ALL_STUDY_SPECS = "all-study-specs";
         public const string GET_ALL_STUDY_SPECS_SCHEDULE = "all-study-specs-schedule";
+        public const string GET_AVAILABLE_STUDY_SPECS_BASE_DEPT = "available-study-specs-base-dept";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -84,6 +83,7 @@
         public const string ADD_STUDY_SUBJECT = "add-study-subject";
         public const string GET_ALL_STUDY_SUBJECTS = "all-study-subjects";
         public const string GET_ALL_STUDY_SUBJECT_BASE_DEPT = "all-study-subjects-dept";
+        public const string GET_AVAILABLE_SUBJECTS_BASE_DEPT = "available-subjects-base-dept";
         
         //--------------------------------------------------------------------------------------------------------------
         

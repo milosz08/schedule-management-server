@@ -12,6 +12,7 @@ namespace asp_net_po_schedule_management_server.Services
         SearchQueryResponseDto GetAllStudySpecializationsInDepartment(string specName, string deptName);
         PaginationResponseDto<StudySpecQueryResponseDto> GetAllStudySpecializations(SearchQueryRequestDto searchQuery);
         Task<List<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(long deptId, long degreeId);
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableStudySpecsBaseDept(string deptName);
         Task DeleteMassiveStudySpecs(MassiveDeleteRequestDto studySpecs, UserCredentialsHeaderDto credentials);
         Task DeleteAllStudySpecs(UserCredentialsHeaderDto credentials);
     }

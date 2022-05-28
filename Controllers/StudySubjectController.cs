@@ -68,6 +68,16 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_SUBJECTS_BASE_DEPT)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySubjectsBaseDept(
+            [FromQuery] string deptName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveSubjects([FromBody] MassiveDeleteRequestDto deleteSubjects)
         {

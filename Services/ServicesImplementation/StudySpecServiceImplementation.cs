@@ -221,6 +221,32 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
+        #region Get available study specializations base department name
+
+        /// <summary>
+        /// Metoda pobierająca i zwracająca wszystkie dostępne kierunki studiów z bazy danych w postaci tupli (nazwa, id)
+        /// na podstawie nazwy wydziału. Metoda nie posiada dynamicznego filtrowania wyników, zwraca jedynie statyczne
+        /// dane pozyskane z bazy danych.
+        /// </summary>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>zwracane wyniki opakowane w obiekt transferowy</returns>
+        public async Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableStudySpecsBaseDept(string deptName)
+        {
+            List<StudySpecialization> findAllStudySpecs = await _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Include(s => s.StudyDegree)
+                .Where(s => s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            return new AvailableDataResponseDto<NameWithDbIdElement>(findAllStudySpecs
+                .Select(s => _mapper.Map<NameWithDbIdElement>(s)).ToList());
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Delete content
 
         /// <summary>

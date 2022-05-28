@@ -43,25 +43,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudyDegreeTypes());
         }
-        
-        //--------------------------------------------------------------------------------------------------------------
-        
-        [HttpGet(ApiEndpoints.GET_AVAILABLE_STUDY_SPECS_BASE_DEPT)]
-        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySpecsBaseDept(
-            [FromQuery] string deptName)
-        {
-            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudySpecsBaseDept(deptName));
-        }
-        
-        //--------------------------------------------------------------------------------------------------------------
-        
-        [HttpGet(ApiEndpoints.GET_AVAILABLE_SUBJECTS_BASE_DEPT)]
-        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySubjectsBaseDept(
-            [FromQuery] string deptName)
-        {
-            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
-        }
-        
+
         //--------------------------------------------------------------------------------------------------------------
 
         [HttpGet(ApiEndpoints.GET_AVAILABLE_DEGREES_BASE_STUDY_SPEC)]

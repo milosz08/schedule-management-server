@@ -14,8 +14,9 @@ namespace asp_net_po_schedule_management_server.Services
         Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSemesters();
         Task<List<NameWithDbIdElement>> GetAvailableStudyDegreeBaseAllSpecs(long deptId);
         Task<List<NameWithDbIdElement>> GetAvailableSemBaseStudyGroups(long deptId, long studySpecId);
-        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableStudySpecsBaseDept(string deptName);
-        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSubjectsBaseDept(string deptName);
+        Task<ConvertToNameWithIdResponseDto> ConvertNamesToIds(ConvertNamesToIdsRequestDto dto);
+        Task<ConvertToNameWithIdResponseDto> ConvertIdsToNames(ConvertIdsToNamesRequestDto dto);
+        Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string subjTypeName);
         Task<AvailableDataResponseDto<string>> GetAvailableRoomTypes();
         Task<AvailableDataResponseDto<string>> GetAvailableRoles();
     }

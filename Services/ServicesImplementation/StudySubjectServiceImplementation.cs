@@ -178,6 +178,33 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #endregion
         
         //--------------------------------------------------------------------------------------------------------------
+
+        #region Get available subjects base department name
+
+        /// <summary>
+        /// Metoda pobierająca i zwracająca wszystkie dostępne przedmioty z bazy danych w postaci tupli (nazwa, id)
+        /// na podstawie nazwy wydziału. Metoda nie posiada dynamicznego filtrowania wyników, zwraca jedynie statyczne
+        /// dane pozyskane z bazy danych.
+        /// </summary>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>zwracane wyniki opakowane w obiekt transferowy</returns>
+        public async Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSubjectsBaseDept(string deptName)
+        {
+            List<StudySubject> findAllStudySubjects = await _context.StudySubjects
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization)
+                .Include(s => s.StudySpecialization.StudyType)
+                .Include(s => s.StudySpecialization.StudyDegree)
+                .Where(s => s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            return new AvailableDataResponseDto<NameWithDbIdElement>(findAllStudySubjects
+                .Select(s => _mapper.Map<NameWithDbIdElement>(s)).ToList());
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Delete content
 
