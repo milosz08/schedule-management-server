@@ -77,24 +77,67 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Get all employeers base cathedral database id
 
         /// <summary>
-        /// Metoda zwracająca wszystkich pracowników (wszystcy użytkownicy oprócz studentów) na podstawie wybranego
+        /// Metoda zwracająca wszystkich pracowników (wszyscy użytkownicy oprócz studentów) na podstawie wybranego
         /// wydziału oraz katedry.
         /// </summary>
         /// <param name="deptId">id wydziału</param>
         /// <param name="cathId">id katedry</param>
         /// <returns>przefiltrowane oraz posortowane wyniki w postaci listy pracowników</returns>
-        public List<NameWithDbIdElement> GetAllEmployeersScheduleBaseCath(long deptId, long cathId)
+        public async Task<List<NameWithDbIdElement>> GetAllEmployeersScheduleBaseCath(long deptId, long cathId)
         {
-            List<Person> allUsersWithoutStudents = _context.Persons
+            List<Person> allUsersWithoutStudents = await _context.Persons
                 .Include(p => p.Role)
                 .Include(p => p.Department)
                 .Include(p => p.Cathedral)
                 .Where(p => p.Department.Id == deptId && p.Cathedral.Id == cathId &&
-                            p.Role.Name.ToLower() != AvailableRoles.STUDENT.ToLower()).ToList();
+                            p.Role.Name.Equals(AvailableRoles.STUDENT, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
             
             allUsersWithoutStudents
                 .Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
             return allUsersWithoutStudents.Select(d => new NameWithDbIdElement(d.Id, $"{d.Surname} {d.Name}")).ToList();
+        }
+        
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get all teachers base department id
+
+        /// <summary>
+        /// Metoda zwracająca wszystkich nauczycieli (wszyscy użytkownicy oprócz studentów) na podstawie wybranego
+        /// wydziału oraz przypisanego (wybranego w parametrach) przedmiotu.
+        /// </summary>
+        /// <param name="deptId">id wydziału</param>
+        /// <param name="subjName">nazwa przypisanego przedmiotu</param>
+        /// <returns>przefiltrowane oraz posortowane wyniki w postaci listy nauczycieli</returns>
+        public async Task<List<NameWithDbIdElement>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjName)
+        {
+            List<Person> selectedUsersWithoutStudents = await _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Department)
+                .Include(p => p.Subjects)
+                .Where(p => p.Department.Id == deptId &&
+                            p.Subjects.Any(s => s.Name.Equals(subjName, StringComparison.OrdinalIgnoreCase))
+                            && !p.Role.Name.Equals(AvailableRoles.STUDENT, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            if (selectedUsersWithoutStudents.Count > 0) {
+                selectedUsersWithoutStudents
+                    .Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
+                return selectedUsersWithoutStudents.Select(d => new NameWithDbIdElement(d.Id, $"{d.Surname} {d.Name}")).ToList();  
+            }
+            
+            List<Person> allUsersWithoutStudents = await _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Department)
+                .Where(p => p.Department.Id == deptId && 
+                            !p.Role.Name.Equals(AvailableRoles.STUDENT, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+            
+            allUsersWithoutStudents
+                .Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
+            return allUsersWithoutStudents.Select(d => new NameWithDbIdElement(d.Id, $"{d.Surname} {d.Name}")).ToList();  
         }
         
         #endregion
