@@ -10,8 +10,8 @@ namespace asp_net_po_schedule_management_server.Entities
     public sealed class RoomType : PrimaryKeyWithClientIdentifierInjection
     {
         [Required]
-        [Column("room-type-name")]
         [StringLength(50)]
+        [Column("room-type-name")]
         public string Name { get; set; }
         
         [Required]

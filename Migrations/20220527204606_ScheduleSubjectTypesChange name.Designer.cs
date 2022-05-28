@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asp_net_po_schedule_management_server.DbConfig;
 
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220527204606_ScheduleSubjectTypesChange name")]
+    partial class ScheduleSubjectTypesChangename
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -382,16 +384,16 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("dictionary-hash");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime(6)")
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time(6)")
                         .HasColumnName("end-time");
 
                     b.Property<long>("ScheduleSubjectTypeId")
                         .HasColumnType("bigint")
                         .HasColumnName("subject-type-key");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime(6)")
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time(6)")
                         .HasColumnName("start-time");
 
                     b.Property<long>("StudyGroupId")

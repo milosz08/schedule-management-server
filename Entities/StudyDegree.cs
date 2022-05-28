@@ -23,13 +23,4 @@ namespace asp_net_po_schedule_management_server.Entities
         [Column("degree-level")]
         public int Level { get; set; }
     }
-    
-    //------------------------------------------------------------------------------------------------------------------
-    
-    public static class StudyDegreeTypes
-    {
-        public static string ALL { get; set; } = "ALL";
-        public static string FIRST { get; set; } = "I";
-        public static string SECOND { get; set; } = "II";
-    }
 }
