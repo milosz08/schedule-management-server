@@ -45,6 +45,10 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public DbSet<StudyDegree> StudyDegrees { get; set; }
         public DbSet<Semester> Semesters { get; set; }
         public DbSet<StudyGroup> StudyGroups { get; set; }
+        public DbSet<Weekday> Weekdays { get; set; }
+        public DbSet<WeekScheduleOccur> WeekdayScheduleOccurs { get; set; }
+        public DbSet<ScheduleSubject> ScheduleSubjects { get; set; }
+        public DbSet<ScheduleSubjectType> ScheduleSubjectTypes { get; set; }
 
         #endregion
 
@@ -98,6 +102,22 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .UsingEntity<Dictionary<string, object>>("users-subjects-binding",
                     b => b.HasOne<StudySubject>().WithMany().HasForeignKey("study-subject-key"),
                     b => b.HasOne<Person>().WithMany().HasForeignKey("user-key"));
+            
+            // mapowanie modelu przedmiotu na planie z nauczycielami w relacji MANY-TO-MANY
+            modelBuilder.Entity<ScheduleSubject>()
+                .HasMany(p => p.ScheduleTeachers)
+                .WithMany(p => p.ScheduleSubjects)
+                .UsingEntity<Dictionary<string, object>>("schedule-teachers-binding",
+                    b => b.HasOne<Person>().WithMany().HasForeignKey("teacher-key"),
+                    b => b.HasOne<ScheduleSubject>().WithMany().HasForeignKey("schedule-subject-key"));
+            
+            // mapowanie modelu przedmiotu na planie z salami zajęciowymi w relacji MANY-TO-MANY
+            modelBuilder.Entity<ScheduleSubject>()
+                .HasMany(p => p.StudyRooms)
+                .WithMany(p => p.ScheduleSubjects)
+                .UsingEntity<Dictionary<string, object>>("schedule-rooms-binding",
+                    b => b.HasOne<StudyRoom>().WithMany().HasForeignKey("room-key"),
+                    b => b.HasOne<ScheduleSubject>().WithMany().HasForeignKey("schedule-subject-key"));
         }
 
         #endregion
