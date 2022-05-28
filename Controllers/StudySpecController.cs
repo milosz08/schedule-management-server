@@ -23,7 +23,6 @@ namespace asp_net_po_schedule_management_server.Controllers
     /// </summary>
     [ApiController]
     [Route("/api/v1/dotnet/[controller]")]
-    [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public sealed class StudySpecController : ControllerBase
     {
@@ -40,6 +39,7 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         //--------------------------------------------------------------------------------------------------------------
 
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpPost(ApiEndpoints.ADD_STUDY_SPECIALIZATION)]
         public async Task<ActionResult<IEnumerable<CreateStudySpecResponseDto>>> AddNewStudySpecialization(
             [FromBody] CreateStudySpecRequestDto dto)
@@ -49,6 +49,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR, AvailableRoles.EDITOR)]
         [HttpGet(ApiEndpoints.GET_All_STUDY_SPEC_BASE_DEPT)]
         public ActionResult<SearchQueryResponseDto> GetAllStudySpecializationsBaseDept(
             [FromQuery] string specQuery,
@@ -60,6 +61,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SPECS)]
         public ActionResult<StudySpecQueryResponseDto> GetAllStudySpecializations(
             [FromQuery] SearchQueryRequestDto searchSearchQuery)
@@ -71,7 +73,7 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SPECS_SCHEDULE)]
-        public async Task<ActionResult<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllStudySpecsScheduleBaseDept(
             [FromQuery] long deptId,
             [FromQuery] long degreeId)
         {
@@ -80,6 +82,17 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         //--------------------------------------------------------------------------------------------------------------
         
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_STUDY_SPECS_BASE_DEPT)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySpecsBaseDept(
+            [FromQuery] string deptName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudySpecsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveStudySpecs([FromBody] MassiveDeleteRequestDto deleteSpecs)
         {
@@ -90,6 +103,7 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         //--------------------------------------------------------------------------------------------------------------
 
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllStudySpecs()
         {

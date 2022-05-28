@@ -14,6 +14,7 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
         /// </summary>
         public static IServiceCollection AddRestServicesCollection(this IServiceCollection services)
         {
+            // serwisy restowe z interfejsami
             services.AddScoped<IAuthService, AuthServiceImplementation>();
             services.AddScoped<IFilesService, FilesServiceImplementation>();
             services.AddScoped<IResetPasswordService, ResetPasswordServiceImplementation>();
@@ -25,7 +26,10 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             services.AddScoped<IStudyRoomsService, StudyRoomsServiceImplementation>();
             services.AddScoped<IStudySubjectService, StudySubjectServiceImplementation>();
             services.AddScoped<IStudyGroupService, StudyGroupServiceImplementation>();
+            services.AddScoped<IScheduleSubjectsService, ScheduleSubjectsServiceImplementation>();
+            services.AddScoped<ITimeManagementService, TimeManagementServiceImplementation>();
 
+            // serwisy typu "singleton" (bez interfejsów)
             services.AddTransient<ServiceHelper>();
             
             return services;

@@ -135,27 +135,27 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Get all study subjects base department
 
         /// <summary>
-        /// Metoda zwracająca wszystkie wyszukane przedmioty na podstawie parametrów zapytania (nazwy przedmiotu i nazwy
-        /// przypisanego do niego wydziału). W przypadku braku znalezienia wyniku, zwraca wszystkie elementy z tabeli.
+        /// Metoda zwracająca wszystkie wyszukane przedmioty na podstawie parametrów zapytania (nazwy przedmiotu i id
+        /// przypisanego do niego wydziału oraz kierunku studiów). W przypadku braku znalezienia wyniku, zwraca
+        /// wszystkie elementy z tabeli.
         /// </summary>
-        /// <param name="subjcQuery">nazwa przedmiotu</param>
-        /// <param name="deptQuery">nazwa wydziału</param>
+        /// <param name="subjcName">nazwa przedmiotu</param>
+        /// <param name="deptId">id wydziału</param>
+        /// <param name="studySpecId">id kierunku studiów</param>
         /// <returns>wszystkie elementy z tablicy/przefiltrowane wyniki</returns>
-        public SearchQueryResponseDto GetAllStudySubjectsBaseDept(string subjcQuery, string deptQuery)
+        public SearchQueryResponseDto GetAllStudySubjectsBaseDeptAndSpec(string subjcName, long deptId, long studySpecId)
         {
             // jeśli parametr jest nullem to przypisz wartość pustego stringa
-            if (deptQuery == null) {
-                deptQuery = string.Empty;
+            if (subjcName == null) {
+                subjcName = string.Empty;
             }
-            if (subjcQuery == null) {
-                subjcQuery = string.Empty;
-            }
-            
+
             // wyszukaj i wypłaszcz rezultat do tablicy stringów z nazwami katedr
             List<string> findAllSubjects = _context.StudySubjects
                 .Include(s => s.Department)
-                .Where(s => s.Department.Name.Equals(deptQuery, StringComparison.OrdinalIgnoreCase) &&
-                            s.Name.Contains(subjcQuery, StringComparison.OrdinalIgnoreCase))
+                .Include(s => s.StudySpecialization)
+                .Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId &&
+                            s.Name.Contains(subjcName, StringComparison.OrdinalIgnoreCase))
                 .Select(s => s.Name)
                 .ToList();
             findAllSubjects.Sort();
@@ -166,13 +166,40 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
             List<string> findAllElements = _context.StudySubjects
                 .Include(s => s.Department)
-                .Where(s => s.Department.Name.Equals(deptQuery, StringComparison.OrdinalIgnoreCase))
+                .Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId)
                 .Select(s => s.Name)
                 .ToList();
             findAllElements.Sort();
             
             // jeśli nie znalazło pasujących rezultatów, zwróć wszystkie elementy
             return new SearchQueryResponseDto(findAllElements);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get available subjects base department name
+
+        /// <summary>
+        /// Metoda pobierająca i zwracająca wszystkie dostępne przedmioty z bazy danych w postaci tupli (nazwa, id)
+        /// na podstawie nazwy wydziału. Metoda nie posiada dynamicznego filtrowania wyników, zwraca jedynie statyczne
+        /// dane pozyskane z bazy danych.
+        /// </summary>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>zwracane wyniki opakowane w obiekt transferowy</returns>
+        public async Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSubjectsBaseDept(string deptName)
+        {
+            List<StudySubject> findAllStudySubjects = await _context.StudySubjects
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization)
+                .Include(s => s.StudySpecialization.StudyType)
+                .Include(s => s.StudySpecialization.StudyDegree)
+                .Where(s => s.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            return new AvailableDataResponseDto<NameWithDbIdElement>(findAllStudySubjects
+                .Select(s => _mapper.Map<NameWithDbIdElement>(s)).ToList());
         }
 
         #endregion

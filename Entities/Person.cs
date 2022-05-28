@@ -88,5 +88,7 @@ namespace asp_net_po_schedule_management_server.Entities
         public virtual ICollection<StudySpecialization> StudySpecializations { get; set; }
         
         public virtual ICollection<StudySubject> Subjects { get; set; }
+        
+        public virtual ICollection<ScheduleSubject> ScheduleSubjects { get; set; }
     }
 }

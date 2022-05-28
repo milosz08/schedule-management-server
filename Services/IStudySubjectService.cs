@@ -9,7 +9,8 @@ namespace asp_net_po_schedule_management_server.Services
     {
         Task<CreateStudySubjectResponseDto> AddNewStudySubject(CreateStudySubjectRequestDto dto);
         PaginationResponseDto<StudySubjectQueryResponseDto> GetAllStudySubjects(SearchQueryRequestDto searchQuery);
-        SearchQueryResponseDto GetAllStudySubjectsBaseDept(string subjcQuery, string deptQuery);
+        SearchQueryResponseDto GetAllStudySubjectsBaseDeptAndSpec(string subjcName, long deptId, long studySpecId);
+        Task<AvailableDataResponseDto<NameWithDbIdElement>> GetAvailableSubjectsBaseDept(string deptName);
         Task DeleteMassiveSubjects(MassiveDeleteRequestDto subjects, UserCredentialsHeaderDto credentials);
         Task DeleteAllSubjects(UserCredentialsHeaderDto credentials);
     }

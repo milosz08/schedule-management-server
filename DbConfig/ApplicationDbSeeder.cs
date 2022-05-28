@@ -41,6 +41,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
         private const string _studyDegrees = "study-degrees.mocked.json";
         private const string _roles = "roles.mocked.json";
         private const string _semesters = "semesters.mocked.json";
+        private const string _weekdays = "weekdays.mocked.json";
+        private const string _scheduleTypes = "schedule-types.mocked.json";
 
         #endregion
 
@@ -64,6 +66,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
             if (_context.Database.CanConnect()) {
                 await InsertAllRoles();
                 await InsertAllSemesters();
+                await InsertAllWeekdays();
+                await InsertAllScheduleSubjectTypes();
                 await InsertInitialDepartment();
                 await InsertInitialCathedral();
                 await InsertDefaultAdminData();
@@ -208,6 +212,34 @@ namespace asp_net_po_schedule_management_server.DbConfig
             if (!_context.Semesters.Any()) {
                 await _context.Semesters.AddRangeAsync(ApplicationUtils
                     .ConvertJsonToList<Semester>(_semesters, _hostingEnvironment));
+                await _context.SaveChangesAsync();
+            }
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Umieszczanie wszystkich dni tygodnia (pobierane z zamockowanych danych w formacie json).
+        /// </summary>
+        private async Task InsertAllWeekdays()
+        {
+            if (!_context.Weekdays.Any()) {
+                await _context.Weekdays.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<Weekday>(_weekdays, _hostingEnvironment));
+                await _context.SaveChangesAsync();
+            }
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Umieszczanie wszystkich typów zajęć (pobierane z zamockowanych danych w formacie json).
+        /// </summary>
+        private async Task InsertAllScheduleSubjectTypes()
+        {
+            if (!_context.ScheduleSubjectTypes.Any()) {
+                await _context.ScheduleSubjectTypes.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<ScheduleSubjectType>(_scheduleTypes, _hostingEnvironment));
                 await _context.SaveChangesAsync();
             }
         }

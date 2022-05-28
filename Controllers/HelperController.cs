@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.Services;
+using asp_net_po_schedule_management_server.Entities;
+using asp_net_po_schedule_management_server.CustomDecorators;
 
 
 namespace asp_net_po_schedule_management_server.Controllers
@@ -43,25 +45,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudyDegreeTypes());
         }
-        
-        //--------------------------------------------------------------------------------------------------------------
-        
-        [HttpGet(ApiEndpoints.GET_AVAILABLE_STUDY_SPECS_BASE_DEPT)]
-        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySpecsBaseDept(
-            [FromQuery] string deptName)
-        {
-            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudySpecsBaseDept(deptName));
-        }
-        
-        //--------------------------------------------------------------------------------------------------------------
-        
-        [HttpGet(ApiEndpoints.GET_AVAILABLE_SUBJECTS_BASE_DEPT)]
-        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySubjectsBaseDept(
-            [FromQuery] string deptName)
-        {
-            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
-        }
-        
+
         //--------------------------------------------------------------------------------------------------------------
 
         [HttpGet(ApiEndpoints.GET_AVAILABLE_DEGREES_BASE_STUDY_SPEC)]
@@ -111,6 +95,33 @@ namespace asp_net_po_schedule_management_server.Controllers
         public async Task<ActionResult<AvailableDataResponseDto<string>>> GetAvailableRoles()
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableRoles());
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_SUBJECT_TYPES)]
+        public async Task<ActionResult<AvailableDataResponseDto<string>>> GetAvailableSubjectTypes(
+            [FromQuery] string subjTypeName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectTypes(subjTypeName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR, AvailableRoles.EDITOR)]
+        [HttpPost(ApiEndpoints.CONVERT_SCHEDULE_DATA_NAMES_TO_IDS)]
+        public async Task<ActionResult<ConvertToNameWithIdResponseDto>> ConvertNamesToIds(ConvertNamesToIdsRequestDto dto)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.ConvertNamesToIds(dto));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR, AvailableRoles.EDITOR)]
+        [HttpPost(ApiEndpoints.CONVERT_SCHEDULE_DATA_IDS_TO_NAMES)]
+        public async Task<ActionResult<ConvertToNameWithIdResponseDto>> ConvertIdsToNames(ConvertIdsToNamesRequestDto dto)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.ConvertIdsToNames(dto));
         }
     }
 }

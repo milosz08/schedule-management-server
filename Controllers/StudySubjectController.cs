@@ -58,10 +58,22 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SUBJECT_BASE_DEPT)]
         public ActionResult<SearchQueryResponseDto> GetAllStudySubjectsBaseDept(
-            [FromQuery] string subjcQuery,
-            [FromQuery] string deptQuery)
+            [FromQuery] string subjcName,
+            [FromQuery] long deptId,
+            [FromQuery] long studySpecId)
         {
-            return StatusCode((int) HttpStatusCode.OK, _service.GetAllStudySubjectsBaseDept(subjcQuery, deptQuery));
+            return StatusCode((int) HttpStatusCode.OK, _service
+                .GetAllStudySubjectsBaseDeptAndSpec(subjcName, deptId, studySpecId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_SUBJECTS_BASE_DEPT)]
+        public async Task<ActionResult<AvailableDataResponseDto<NameWithDbIdElement>>> GetAvailableStudySubjectsBaseDept(
+            [FromQuery] string deptName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
         }
         
         //--------------------------------------------------------------------------------------------------------------

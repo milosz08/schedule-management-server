@@ -169,5 +169,24 @@ namespace asp_net_po_schedule_management_server.Services.Helpers
         }
 
         #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Return study year base month
+        
+        /// <summary>
+        /// Metoda zwracająca rok studiów na podstawie aktualnego roku.
+        /// </summary>
+        /// <returns>rok studiów składający się z dwóch dat</returns>
+        public string StudyYearBaseCurrentMonth()
+        {
+            int currentYear = DateTime.Now.Year;
+            if (DateTime.Now.Month > 1 && DateTime.Now.Month < 10) {
+                return $"{currentYear - 1}/{currentYear}";
+            }
+            return $"{currentYear}/{currentYear + 1}";
+        }
+
+        #endregion
     }
 }

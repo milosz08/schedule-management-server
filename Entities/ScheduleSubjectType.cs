@@ -6,21 +6,22 @@ using asp_net_po_schedule_management_server.Entities.Shared;
 
 namespace asp_net_po_schedule_management_server.Entities
 {
-    [Table("study-degrees")]
-    public sealed class StudyDegree : PrimaryKeyWithClientIdentifierInjection
+    [Table("schedule-subject-types")]
+    public class ScheduleSubjectType : PrimaryKeyWithClientIdentifierInjection
     {
         [Required]
         [StringLength(50)]
-        [Column("degree-name")]
+        [Column("schedule-type-name")]
         public string Name { get; set; }
         
         [Required]
-        [StringLength(10)]
-        [Column("degree-alias")]
+        [StringLength(5)]
+        [Column("schedule-type-alias")]
         public string Alias { get; set; }
         
         [Required]
-        [Column("degree-level")]
-        public int Level { get; set; }
+        [StringLength(7)]
+        [Column("schedule-type-color")]
+        public string Color { get; set; }
     }
 }

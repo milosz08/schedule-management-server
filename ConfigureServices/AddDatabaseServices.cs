@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +26,12 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
                     opt => {
                         // zezwolenie na dynamiczną translację zapytań do bazy
                         opt.EnableStringComparisonTranslations();
+                        // zezwolenie na próbę nawiązania ponownego połączenia do bazy danych w przypadku błędu
+                        // po stronie serwera bazodanowego
+                        opt.EnableRetryOnFailure(
+                            maxRetryCount: 10,
+                            maxRetryDelay: TimeSpan.FromSeconds(5),
+                            errorNumbersToAdd: null);
                     }
                 ));
             

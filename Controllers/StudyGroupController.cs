@@ -69,6 +69,19 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_AVAILABLE_GROUPS_BASE_SPEC)]
+        public async Task<ActionResult<SearchQueryResponseDto>> GetAvailableStudyGroupsBaseSpec(
+            [FromQuery] string groupName,
+            [FromQuery] string deptName,
+            [FromQuery] string studySpecName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service
+                .GetGroupsBaseStudySpec(groupName, deptName, studySpecName));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveGroups([FromBody] MassiveDeleteRequestDto deleteGroups)
         {
