@@ -50,11 +50,23 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_EMPLOYEERS_SCHEDULE)]
-        public ActionResult<List<NameWithDbIdElement>> GetAllEmployeersScheduleBaseCath(
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllEmployeersScheduleBaseCath(
             [FromQuery] long deptId,
             [FromQuery] long cathId)
         {
-            return StatusCode((int) HttpStatusCode.OK, _service.GetAllEmployeersScheduleBaseCath(deptId, cathId));
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllEmployeersScheduleBaseCath(deptId, cathId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_TEACHERS_BASE_DEPT_AND_SUBJ)]
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllTeachersScheduleBaseDeptAndSpec(
+            [FromQuery] long deptId,
+            [FromQuery] string subjName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service
+                .GetAllTeachersScheduleBaseDeptAndSpec(deptId, subjName));
         }
         
         //--------------------------------------------------------------------------------------------------------------
