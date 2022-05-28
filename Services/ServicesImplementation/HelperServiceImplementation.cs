@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 
+using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Entities;
+using asp_net_po_schedule_management_server.Exceptions;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -187,6 +189,106 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         {
             // wypłaszczanie wyniku i mapowanie na obiekt transferowy (DTO)
             return new AvailableDataResponseDto<string>(await _context.Roles.Select(r => r.Name).ToListAsync());
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get available schedule subject types
+
+        /// <summary>
+        /// Metoda pobierająca i zwracająca wszystkie typy przedmiotów z bazy danych w postaci tablicy stringów na
+        /// podstawie parametru zapytania.
+        /// </summary>
+        /// <param name="typeName">nazwa typu</param>
+        /// <returns>zwracane wyniki opakowane w obiekt transferowy</returns>
+        public async Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string subjTypeName)
+        {
+            if (subjTypeName == null) {
+                subjTypeName = string.Empty;
+            }
+            
+            List<string> findAllScheduleSubjectTypes = await _context.ScheduleSubjectTypes
+                .Where(t => t.Name.Contains(subjTypeName, StringComparison.OrdinalIgnoreCase) || subjTypeName == string.Empty)
+                .Select(t => t.Name)
+                .ToListAsync();
+            
+            return new AvailableDataResponseDto<string>(findAllScheduleSubjectTypes);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Convert names to id's
+
+        /// <summary>
+        /// Metoda odpowiedzialna za konwertowanie parametrów zapytania grupy z parametrów typu string na parametry
+        /// numeryczne (wartości id) w bazie danych.
+        /// </summary>
+        /// <param name="dto">parametry typu string</param>
+        /// <returns>parametry numeryczne</returns>
+        /// <exception cref="BasicServerException">w przypadku braku obiektu na podstawie parametrów</exception>
+        public async Task<ConvertToNameWithIdResponseDto> ConvertNamesToIds(ConvertNamesToIdsRequestDto dto)
+        {
+            // wyszukiwanie grupy dziekańskiej na podstawie podanych parametrów
+            StudyGroup findStudyGroup = await _context.StudyGroups
+                .Include(g => g.Department)
+                .Include(g => g.StudySpecialization)
+                .FirstOrDefaultAsync(g => g.Name.Equals(dto.StudyGroupName, StringComparison.OrdinalIgnoreCase) &&
+                                          g.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase) &&
+                                          string.Equals(g.StudySpecialization.Name + " (" +
+                                                        g.StudySpecialization.StudyType.Alias + " " +
+                                                        g.StudySpecialization.StudyDegree.Alias + ")",
+                                              dto.StudySpecName, StringComparison.OrdinalIgnoreCase));
+            // jeśli nie znajdzie żadnej pasującej grupy, rzuć wyjątek
+            if (findStudyGroup == null) {
+                throw new BasicServerException("Nie znaleziono grupy z podanymi parametrami.", HttpStatusCode.NotFound);
+            }
+
+            // zwrócenie przekonwertowanych danych na obiekt transferowy DTO
+            return new ConvertToNameWithIdResponseDto(
+                findStudyGroup.Department,
+                findStudyGroup.StudySpecialization,
+                findStudyGroup);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Convert names to id's
+
+        /// <summary>
+        /// Metoda odpowiedzialna za konwertowanie parametrów zapytania grupy z parametrów numerycznych na parametry
+        /// typu string (nazwa z bazy danych).
+        /// </summary>
+        /// <param name="dto">parametry numeryczne</param>
+        /// <returns>parametry typu string</returns>
+        /// <exception cref="BasicServerException">w przypadku braku obiektu na podstawie parametrów</exception>
+        public async Task<ConvertToNameWithIdResponseDto> ConvertIdsToNames(ConvertIdsToNamesRequestDto dto)
+        {
+            if (dto.StudySpecId == null || dto.StudyGroupId == null || dto.DepartmentId == null) {
+                throw new BasicServerException("Niepoprawne parametry planu.", HttpStatusCode.NotFound);
+            }
+            
+            // wyszukiwanie grupy dziekańskiej na podstawie podanych parametrów
+            StudyGroup findStudyGroup = await _context.StudyGroups
+                .Include(g => g.Department)
+                .Include(g => g.StudySpecialization)
+                .FirstOrDefaultAsync(g => g.Id == dto.StudyGroupId && g.Department.Id == dto.DepartmentId &&
+                                          g.StudySpecialization.Id == dto.StudySpecId);
+            // jeśli nie znajdzie żadnej pasującej grupy, rzuć wyjątek
+            if (findStudyGroup == null) {
+                throw new BasicServerException("Nie znaleziono grupy z podanymi parametrami.", HttpStatusCode.NotFound);
+            }
+
+            // zwrócenie przekonwertowanych danych na obiekt transferowy DTO
+            return new ConvertToNameWithIdResponseDto(
+                findStudyGroup.Department,
+                findStudyGroup.StudySpecialization,
+                findStudyGroup);
         }
 
         #endregion
