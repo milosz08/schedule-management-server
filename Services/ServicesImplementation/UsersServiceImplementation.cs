@@ -90,7 +90,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Include(p => p.Department)
                 .Include(p => p.Cathedral)
                 .Where(p => p.Department.Id == deptId && p.Cathedral.Id == cathId &&
-                            p.Role.Name.Equals(AvailableRoles.STUDENT, StringComparison.OrdinalIgnoreCase))
+                            !p.Role.Name.Equals(AvailableRoles.STUDENT, StringComparison.OrdinalIgnoreCase))
                 .ToListAsync();
             
             allUsersWithoutStudents

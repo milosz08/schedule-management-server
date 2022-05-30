@@ -53,14 +53,13 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 DateTime lastDay = firstDay.AddDays(6);
 
                 string firstDayFormat = firstDay.Day < 10 ? $"0{firstDay.Day}" : firstDay.Day.ToString();
-                string firstMothFormat = firstDay.Month < 10 ? $"0{firstDay.Month}" : firstDay.Month.ToString();
+                string firstMonthFormat = firstDay.Month < 10 ? $"0{firstDay.Month}" : firstDay.Month.ToString();
                 
                 string lastDayFormat = lastDay.Day < 10 ? $"0{lastDay.Day}" : lastDay.Day.ToString();
                 string lastMothFormat = lastDay.Month < 10 ? $"0{lastDay.Month}" : lastDay.Month.ToString();
                 
-                allDates.Add($"{firstDayFormat}.{firstMothFormat} - {lastDayFormat}.{lastMothFormat} " +
+                allDates.Add($"{firstDayFormat}.{firstMonthFormat} - {lastDayFormat}.{lastMothFormat} " +
                              $"({dt.Year}, {weekNumber})");
-
                 ++weekNumber;
             }
 
