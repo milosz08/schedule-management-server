@@ -100,6 +100,7 @@
         public const string GET_SCHEDULE_SUBJECTS_BASE_GROUP_ID = "all-schedule-subjects-base-group";
         public const string GET_SCHEDULE_SUBJECTS_BASE_TEACHER_ID = "all-schedule-subjects-base-teacher";
         public const string GET_SCHEDULE_SUBJECTS_BASE_ROOM_ID = "all-schedule-subjects-base-room";
+        public const string GET_SCHEDULE_SUBJECT_DETAILS = "schedule-subject-details";
         
         //--------------------------------------------------------------------------------------------------------------
         
