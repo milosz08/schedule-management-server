@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asp_net_po_schedule_management_server.DbConfig;
 
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220529103807_ChangeOneToManyRelation4")]
+    partial class ChangeOneToManyRelation4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -394,6 +396,10 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("time(6)")
                         .HasColumnName("start-time");
 
+                    b.Property<long>("StudyGroupId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("group-key");
+
                     b.Property<long>("StudySubjectId")
                         .HasColumnType("bigint")
                         .HasColumnName("subject-key");
@@ -409,6 +415,8 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ScheduleSubjectTypeId");
+
+                    b.HasIndex("StudyGroupId");
 
                     b.HasIndex("StudySubjectId");
 
@@ -871,21 +879,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.ToTable("weekdays");
                 });
 
-            modelBuilder.Entity("schedule-groups-binding", b =>
-                {
-                    b.Property<long>("group-key")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("schedule-subject-key")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("group-key", "schedule-subject-key");
-
-                    b.HasIndex("schedule-subject-key");
-
-                    b.ToTable("schedule-groups-binding");
-                });
-
             modelBuilder.Entity("schedule-rooms-binding", b =>
                 {
                     b.Property<long>("room-key")
@@ -1010,6 +1003,12 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudyGroup", "StudyGroup")
+                        .WithMany()
+                        .HasForeignKey("StudyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("asp_net_po_schedule_management_server.Entities.StudySubject", "StudySubject")
                         .WithMany()
                         .HasForeignKey("StudySubjectId")
@@ -1023,6 +1022,8 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("ScheduleSubjectType");
+
+                    b.Navigation("StudyGroup");
 
                     b.Navigation("StudySubject");
 
@@ -1138,21 +1139,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("ScheduleSubject");
-                });
-
-            modelBuilder.Entity("schedule-groups-binding", b =>
-                {
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudyGroup", null)
-                        .WithMany()
-                        .HasForeignKey("group-key")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.ScheduleSubject", null)
-                        .WithMany()
-                        .HasForeignKey("schedule-subject-key")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("schedule-rooms-binding", b =>
