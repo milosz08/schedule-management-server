@@ -137,6 +137,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.Name, from => from.MapFrom(dir => 
                     $"{dir.Name} ({dir.StudySpecialization.Alias} {dir.StudySpecialization.StudyType.Alias} " +
                     $"{dir.StudySpecialization.StudyDegree.Alias})"));
+
+            //----------------------------------------------------------------------------------------------------------
+            
+            CreateMap<BaseScheduleResData, ScheduleGroups>();
+            CreateMap<BaseScheduleResData, ScheduleTeachers>();
+            CreateMap<BaseScheduleResData, ScheduleRooms>();
+            
+            //----------------------------------------------------------------------------------------------------------
             
             CreateMap<Semester, NameWithDbIdElement>();
             CreateMap<StudyRoom, NameWithDbIdElement>();

@@ -1,12 +1,15 @@
 ﻿using System;
+
 using System.IO;
 using System.Net;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Hosting;
 
+using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Exceptions;
 
 
@@ -164,6 +167,45 @@ namespace asp_net_po_schedule_management_server.Utils
                 builder.Append(piece.Substring(0, 1).ToUpper());
             }
             return builder.ToString();
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda formatująca czas odbywania przedmitu z typów TimeSpan na string.
+        /// </summary>
+        /// <param name="subject">przedmiot z planu zajęć</param>
+        /// <returns>przeformatowany czas początkowy i końcowy w formie HH:mm - HH:mm</returns>
+        public static string FormatTime(ScheduleSubject subject)
+        {
+            return $"{subject.StartTime.ToString("hh\\:mm")} - {subject.EndTime.ToString("hh\\:mm")}";
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda konwertująca, sortująca i formatująca występowanie danego przedmiotu w planie zajęć grupy.
+        /// </summary>
+        /// <param name="scheduleSubject">przedmiot z planu zajęć</param>
+        /// <returns>posortowane daty występowania przedmiotu w formie stringa</returns>
+        public static string ConvertScheduleOccur(ScheduleSubject scheduleSubject)
+        {
+            return string.Join(", ", scheduleSubject.WeekScheduleOccurs
+                .OrderBy(x => x.OccurDate)
+                .Select(o => o.OccurDate.ToString("dd.MM")));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda generująca alias przedmiotu (na podtrzeby obiektu transferowego przekazywanego w planie zajęć).
+        /// </summary>
+        /// <param name="scheduleSubject">przedmiot z planu zajęć</param>
+        /// <returns>alias przedmiotu</returns>
+        public static string CreateSubjectAlias(ScheduleSubject scheduleSubject)
+        {
+            return scheduleSubject.StudySubject.Alias.Substring(0, scheduleSubject.StudySubject.Alias.IndexOf("/",
+                StringComparison.OrdinalIgnoreCase)) + ", " + scheduleSubject.ScheduleSubjectType.Alias;
         }
     }
 }
