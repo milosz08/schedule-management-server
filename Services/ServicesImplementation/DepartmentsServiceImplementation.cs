@@ -194,7 +194,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         {
             await _helper.CheckIfUserCredentialsAreValid(credentials);
             
-            IQueryable<Department> findAllRemovingDepartments = _context.Departments.Where(d => !d.IfRemovable);
+            IQueryable<Department> findAllRemovingDepartments = _context.Departments.Where(d => d.IfRemovable);
             // jeśli znajdzie co najmniej jeden wydział do usunięcia
             if (findAllRemovingDepartments.Count() > 0) {
                 _context.Departments.RemoveRange(findAllRemovingDepartments);
