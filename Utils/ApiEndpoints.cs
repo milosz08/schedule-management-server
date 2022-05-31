@@ -105,8 +105,9 @@
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler TimeManagementController
+        public const string GET_STUDY_YEARS = "all-study-years";
         public const string GET_WEEKSDATA_BASE_CURR_YEAR = "all-weeks-data-base-curr-year";
-        
+
         //--------------------------------------------------------------------------------------------------------------
         
         // wspólne

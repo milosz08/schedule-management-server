@@ -19,6 +19,10 @@ namespace asp_net_po_schedule_management_server.Entities
         [Required]
         [Column("end-time")]
         public TimeSpan EndTime { get; set; }
+        
+        [Required]
+        [Column("study-year")]
+        public string StudyYear { get; set; }
 
         [ForeignKey(nameof(Weekday))]
         [Column("weekday-key")]

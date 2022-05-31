@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Collections.Generic;
 
 
@@ -6,6 +7,29 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 {
     public sealed class TimeManagementServiceImplementation : ITimeManagementService
     {
+        
+        #region Get all study years from 2020 to current
+
+        /// <summary>
+        /// Metoda zwraca wszystkie roki studiów, począwszy od pierwszego podanego roku (2020) do roku o jeden większego
+        /// od aktualnego.
+        /// </summary>
+        /// <returns>tablica roków studiów w formacie YYYY/YYYY</returns>
+        public List<string> GetAllStudyYearsFrom2020ToCurrent()
+        {
+            int initialYear = 2020;
+            int currentYear = DateTime.Now.Year;
+            List<string> allDates = new List<string>();
+            for (int i = 0; i < currentYear - initialYear + 1; i++) {
+                allDates.Add($"{initialYear + i}/{initialYear + 1 + i}");
+            }
+            return allDates;
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Return all weeks indicators in current study year
         
         /// <summary>
@@ -13,20 +37,9 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// wyliczonego aktualnego roku akademickiego.
         /// </summary>
         /// <returns>lista tygodni</returns>
-        public List<string> GetAllWeeksNameWithWeekNumberInCurrentYear()
+        public List<string> GetAllWeeksNameWithWeekNumberInCurrentYear(int startYear, int endYear)
         {
             List<string> allDates = new List<string>();
-            int startYear, endYear;
-            
-            // jeśli jest to 2 semestr, ustaw rok poprzedni, jeśli nie (semestr 1) ustaw rok kolejny
-            if (DateTime.Now.Month > 1 && DateTime.Now.Month < 10) {
-                startYear = DateTime.Now.Year - 1;
-                endYear = DateTime.Now.Year;
-            } else {
-                startYear = DateTime.Now.Year;
-                endYear = DateTime.Now.Year + 1;
-            }
-            
             DateTime start = new DateTime(startYear, 10, 1);
             DateTime end = new DateTime(endYear, 9, 30);
 
