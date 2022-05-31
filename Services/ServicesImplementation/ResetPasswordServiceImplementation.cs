@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -171,8 +172,9 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 throw new BasicServerException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
             }
             
-            // zapisz jako wykorzystane i zapisz nowe hasło
+            // zapisz jako wykorzystane i zapisz nowe hasło (oraz ustaw flagę zmiany hasła na true)
             findResetOtp.IfUsed = true;
+            findPerson.FirstAccess = false;
             findPerson.Password = _passwordHasher.HashPassword(findPerson, dto.newPassword);
             _context.Persons.Update(findPerson);
             

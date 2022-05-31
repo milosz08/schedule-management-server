@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asp_net_po_schedule_management_server.DbConfig;
 
 namespace asp_net_po_schedule_management_server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220528235344_ChangeOneToManyRelation2")]
+    partial class ChangeOneToManyRelation2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -394,14 +396,13 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("time(6)")
                         .HasColumnName("start-time");
 
+                    b.Property<long>("StudyGroupId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("group-key");
+
                     b.Property<long>("StudySubjectId")
                         .HasColumnType("bigint")
                         .HasColumnName("subject-key");
-
-                    b.Property<string>("StudyYear")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("study-year");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime(6)")
@@ -414,6 +415,8 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ScheduleSubjectTypeId");
+
+                    b.HasIndex("StudyGroupId");
 
                     b.HasIndex("StudySubjectId");
 
@@ -808,13 +811,9 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("dictionary-hash");
 
-                    b.Property<DateTime>("OccurDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("week-occur");
-
                     b.Property<long>("ScheduleSubjectId")
                         .HasColumnType("bigint")
-                        .HasColumnName("schedule-subject-key");
+                        .HasColumnName("subject-schedule-key");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime(6)")
@@ -874,21 +873,6 @@ namespace asp_net_po_schedule_management_server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("weekdays");
-                });
-
-            modelBuilder.Entity("schedule-groups-binding", b =>
-                {
-                    b.Property<long>("group-key")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("schedule-subject-key")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("group-key", "schedule-subject-key");
-
-                    b.HasIndex("schedule-subject-key");
-
-                    b.ToTable("schedule-groups-binding");
                 });
 
             modelBuilder.Entity("schedule-rooms-binding", b =>
@@ -1015,6 +999,12 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudyGroup", "StudyGroup")
+                        .WithMany()
+                        .HasForeignKey("StudyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("asp_net_po_schedule_management_server.Entities.StudySubject", "StudySubject")
                         .WithMany()
                         .HasForeignKey("StudySubjectId")
@@ -1028,6 +1018,8 @@ namespace asp_net_po_schedule_management_server.Migrations
                         .IsRequired();
 
                     b.Navigation("ScheduleSubjectType");
+
+                    b.Navigation("StudyGroup");
 
                     b.Navigation("StudySubject");
 
@@ -1136,26 +1128,9 @@ namespace asp_net_po_schedule_management_server.Migrations
 
             modelBuilder.Entity("asp_net_po_schedule_management_server.Entities.WeekScheduleOccur", b =>
                 {
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.ScheduleSubject", "ScheduleSubject")
+                    b.HasOne("asp_net_po_schedule_management_server.Entities.ScheduleSubject", null)
                         .WithMany("WeekScheduleOccurs")
                         .HasForeignKey("ScheduleSubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ScheduleSubject");
-                });
-
-            modelBuilder.Entity("schedule-groups-binding", b =>
-                {
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.StudyGroup", null)
-                        .WithMany()
-                        .HasForeignKey("group-key")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("asp_net_po_schedule_management_server.Entities.ScheduleSubject", null)
-                        .WithMany()
-                        .HasForeignKey("schedule-subject-key")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

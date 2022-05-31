@@ -118,6 +118,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .UsingEntity<Dictionary<string, object>>("schedule-rooms-binding",
                     b => b.HasOne<StudyRoom>().WithMany().HasForeignKey("room-key"),
                     b => b.HasOne<ScheduleSubject>().WithMany().HasForeignKey("schedule-subject-key"));
+            
+            // mapowanie modelu przedmiotu na planie z salami zajęciowymi w relacji MANY-TO-MANY
+            modelBuilder.Entity<ScheduleSubject>()
+                .HasMany(p => p.StudyGroups)
+                .WithMany(p => p.ScheduleSubjects)
+                .UsingEntity<Dictionary<string, object>>("schedule-groups-binding",
+                    b => b.HasOne<StudyGroup>().WithMany().HasForeignKey("group-key"),
+                    b => b.HasOne<ScheduleSubject>().WithMany().HasForeignKey("schedule-subject-key"));
         }
 
         #endregion

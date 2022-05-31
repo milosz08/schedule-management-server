@@ -2,14 +2,16 @@
 
 using System.Net;
 using System.Linq;
-using System.Security.Claims;
+using System.Globalization;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Utils;
@@ -28,6 +30,8 @@ namespace asp_net_po_schedule_management_server.Services.Helpers
     {
         private readonly ApplicationDbContext _context;
         private readonly IPasswordHasher<Person> _passwordHasher;
+
+        private readonly int _singleGridBlockHeight = 96;
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -185,6 +189,233 @@ namespace asp_net_po_schedule_management_server.Services.Helpers
                 return $"{currentYear - 1}/{currentYear}";
             }
             return $"{currentYear}/{currentYear + 1}";
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Find day based day id and weeknumber with year
+
+        /// <summary>
+        /// Metoda znajdująca dzień (w postaci obiektu daty) na podstawie roku, numeru tygodnia oraz dnia tygodnia.
+        /// </summary>
+        /// <param name="year">rok</param>
+        /// <param name="weekNumber">numer tygodnia</param>
+        /// <param name="dayOfWeek">dzień tygodnia</param>
+        /// <returns>znaleziony dzień (w postaci obiektu daty)</returns>
+        public DateTime FindDayBasedDayIdAndWeekNumber(int year, int weekNumber, int dayOfWeek)
+        {
+            DateTime jan1 = new DateTime(year, 1, 1);
+            int daysOffset = DayOfWeek.Tuesday - jan1.DayOfWeek;
+        
+            DateTime firstMonday = jan1.AddDays(daysOffset);
+        
+            Calendar cal = CultureInfo.CurrentCulture.Calendar;
+            int firstWeek = cal.GetWeekOfYear(jan1, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        
+            int weekNum = weekNumber;
+            if (firstWeek <= 1) {
+                weekNum -= 1;
+            }
+
+            return firstMonday.AddDays(weekNum * 7 + dayOfWeek - 2);
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Computed position from top and height of subject schedule element
+
+        /// <summary>
+        /// Metoda obliczająca ilość pikseli od góry elementu canvas oraz wielkości pojedynczego bloku zajęciowego.
+        /// Używane przede wszystkim we front-endzie do wizualizacji planu na obiekcie canvas.
+        /// </summary>
+        /// <param name="hourStart">godzina rozpoczęcia zajęć</param>
+        /// <param name="hourEnd">godzina zakończenia zajęć</param>
+        /// <returns></returns>
+        public (int pxFromTop, int pxHegith) ComputedPositionFromTopAndHeight(TimeSpan hourStart, TimeSpan hourEnd)
+        {
+            int heightOf5minutes = _singleGridBlockHeight / (60 / 5); // wysokość jednego 5 minutowego bloku
+            
+            // obliczanie pozycji kafelka od góry canvasu
+            int allMinutesFromTop = (int) (hourStart - TimeSpan.Parse("07:00")).TotalMinutes;
+            int pxFromTop = (heightOf5minutes * allMinutesFromTop) / 5;
+            
+            // obliczanie wysokości kafelka
+            int fullLength = ((int) (hourEnd - hourStart).TotalMinutes) / 5;
+            int pxHegith = heightOf5minutes * fullLength;
+            
+            return (pxFromTop, pxHegith);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Schedule Subjects helpers
+
+        /// <summary>
+        /// Metoda pomocnicza, tworząca obiekt bazowy filtrowanych przedmiotów na planie zajęć.
+        /// </summary>
+        /// <param name="subj">iterowany przedmiot</param>
+        /// <returns>stworzony obiekt z parametrami przedmiotu przekazywanego w argumencie</returns>
+        public BaseScheduleResData ScheduleSubjectFilledFieldData(ScheduleSubject subj, ScheduleFilteringData filter)
+        {
+            var test = new BaseScheduleResData()
+            {
+                ScheduleSubjectId = subj.Id,
+                SubjectWithTypeAlias = ApplicationUtils.CreateSubjectAlias(subj),
+                SubjectTypeHexColor = subj.ScheduleSubjectType.Color,
+                SubjectTime = $"{subj.StartTime.ToString("hh\\:mm")} - {subj.EndTime.ToString("hh\\:mm")}",
+                PositionFromTop = ComputedPositionFromTopAndHeight(subj.StartTime, subj.EndTime).pxFromTop,
+                ElementHeight = ComputedPositionFromTopAndHeight(subj.StartTime, subj.EndTime).pxHegith,
+                SubjectOccuredData = ApplicationUtils.ConvertScheduleOccur(subj),
+                IfNotShowingOccuredDates = !filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase),
+            };
+            return test;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Metoda pomocnicza służąca do mapowania grup dziekańskich z encji na obiekt zapytania HTTP.
+        /// </summary>
+        /// <param name="scheduleSubject">obiekt przedmiotu do zmapowania</param>
+        /// <returns>zmapoowany subobiekt</returns>
+        public List<ScheduleMultipleValues<ScheduleGroupQuery>> MappingScheduleGroups(ScheduleSubject scheduleSubject)
+        {
+            return scheduleSubject.StudyGroups
+                .Select(g => new ScheduleMultipleValues<ScheduleGroupQuery>(
+                    g.Name,
+                    new ScheduleGroupQuery(g.Department.Id, g.StudySpecialization.Id, g.Id))
+                ).ToList();
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Metoda pomocnicza służąca do mapowania pracowników z encji na obiekt zapytania HTTP.
+        /// </summary>
+        /// <param name="scheduleSubject">obiekt przedmiotu do zmapowania</param>
+        /// <returns>zmapoowany subobiekt</returns>
+        public List<ScheduleMultipleValues<ScheduleTeacherQuery>> MappingScheduleTeachers(ScheduleSubject scheduleSubject)
+        {
+            return scheduleSubject.ScheduleTeachers
+                .Select(t => new ScheduleMultipleValues<ScheduleTeacherQuery>(
+                    t.Shortcut,
+                    new ScheduleTeacherQuery(t.Department.Id, t.Cathedral.Id, t.Id))
+                ).ToList();
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Metoda pomocnicza służąca do mapowania sal zajęciowych z encji na obiekt zapytania HTTP.
+        /// </summary>
+        /// <param name="scheduleSubject">obiekt przedmiotu do zmapowania</param>
+        /// <returns>zmapoowany subobiekt</returns>
+        public List<ScheduleMultipleValues<ScheduleRoomQuery>> MappingScheduleRooms(ScheduleSubject scheduleSubject)
+        {
+            return scheduleSubject.StudyRooms
+                .Select(r => new ScheduleMultipleValues<ScheduleRoomQuery>(
+                    r.Name,
+                    new ScheduleRoomQuery(r.Department.Id, r.Cathedral.Id, r.Id))
+                ).ToList();
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Metoda pomocniczna filtrująca przedmioty w planie zajęć na podstawie parametrów filtracji w obiekcie
+        /// transferowym.
+        /// </summary>
+        /// <param name="scheduleSubject">iterowany przedmiot z planu</param>
+        /// <param name="filter">obiekt filtracji</param>
+        /// <param name="allElements">wszystkie przedmioty</param>
+        /// <param name="element">pojedynczy przedmiot</param>
+        /// <typeparam name="T">parametr pojedynczego elementu (grupy, pracownika, sali)</typeparam>
+        public void FilteringScheduleSubject<T>(ScheduleSubject scheduleSubject, ScheduleFilteringData filter, 
+            ref List<T> allElements, ref T element)
+        {
+            bool ifShow = false;
+            if (!filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase)) {
+                List<int> options = filter.WeekInputOptions
+                    .Substring(filter.WeekInputOptions.IndexOf("(", StringComparison.OrdinalIgnoreCase) + 1)
+                    .Replace(")", "").Split(", ").Select(v => int.Parse(v)).ToList();
+                ifShow = scheduleSubject.WeekScheduleOccurs
+                    .Any(o => o.Year == options[0] && o.WeekNumber == options[1]);
+                if (scheduleSubject.WeekScheduleOccurs.IsNullOrEmpty()) {
+                    ifShow = true;
+                }
+            } else if(scheduleSubject.StudyYear.Equals(filter.SelectedYears)) {
+                ifShow = true;
+            }
+
+            // pokaż wybrane/pokaż wszystkie
+            if (ifShow) {
+                allElements.Add(element);
+            }
+        }
+        
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Current DateTime object from year and weekOfYear
+
+        /// <summary>
+        /// Metoda pomocnicza zwracająca datę pierszego dnia tygodnia na podstawie numeru tygodnia oraz roku.
+        /// </summary>
+        /// <param name="year">rok</param>
+        /// <param name="weekOfYear">numer tygodnia</param>
+        /// <returns>pierwsza data pierszego dnia tygodnia (poniedziałek)</returns>
+        public DateTime FirstDateOfWeekBasedWeekNumber(int year, int weekOfYear)
+        {
+            DateTime jan1 = new DateTime(year, 1, 1);
+            int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
+            DateTime firstThursday = jan1.AddDays(daysOffset);
+            Calendar cal = CultureInfo.CurrentCulture.Calendar;
+            int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int weekNum = weekOfYear;
+            if (firstWeek == 1) {
+                weekNum -= 1;
+            }
+            var result = firstThursday.AddDays(weekNum * 7);
+            return result.AddDays(-3);
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Add base values for single day
+
+        /// <summary>
+        /// Metoda pomocnicza dodająca podstawowe wartości do modelu odczytane z bazy danych na podstawie parametrów
+        /// zapytania.
+        /// </summary>
+        /// <param name="canvasData">zawartość wszystkich treści</param>
+        /// <param name="weekday">dzień tygodnia</param>
+        /// <param name="filter">obiekt filtracji</param>
+        /// <param name="dayIncrement">zmienna inkrementująca dzień tygodnia</param>
+        /// <typeparam name="T">typ zawartości treści (grupy, pracownicy, sale zajęciowe)</typeparam>
+        public void AddBaseValuesForSingleDay<T>(ref ScheduleCanvasData<T> canvasData, Weekday weekday,
+            ScheduleFilteringData filter, ref int dayIncrement)
+        {
+            canvasData.WeekdayNameWithId = new NameWithDbIdElement(weekday.Id, weekday.Alias);
+            canvasData.IfNotShowingOccuredDates = filter.WeekInputOptions
+                .Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase);
+            if (!filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase)) {
+                List<int> options = filter.WeekInputOptions
+                    .Substring(filter.WeekInputOptions.IndexOf("(", StringComparison.OrdinalIgnoreCase) + 1)
+                    .Replace(")", "").Split(", ").Select(v => int.Parse(v)).ToList();
+                canvasData.WeekdayDateTime = FirstDateOfWeekBasedWeekNumber(options[0], options[1])
+                    .AddDays(dayIncrement++).ToString("dd\\.MM");
+            } else {
+                canvasData.WeekdayDateTime = filter.WeekInputOptions;
+            }
         }
 
         #endregion

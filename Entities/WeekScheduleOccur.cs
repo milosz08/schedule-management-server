@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using asp_net_po_schedule_management_server.Entities.Shared;
@@ -16,6 +18,10 @@ namespace asp_net_po_schedule_management_server.Entities
         [Required]
         [Column("week-year")]
         public int Year { get; set; }
+        
+        [Required]
+        [Column("week-occur")]
+        public DateTime OccurDate { get; set; }
         
         [ForeignKey(nameof(ScheduleSubject))]
         [Column("schedule-subject-key")]
