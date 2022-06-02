@@ -110,6 +110,11 @@
 
         //--------------------------------------------------------------------------------------------------------------
         
+        // kontroler SearchContentController
+        public const string GET_MASSIVE_QUERY_RESULT = "massive-query-result";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         // wspólne
         public const string DELETE_MASSIVE = "delete-massive";
         public const string DELETE_ALL = "delete";
