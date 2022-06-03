@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.IO;
 using System.Net;
 using System.Security.Claims;
@@ -20,6 +21,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         private readonly ApplicationDbContext _context;
         
         private readonly static string[] ACCEPTABLE_IMAGE_TYPES = { "image/jpeg" };
+        private readonly string FOLDER_PATH = $"{ROOT_PATH}/_StaticPrivateContent/UserImages";
+        
         private readonly static string ROOT_PATH = Directory.GetCurrentDirectory();
 
         //--------------------------------------------------------------------------------------------------------------
@@ -104,11 +107,10 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 throw new BasicServerException(
                     "Akceptowane rozszerzenia pliku to: .jpeg", HttpStatusCode.ExpectationFailed);
             }
-            string folderPath = $"{ROOT_PATH}/_StaticPrivateContent/UserImages";
-            if (!Directory.Exists(folderPath)) { // jeśli folder nie istnieje, stwórz
-                Directory.CreateDirectory(folderPath);
+            if (!Directory.Exists(FOLDER_PATH)) { // jeśli folder nie istnieje, stwórz
+                Directory.CreateDirectory(FOLDER_PATH);
             }
-            string fullPath = $"{folderPath}/{findPerson.DictionaryHash}__{findPerson.Login}" +
+            string fullPath = $"{FOLDER_PATH}/{findPerson.DictionaryHash}__{findPerson.Login}" +
                               $"{new FileInfo(image.FileName).Extension}";
             
             FileStream stream = new FileStream(fullPath, FileMode.Create);
@@ -121,6 +123,37 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             return new PseudoNoContentResponseDto()
             {
                 Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione.",
+            };
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Delete custom avatar
+        
+        /// <summary>
+        /// Metoda odpowiadająca za usuwanie zdjęcia użytkownika. Tożsamość sprawdzana jest na podstawie JWT oraz
+        /// odpowiadających im wartości claimów.
+        /// </summary>
+        /// <param name="userLogin">login użytkownika (wartość typu Claim)</param>
+        /// <returns>obiekt z wiadomością serwera</returns>
+        public async Task<PseudoNoContentResponseDto> UserRemoveCustomAvatar(Claim userLogin)
+        {
+            // znajdowanie osoby na podstawie tokenu JWT
+            Person findPerson = await GetPersonFromDb(userLogin);
+            string fullPath = $"{FOLDER_PATH}/{findPerson.DictionaryHash}__{findPerson.Login}" +
+                              $"{new FileInfo(ACCEPTABLE_IMAGE_TYPES[0]).Extension}";
+            
+            // procedura usuwania zasobu z serwera
+            File.Delete($"{fullPath}.jpg");
+            
+            findPerson.HasPicture = false;
+            await _context.SaveChangesAsync();
+            
+            return new PseudoNoContentResponseDto()
+            {
+                Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało usunięte z serwera.",
             };
         }
 

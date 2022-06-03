@@ -12,5 +12,6 @@ namespace asp_net_po_schedule_management_server.Services
     {
         Task<(byte[], string)> UserGetCustomAvatar(string userId, Claim userLogin);
         Task<PseudoNoContentResponseDto> UserAddCustomAvatar(IFormFile image, Claim userLogin);
+        Task<PseudoNoContentResponseDto> UserRemoveCustomAvatar(Claim userLogin);
     }
 }

@@ -19,7 +19,8 @@
         
         // kontroler FileController
         public const string GET_AVATAR = "get-avatar";
-        public const string ADD_AVATAR = "add-avatar";
+        public const string ADD_OR_CHANGE_AVATAR = "add-or-change-avatar";
+        public const string DELETE_AVATAR = "delete-avatar";
         public const string GET_ALL_AVATARS = "user-avatars";
         
         //--------------------------------------------------------------------------------------------------------------

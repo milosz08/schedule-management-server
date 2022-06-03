@@ -44,11 +44,20 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
-        [HttpPost(ApiEndpoints.ADD_AVATAR)]
+        [HttpPost(ApiEndpoints.ADD_OR_CHANGE_AVATAR), DisableRequestSizeLimit]
         public async Task<ActionResult<PseudoNoContentResponseDto>> UserAddCustomAvatar([FromForm] IFormFile image)
         {
             Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
             return StatusCode((int) HttpStatusCode.OK, await _service.UserAddCustomAvatar(image, userLogin));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpDelete(ApiEndpoints.DELETE_AVATAR)]
+        public async Task<ActionResult<PseudoNoContentResponseDto>> UserRemoveCustomAvatar()
+        {
+            Claim userLogin = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
+            return StatusCode((int) HttpStatusCode.OK, await _service.UserRemoveCustomAvatar(userLogin));
         }
     }
 }
