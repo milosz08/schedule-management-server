@@ -206,6 +206,34 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
+        #region Get study subject data base study subject id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość przedmiotu z bazy danych na podstawie przekazywanego parametru id w
+        /// parametrach zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="specId">id przedmiotu</param>
+        /// <returns>obiekt transferowy z danymi konkretnego przedmiotu</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia przedmiotu z podanym id</exception>
+        public async Task<StudySubjectEditResDto> GetStudySubjectBaseDbId(long subjId)
+        {
+            // wyszukaj katedrę na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            StudySubject findStudySubject = await _context.StudySubjects
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization).ThenInclude(sp => sp.StudyType)
+                .Include(s => s.StudySpecialization).ThenInclude(sp => sp.StudyDegree)
+                .FirstOrDefaultAsync(s => s.Id == subjId);
+            if (findStudySubject == null) {
+                throw new BasicServerException("Nie znaleziono przedmiotu z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<StudySubjectEditResDto>(findStudySubject);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Delete content
 
         /// <summary>

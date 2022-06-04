@@ -12,6 +12,7 @@ namespace asp_net_po_schedule_management_server.Services
         SearchQueryResponseDto GetAllCathedralsBasedDepartmentName(string cathName, string deptName);
         PaginationResponseDto<CathedralQueryResponseDto> GetAllCathedrals(SearchQueryRequestDto searchQuery);
         List<NameWithDbIdElement> GetAllCathedralsScheduleBaseDept(long deptId);
+        Task<CathedralEditResDto> GetCathedralBaseDbId(long cathId);
         Task DeleteMassiveCathedrals(MassiveDeleteRequestDto cathedrals, UserCredentialsHeaderDto credentials);
         Task DeleteAllCathedrals(UserCredentialsHeaderDto credentials);
     }

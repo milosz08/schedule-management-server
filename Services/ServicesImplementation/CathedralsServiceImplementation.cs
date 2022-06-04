@@ -187,6 +187,32 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #endregion
         
         //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get cathedral data base cathedral id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość katedry z bazy danych na podstawie przekazywanego parametru id w parametrach
+        /// zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="cathId">id katedry</param>
+        /// <returns>obiekt transferowy z danymi konkretnej katedry</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia katedry z podanym id</exception>
+        public async Task<CathedralEditResDto> GetCathedralBaseDbId(long cathId)
+        {
+            // wyszukaj katedrę na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            Cathedral findCathedral = await _context.Cathedrals
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(c => c.Id == cathId);
+            if (findCathedral == null) {
+                throw new BasicServerException("Nie znaleziono katedry z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<CathedralEditResDto>(findCathedral);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
 
         #region Delete content
 

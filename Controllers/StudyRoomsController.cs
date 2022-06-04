@@ -77,6 +77,14 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpGet(ApiEndpoints.GET_STUDY_ROOM_BASE_ID)]
+        public async Task<ActionResult<StudyRoomEditResDto>> GetStudyRoomBaseDbId([FromQuery] long roomId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetStudyRoomBaseDbId(roomId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveStudyRooms([FromBody] MassiveDeleteRequestDto deleteRooms)
         {

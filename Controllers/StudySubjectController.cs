@@ -80,6 +80,14 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpGet(ApiEndpoints.GET_STUDY_SUBJECT_BASE_ID)]
+        public async Task<ActionResult<StudySubjectEditResDto>> GetStudySubjectBaseDbId([FromQuery] long subjId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetStudySubjectBaseDbId(subjId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveSubjects([FromBody] MassiveDeleteRequestDto deleteSubjects)
         {

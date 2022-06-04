@@ -53,6 +53,7 @@
         public const string GET_ALL_DEPARTMENTS_LIST = "all-departments-list";
         public const string GET_ALL_DEPARTMENTS_PAGINATION = "all-departments";
         public const string GET_ALL_DEPARTMENTS_SCHEDULE = "all-departments-schedule";
+        public const string GET_DEPARTMENT_BASE_ID = "department-base-id";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -61,6 +62,7 @@
         public const string GET_ALL_CATHEDRALS_BASE_DEPT = "all-cathedrals-dept";
         public const string GET_ALL_CATHEDRALS_PAGINATION = "all-cathedrals";
         public const string GET_ALL_CATHEDRALS_SCHEDULE = "all-cathedrals-schedule";
+        public const string GET_CATHEDRAL_BASE_ID = "cathedral-base-id";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -70,6 +72,7 @@
         public const string GET_ALL_STUDY_SPECS = "all-study-specs";
         public const string GET_ALL_STUDY_SPECS_SCHEDULE = "all-study-specs-schedule";
         public const string GET_AVAILABLE_STUDY_SPECS_BASE_DEPT = "available-study-specs-base-dept";
+        public const string GET_STUDY_SPECIALIZATION_BASE_ID = "study-spec-base-id";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -78,6 +81,7 @@
         public const string GET_ALL_STUDY_ROOMS = "all-study-rooms";
         public const string GET_ALL_STUDY_ROOMS_SCHEDULE = "all-study-rooms-schedule";
         public const string GET_ALL_STUDY_ROOMS_BASE_DEPT = "all-study-rooms-base-dept";
+        public const string GET_STUDY_ROOM_BASE_ID = "study-room-base-id";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -86,6 +90,7 @@
         public const string GET_ALL_STUDY_SUBJECTS = "all-study-subjects";
         public const string GET_ALL_STUDY_SUBJECT_BASE_DEPT = "all-study-subjects-dept";
         public const string GET_AVAILABLE_SUBJECTS_BASE_DEPT = "available-subjects-base-dept";
+        public const string GET_STUDY_SUBJECT_BASE_ID = "study-subject-base-id";
         
         //--------------------------------------------------------------------------------------------------------------
         

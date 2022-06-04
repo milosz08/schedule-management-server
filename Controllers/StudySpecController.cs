@@ -93,6 +93,15 @@ namespace asp_net_po_schedule_management_server.Controllers
         //--------------------------------------------------------------------------------------------------------------
         
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
+        [HttpGet(ApiEndpoints.GET_STUDY_SPECIALIZATION_BASE_ID)]
+        public async Task<ActionResult<StudySpecializationEditResDto>> GetStudySpecializationBaseDbId([FromQuery] long specId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetStudySpecializationBaseDbId(specId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveStudySpecs([FromBody] MassiveDeleteRequestDto deleteSpecs)
         {

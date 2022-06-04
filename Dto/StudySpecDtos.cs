@@ -46,4 +46,15 @@ namespace asp_net_po_schedule_management_server.Dto
         public string StudyDegree { get; set; }
         public string StudyDegreeAlias { get; set; }
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    
+    public sealed class StudySpecializationEditResDto
+    {
+        public string Name { get; set; }
+        public string Alias { get; set; }
+        public string DepartmentName { get; set; }
+        public List<long> StudyType { get; set; }
+        public List<long> StudyDegree { get; set; }
+    }
 }

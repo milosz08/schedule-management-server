@@ -12,6 +12,7 @@ namespace asp_net_po_schedule_management_server.Services
         PaginationResponseDto<StudyRoomQueryResponseDto> GetAllStudyRooms(SearchQueryRequestDto searchQuery);
         Task<List<NameWithDbIdElement>> GetAllStudyRoomsScheduleBaseCath(long deptId, long cathId);
         Task<List<NameWithDbIdElement>> GetAllStudyRoomsScheduleBaseDeptName(long deptId);
+        Task<StudyRoomEditResDto> GetStudyRoomBaseDbId(long roomId);
         Task DeleteMassiveStudyRooms(MassiveDeleteRequestDto studyRooms, UserCredentialsHeaderDto credentials);
         Task DeleteAllStudyRooms(UserCredentialsHeaderDto credentials);
     }

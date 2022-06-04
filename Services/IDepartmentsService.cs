@@ -12,6 +12,7 @@ namespace asp_net_po_schedule_management_server.Services
         SearchQueryResponseDto GetAllDepartmentsList(string deptQueryName);
         PaginationResponseDto<DepartmentQueryResponseDto> GetAllDepartments(SearchQueryRequestDto searchQuery);
         Task<List<NameWithDbIdElement>> GetAllDepartmentsSchedule();
+        Task<DepartmentEditResDto> GetDepartmentBaseDbId(long deptId);
         Task DeleteMassiveDepartments(MassiveDeleteRequestDto departments, UserCredentialsHeaderDto credentials);
         Task DeleteAllDepartments(UserCredentialsHeaderDto credentials);
     }

@@ -76,6 +76,14 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpGet(ApiEndpoints.GET_CATHEDRAL_BASE_ID)]
+        public async Task<ActionResult<CathedralEditResDto>> GetCathedralBaseDbId([FromQuery] long cathId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetCathedralBaseDbId(cathId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveCathedrals([FromBody] MassiveDeleteRequestDto deleteCathedrals)
         {

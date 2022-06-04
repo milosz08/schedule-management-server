@@ -247,6 +247,34 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
+        #region Get study specialization data base study specialization id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość kierunku studiów z bazy danych na podstawie przekazywanego parametru id w
+        /// parametrach zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="specId">id kierunku studiów</param>
+        /// <returns>obiekt transferowy z danymi konkretnego kierunku studiów</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia kierunku z podanym id</exception>
+        public async Task<StudySpecializationEditResDto> GetStudySpecializationBaseDbId(long specId)
+        {
+            // wyszukaj katedrę na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            StudySpecialization findStudySpecialization = await _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Include(s => s.StudyDegree)
+                .FirstOrDefaultAsync(s => s.Id == specId);
+            if (findStudySpecialization == null) {
+                throw new BasicServerException("Nie znaleziono kierunku z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<StudySpecializationEditResDto>(findStudySpecialization);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Delete content
 
         /// <summary>

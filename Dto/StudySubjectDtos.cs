@@ -36,4 +36,13 @@ namespace asp_net_po_schedule_management_server.Dto
         public string DepartmentName { get; set; }
         public string DepartmentAlias { get; set; }
     }
+    
+    //------------------------------------------------------------------------------------------------------------------
+    
+    public sealed class StudySubjectEditResDto
+    {
+        public string Name { get; set; }
+        public string DepartmentName { get; set; }
+        public string StudySpecName { get; set; }
+    }
 }

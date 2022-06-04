@@ -187,6 +187,34 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
+        #region Get study room data base study room id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość sali zajęciowej z bazy danych na podstawie przekazywanego parametru id w
+        /// parametrach zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="roomId">id sali zajęciowej</param>
+        /// <returns>obiekt transferowy z danymi konkretnej sali zajęciowej</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia sali z podanym id</exception>
+        public async Task<StudyRoomEditResDto> GetStudyRoomBaseDbId(long roomId)
+        {
+            // wyszukaj katedrę na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            StudyRoom findStudyRoom = await _context.StudyRooms
+                .Include(r => r.RoomType)
+                .Include(r => r.Cathedral)
+                .Include(r => r.Department)
+                .FirstOrDefaultAsync(r => r.Id == roomId);
+            if (findStudyRoom == null) {
+                throw new BasicServerException("Nie znaleziono sali z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<StudyRoomEditResDto>(findStudyRoom);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         #region Delete content
 
         /// <summary>

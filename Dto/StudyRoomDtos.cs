@@ -51,4 +51,16 @@ namespace asp_net_po_schedule_management_server.Dto
         public string RoomTypeName { get; set; }
         public string RoomTypeAlias { get; set; }
     }
+    
+    //------------------------------------------------------------------------------------------------------------------
+
+    public sealed class StudyRoomEditResDto
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string DepartmentName { get; set; }
+        public string CathedralName { get; set; }
+        public int Capacity { get; set; }
+        public string RoomTypeName { get; set; }
+    }
 }

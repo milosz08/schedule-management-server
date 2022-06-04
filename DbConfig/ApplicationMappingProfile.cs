@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 
+using System.Collections.Generic;
+
 using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Entities;
 
@@ -45,6 +47,9 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name));
             
             CreateMap<CathedralRequestDto, Cathedral>();
+
+            CreateMap<Cathedral, CathedralEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name));
             
             //----------------------------------------------------------------------------------------------------------
             
@@ -66,6 +71,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
             
             CreateMap<StudySpecialization, NameWithDbIdElement>()
                 .ForMember(dist => dist.Name, from => from.MapFrom(dir => $"{dir.Name} ({dir.StudyType.Alias})"));
+
+            CreateMap<StudySpecialization, StudySpecializationEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.StudyType, from => from.MapFrom(dir => new List<long>() { dir.StudyType.Id }))
+                .ForMember(dist => dist.StudyDegree, from => from.MapFrom(dir => new List<long>() { dir.StudyDegree.Id }));
             
             //----------------------------------------------------------------------------------------------------------
             
@@ -84,6 +94,12 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.CathedralAlias, from => from.MapFrom(dir => dir.Cathedral.Alias))
                 .ForMember(dist => dist.DeptWithCathAlias, from => from.MapFrom(dir =>
                     $"{dir.Department.Alias} / {dir.Cathedral.Alias}"));
+
+            CreateMap<StudyRoom, StudyRoomEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.CathedralName, from => from.MapFrom(dir => dir.Cathedral.Name))
+                .ForMember(dist => dist.RoomTypeName,
+                    from => from.MapFrom(dir => $"{dir.RoomType.Name} ({dir.RoomType.Alias})"));
             
             //----------------------------------------------------------------------------------------------------------
             
@@ -99,6 +115,12 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.SpecName, from => from.MapFrom(dir => dir.StudySpecialization.Name))
                 .ForMember(dist => dist.SpecAlias, from => from.MapFrom(dir =>
                     $"{dir.StudySpecialization.Alias} ({dir.StudySpecialization.StudyType.Alias} " +
+                    $"{dir.StudySpecialization.StudyDegree.Alias})"));
+
+            CreateMap<StudySubject, StudySubjectEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.StudySpecName, from => from.MapFrom(dir => 
+                    $"{dir.StudySpecialization.Name} ({dir.StudySpecialization.StudyType.Alias} " +
                     $"{dir.StudySpecialization.StudyDegree.Alias})"));
             
             //----------------------------------------------------------------------------------------------------------
@@ -121,6 +143,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             CreateMap<Department, DepartmentQueryResponseDto>();
             CreateMap<Department, SearchQueryResponseDto>();
             CreateMap<DepartmentRequestResponseDto, Department>();
+            CreateMap<Department, DepartmentEditResDto>();
             
             //----------------------------------------------------------------------------------------------------------
             
