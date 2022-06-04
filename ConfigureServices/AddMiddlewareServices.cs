@@ -1,6 +1,7 @@
-﻿using System.Reflection;
+﻿using FluentValidation;
+using System.Reflection;
 
-using FluentValidation;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 
 using asp_net_po_schedule_management_server.Dto;
@@ -25,6 +26,12 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             
             // strefa dodawania walidatorów modeli DTO
             services.AddScoped<IValidator<SearchQueryRequestDto>, UserQueryValidator>();
+            
+            services.Configure<FormOptions>(o => {  
+                o.ValueLengthLimit = int.MaxValue;  
+                o.MultipartBodyLengthLimit = int.MaxValue;  
+                o.MemoryBufferThreshold = int.MaxValue;  
+            }); 
             
             return services;
         }

@@ -48,6 +48,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SUBJECTS)]
         public ActionResult<StudySubjectQueryResponseDto> GetStudyRooms([FromQuery] SearchQueryRequestDto searchSearchQuery)
         {
@@ -56,6 +57,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SUBJECT_BASE_DEPT)]
         public ActionResult<SearchQueryResponseDto> GetAllStudySubjectsBaseDept(
             [FromQuery] string subjcName,

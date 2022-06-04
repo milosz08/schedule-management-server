@@ -19,7 +19,8 @@
         
         // kontroler FileController
         public const string GET_AVATAR = "get-avatar";
-        public const string ADD_AVATAR = "add-avatar";
+        public const string ADD_OR_CHANGE_AVATAR = "add-or-change-avatar";
+        public const string DELETE_AVATAR = "delete-avatar";
         public const string GET_ALL_AVATARS = "user-avatars";
         
         //--------------------------------------------------------------------------------------------------------------
@@ -28,6 +29,7 @@
         public const string GET_ALL_USERS_PAGINATION = "all-users";
         public const string GET_ALL_EMPLOYEERS_SCHEDULE = "all-employeers-schedule";
         public const string GET_ALL_TEACHERS_BASE_DEPT_AND_SUBJ = "all-teachers-base-dept-and-subj";
+        public const string GET_DASHBOARD_DETAILS = "dashboard-details";
 
         //--------------------------------------------------------------------------------------------------------------
         

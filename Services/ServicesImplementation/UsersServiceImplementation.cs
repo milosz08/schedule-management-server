@@ -1,16 +1,18 @@
 ﻿using AutoMapper;
 
 using System;
+using System.Net;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Entities;
+using asp_net_po_schedule_management_server.Exceptions;
 using asp_net_po_schedule_management_server.Services.Helpers;
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
 
@@ -142,6 +144,73 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         #endregion
 
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region User dashboard panel properties
+
+        /// <summary>
+        /// Metoda pobierająca szczegółowe dane użytkownika z bazyd danych i zwracająca je w postaci obiektu
+        /// transferowego. Metoda pobiera dane na podstawie identyfikacji JWT. Jeśli token jest nieprawidłowy, lub jeśli
+        /// nie znajdzie użytkownika z odszyfrowanymi danymi logowania, wyrzuci wyjątek.
+        /// </summary>
+        /// <param name="userIdentity">claimy identyfikujące użytkownika</param>
+        /// <returns>dane do głównego panelu konta opakowane w obiekt transferowy</returns>
+        /// <exception cref="BasicServerException">błędy JWT/brak JWT/nieautoryzowany dostęp do zasobu</exception>
+        public async Task<DashboardDetailsResDto> GetDashboardPanelData(Claim userIdentity)
+        {
+            // jeśli JWT jest nieprawidłowy, rzuć wyjątek dostępu (forbidden 403)
+            if (userIdentity == null) {
+                throw new BasicServerException("Dostęp do zasobu zabroniony.", HttpStatusCode.Forbidden);
+            }
+            // wyszukaj osobę na podstawie loginu z JWT, jeśli nie znajdzie rzuć wyjątek 404
+            Person findPerson = await _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Subjects)
+                .Include(p => p.Cathedral)
+                .Include(p => p.Department)
+                .Include(p => p.StudySpecializations)
+                .FirstOrDefaultAsync(p => p.Login == userIdentity.Value);
+            if (findPerson == null) {
+                throw new BasicServerException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
+            }
+            
+            DashboardDetailsResDto dashboardDetailsResDto = _mapper.Map<DashboardDetailsResDto>(findPerson);
+
+            if (findPerson.Cathedral != null) {
+                dashboardDetailsResDto.CathedralFullName = $"{findPerson.Cathedral.Name} ({findPerson.Cathedral.Alias})";
+            }
+
+            if (findPerson.Role.Name == AvailableRoles.STUDENT) {
+                dashboardDetailsResDto.StudySpecializations =
+                    findPerson.StudySpecializations.Select(s => $"{s.Name} ({s.Alias})").ToList();
+            }
+
+            if (findPerson.Role.Name == AvailableRoles.TEACHER || findPerson.Role.Name == AvailableRoles.EDITOR) {
+                dashboardDetailsResDto.StudySubjects = findPerson.Subjects.Select(s => $"{s.Name} ({s.Alias})").ToList();
+            }
+
+            if (findPerson.Role.Name == AvailableRoles.ADMINISTRATOR) {
+                dashboardDetailsResDto.DashboardElementsCount = new DashboardElementsCount(
+                    _context.Departments.Count(),
+                    _context.Cathedrals.Count(),
+                    _context.StudyRooms.Count(),
+                    _context.StudySpecializations.Count(),
+                    _context.StudySubjects.Count(),
+                    _context.StudyGroups.Count()
+                );
+                dashboardDetailsResDto.DashboardUserTypesCount = new DashboardUserTypesCount(
+                    _context.Persons.Include(r => r.Role).Where(p => p.Role.Name == AvailableRoles.STUDENT).Count(),
+                    _context.Persons.Include(r => r.Role).Where(p => p.Role.Name == AvailableRoles.TEACHER).Count(),
+                    _context.Persons.Include(r => r.Role).Where(p => p.Role.Name == AvailableRoles.EDITOR).Count(),
+                    _context.Persons.Include(r => r.Role).Where(p => p.Role.Name == AvailableRoles.ADMINISTRATOR).Count()
+                );
+            }
+            
+            return dashboardDetailsResDto;
+        }
+
+        #endregion
+        
         //--------------------------------------------------------------------------------------------------------------
         
         #region Delete massive users
