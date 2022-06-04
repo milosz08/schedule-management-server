@@ -1,6 +1,7 @@
 ﻿using System.Net;
-using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -71,6 +72,16 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
 
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_DASHBOARD_DETAILS)]
+        public async Task<ActionResult<DashboardDetailsResDto>> GetDashboardPanelData()
+        {
+            Claim userIdentity = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);   
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetDashboardPanelData(userIdentity));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveUsers([FromBody] MassiveDeleteRequestDto deleteUsers)
         {

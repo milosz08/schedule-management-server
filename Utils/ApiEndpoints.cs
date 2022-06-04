@@ -29,6 +29,7 @@
         public const string GET_ALL_USERS_PAGINATION = "all-users";
         public const string GET_ALL_EMPLOYEERS_SCHEDULE = "all-employeers-schedule";
         public const string GET_ALL_TEACHERS_BASE_DEPT_AND_SUBJ = "all-teachers-base-dept-and-subj";
+        public const string GET_DASHBOARD_DETAILS = "dashboard-details";
 
         //--------------------------------------------------------------------------------------------------------------
         
