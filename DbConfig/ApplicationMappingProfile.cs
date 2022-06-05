@@ -36,6 +36,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"));
 
+            CreateMap<Person, UserDetailsEditResDto>()
+                .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.CathedralName, from => from.MapFrom(dir => dir.Cathedral.Name));
+
             //----------------------------------------------------------------------------------------------------------
             
             CreateMap<Cathedral, CathedralResponseDto>()

@@ -50,8 +50,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 d.Name.Equals(dto.Name, StringComparison.OrdinalIgnoreCase) ||
                 d.Alias.Equals(dto.Alias, StringComparison.OrdinalIgnoreCase));
             if (findDepartment != null) {
-                throw new BasicServerException(
-                    "Podany wydział istnieje już w systemie.", HttpStatusCode.ExpectationFailed);
+                throw new BasicServerException("Podany wydział istnieje już w systemie.", HttpStatusCode.ExpectationFailed);
             }
 
             // mapowanie obiektu DTO na instancję encji dodawaną do bazy danych

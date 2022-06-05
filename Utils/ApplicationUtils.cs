@@ -162,9 +162,15 @@ namespace asp_net_po_schedule_management_server.Utils
         public static string CreateSubjectAlias(string subjectName)
         {
             string[] namePieces = subjectName.Split(" ");
+            int iterator = 0;
             StringBuilder builder = new StringBuilder();
             foreach (string piece in namePieces) {
-                builder.Append(piece.Substring(0, 1).ToUpper());
+                if (iterator == 0) {
+                    builder.Append(piece.Substring(0, 1).ToUpper());
+                } else {
+                    builder.Append(piece.Substring(0, 1).ToLower());
+                }
+                iterator++;
             }
             return builder.ToString();
         }
