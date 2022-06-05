@@ -37,6 +37,22 @@ namespace asp_net_po_schedule_management_server.Ssh.SshEmailService
         }
 
         //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Aktualizacja hasła na podstawie adresu email
+        /// </summary>
+        /// <param name="emailAddress">adres email</param>
+        /// <param name="newEmailPassword">nowe hasło do adresu email</param>
+        public void UpdateEmailPassword(string emailAddress, string newEmailPassword)
+        {
+            _sshInterceptor.ExecuteCommand(
+                $"echo " +
+                $"\"['--json', 'mail', 'passwd', '{emailAddress}', '{newEmailPassword}']\" " +
+                $"| nc -U /var/run/devil2.sock"
+            );
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
 
         /// <summary>
         /// Usuwanie skrzynki pocztowej.
