@@ -23,7 +23,7 @@ Projekt ma za zadanie symulować system zarządzania planem zajęć przykładowe
     - [Entity Framework](https://docs.microsoft.com/pl-pl/ef/)
     - [MySQL](https://www.mysql.com/)
     - [SSH.NET](https://github.com/sshnet/SSH.NET)
-- Pozostałe usługi / middleware services:     
+- Pozostałe usługi / other services:     
     - [JWT](https://jwt.io/)
     - [OAuth2](https://oauth.net/2/)
     - [Docker](https://www.docker.com/)
