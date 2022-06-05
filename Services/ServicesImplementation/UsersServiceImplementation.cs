@@ -132,16 +132,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 return selectedUsersWithoutStudents.Select(d => new NameWithDbIdElement(d.Id, $"{d.Surname} {d.Name}")).ToList();  
             }
             
-            List<Person> allUsersWithoutStudents = await _context.Persons
-                .Include(p => p.Role)
-                .Include(p => p.Department)
-                .Where(p => p.Department.Id == deptId && 
-                            !p.Role.Name.Equals(AvailableRoles.STUDENT, StringComparison.OrdinalIgnoreCase))
-                .ToListAsync();
-            
-            allUsersWithoutStudents
-                .Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
-            return allUsersWithoutStudents.Select(d => new NameWithDbIdElement(d.Id, $"{d.Surname} {d.Name}")).ToList();  
+            return new List<NameWithDbIdElement>();  
         }
         
         #endregion
