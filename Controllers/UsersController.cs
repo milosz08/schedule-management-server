@@ -81,6 +81,14 @@ namespace asp_net_po_schedule_management_server.Controllers
         }
         
         //--------------------------------------------------------------------------------------------------------------
+
+        [HttpGet(ApiEndpoints.GET_USER_BASE_ID)]
+        public async Task<ActionResult<UserDetailsEditResDto>> GetUserBaseDbId([FromQuery] long userId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetUserBaseDbId(userId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveUsers([FromBody] MassiveDeleteRequestDto deleteUsers)

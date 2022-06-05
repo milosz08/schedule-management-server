@@ -70,4 +70,18 @@ namespace asp_net_po_schedule_management_server.Dto
             AllElements = stud + teach + edit + admin;
         }
     }
+    
+    //------------------------------------------------------------------------------------------------------------------
+    
+    public sealed class UserDetailsEditResDto
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string City { get; set; }
+        public string Nationality { get; set; }
+        public string Role { get; set; }
+        public string DepartmentName { get; set; }
+        public string CathedralName { get; set; }
+        public List<long> StudySpecsOrSubjects { get; set; }
+    }
 }

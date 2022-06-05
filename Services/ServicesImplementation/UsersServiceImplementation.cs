@@ -1,12 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 
-using System;
 using System.Net;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Dto;
@@ -15,6 +16,7 @@ using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Exceptions;
 using asp_net_po_schedule_management_server.Services.Helpers;
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
+using asp_net_po_schedule_management_server.Utils;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -207,6 +209,42 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             }
             
             return dashboardDetailsResDto;
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get user base user id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość danych użytkownika z bazy danych na podstawie przekazywanego parametru id w
+        /// parametrach zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="userId">id użytkownika</param>
+        /// <returns>obiekt transferowy z danymi konkretnego użytkownika</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia użytkownika z podanym id</exception>
+        public async Task<UserDetailsEditResDto> GetUserBaseDbId(long userId)
+        {
+            Person findPerson = await _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Subjects)
+                .Include(p => p.Cathedral)
+                .Include(p => p.Department)
+                .Include(p => p.StudySpecializations)
+                .FirstOrDefaultAsync(p => p.Id == userId);
+            if (findPerson == null) {
+                throw new BasicServerException("Nie znaleziono użytkownika z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            UserDetailsEditResDto response = _mapper.Map<UserDetailsEditResDto>(findPerson);
+
+            if (findPerson.Role.Name.Equals(AvailableRoles.TEACHER) || findPerson.Role.Name.Equals(AvailableRoles.EDITOR)) {
+                response.StudySpecsOrSubjects = findPerson.Subjects.Select(s => s.Id).ToList();
+            } else if (findPerson.Role.Name.Equals(AvailableRoles.STUDENT)) {
+                response.StudySpecsOrSubjects = findPerson.StudySpecializations.Select(s => s.Id).ToList();
+            }
+            return response;
         }
 
         #endregion
