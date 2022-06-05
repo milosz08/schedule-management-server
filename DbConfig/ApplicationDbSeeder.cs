@@ -130,7 +130,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .Include(c => c.Department)
                 .FirstOrDefaultAsync(c => c.Name.Equals(initialCathedrals[0].Name, StringComparison.OrdinalIgnoreCase));
             if (findPerson == null) {
-                await _authService.UserRegister(new RegisterNewUserRequestDto()
+                await _authService.UserRegister(new RegisterUpdateUserRequestDto()
                 {
                     Name = _name,
                     Surname = _surname,

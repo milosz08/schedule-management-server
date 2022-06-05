@@ -7,7 +7,7 @@ using asp_net_po_schedule_management_server.CustomDecorators;
 
 namespace asp_net_po_schedule_management_server.Dto
 {
-    public class RegisterNewUserRequestDto
+    public class RegisterUpdateUserRequestDto
     {
         [Required(ErrorMessage = "Imię nie może być puste")]
         public string Name { get; set; }
@@ -38,7 +38,7 @@ namespace asp_net_po_schedule_management_server.Dto
     
     //------------------------------------------------------------------------------------------------------------------
     
-    public sealed class RegisterNewUserResponseDto
+    public sealed class RegisterUpdateUserResponseDto
     {
         public string Name { get; set; }
         public string Surname { get; set; }

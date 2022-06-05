@@ -3,7 +3,7 @@
 
 namespace asp_net_po_schedule_management_server.Dto
 {
-    public sealed class CreateStudyRoomRequestDto
+    public sealed class StudyRoomRequestDto
     {
         [Required(ErrorMessage = "Pole nazwy (aliasu) sali nie może być puste")]
         public string Name { get; set; }
@@ -25,7 +25,7 @@ namespace asp_net_po_schedule_management_server.Dto
 
     //------------------------------------------------------------------------------------------------------------------
     
-    public sealed class CreateStudyRoomResponseDto
+    public sealed class StudyRoomResponseDto
     {
         public string Name { get; set; }
         public string Description { get; set; }

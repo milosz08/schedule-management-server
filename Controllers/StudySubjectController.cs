@@ -40,8 +40,8 @@ namespace asp_net_po_schedule_management_server.Controllers
         //--------------------------------------------------------------------------------------------------------------
 
         [HttpPost(ApiEndpoints.ADD_STUDY_SUBJECT)]
-        public async Task<ActionResult<CreateStudySubjectResponseDto>> AddNewStudySubject(
-            [FromBody] CreateStudySubjectRequestDto dto)
+        public async Task<ActionResult<StudySubjectResponseDto>> AddNewStudySubject(
+            [FromBody] StudySubjectRequestDto dto)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.AddNewStudySubject(dto));
         }

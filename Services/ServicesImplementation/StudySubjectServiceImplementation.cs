@@ -45,7 +45,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="dto">obiekt transferowy z danymi od klienta</param>
         /// <returns>informacje o stworzonym przedmiocie</returns>
         /// <exception cref="BasicServerException">brak zasobu/próba wprowadzenia duplikatu</exception>
-        public async Task<CreateStudySubjectResponseDto> AddNewStudySubject(CreateStudySubjectRequestDto dto)
+        public async Task<StudySubjectResponseDto> AddNewStudySubject(StudySubjectRequestDto dto)
         {
             //wyszukanie kierunku oraz wydziału studiów pasującego do zapytania, jeśli nie znajdzie wyrzuci wyjątek
             StudySpecialization findSpecialization = await _context.StudySpecializations
@@ -75,7 +75,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             StudySubject studySubject = new StudySubject()
             {
                 Name = dto.Name,
-                Alias = $"{ApplicationUtils.CreateSubjectAlias(dto.Name)}/{findSpecialization.Alias.ToUpper()}" +
+                Alias = $"{ApplicationUtils.CreateSubjectAlias(dto.Name)}/{findSpecialization.Alias}" +
                         $"/{findSpecialization.Department.Alias}",
                 DepartmentId = findSpecialization.DepartmentId,
                 StudySpecializationId = findSpecialization.Id,

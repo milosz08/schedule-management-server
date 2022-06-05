@@ -47,7 +47,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <exception cref="BasicServerException">
         /// Jeśli nie znajdzie katedry/wydziału/typu lub jeśli zajdzie próba wprowadzenia duplikatu.
         /// </exception>
-        public async Task<CreateStudyRoomResponseDto> CreateStudyRoom(CreateStudyRoomRequestDto dto)
+        public async Task<StudyRoomResponseDto> CreateStudyRoom(StudyRoomRequestDto dto)
         {
             //wyszukanie wydziału pasującego do katedry, jeśli nie znajdzie wyrzuci wyjątek
             Cathedral findCathedral = await _context.Cathedrals

@@ -45,7 +45,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="dto">obiekt transferowy z danymi odnośnie nowego kierunku studiów</param>
         /// <returns>utworzone kierunek/kierunki studiów</returns>
         /// <exception cref="BasicServerException">nieistniejący wydział/duplikat kierunku/brak typu kierunku</exception>
-        public async Task<IEnumerable<CreateStudySpecResponseDto>> AddNewStudySpecialization(CreateStudySpecRequestDto dto)
+        public async Task<IEnumerable<StudySpecResponseDto>> AddNewStudySpecialization(StudySpecRequestDto dto)
         {
             //wyszukanie wydziału pasującego do kierunku, jeśli nie znajdzie wyrzuci wyjątek
             Department findDepartment = await _context.Departments
@@ -110,11 +110,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Get all available study types based department
 
         /// <summary>
-        /// 
+        /// Metoda odpowiadająca za zwracanie wszystkich typów kierunków na podstawie nazwy wydziału oraz nazwy danego
+        /// kierunku.
         /// </summary>
-        /// <param name="specName"></param>
-        /// <param name="deptName"></param>
-        /// <returns></returns>
+        /// <param name="specName">nazwa kierunku</param>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>obiekt transferowy z przefiltrowaną listą elementów</returns>
         public SearchQueryResponseDto GetAllStudySpecializationsInDepartment(string specName, string deptName)
         {
             // jeśli parametr jest nullem to przypisz wartość pustego stringa
@@ -214,7 +215,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Where(s => s.Department.Id == deptId && s.StudyDegree.Id == degreeId)
                 .ToListAsync();
             studySpecsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
-            return studySpecsBaseDept.Select(d => new NameWithDbIdElement(d.Id, $"{d.Name} ({d.StudyType.Alias})")).ToList();
+            return studySpecsBaseDept.Select(s => new NameWithDbIdElement(s.Id, $"{s.Name} ({s.StudyType.Alias})")).ToList();
         }
 
         #endregion
@@ -240,7 +241,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .ToListAsync();
 
             return new AvailableDataResponseDto<NameWithDbIdElement>(findAllStudySpecs
-                .Select(s => _mapper.Map<NameWithDbIdElement>(s)).ToList());
+                .Select(s => new NameWithDbIdElement(s.Id, $"{s.Name} ({s.StudyType.Alias})")).ToList());
         }
 
         #endregion

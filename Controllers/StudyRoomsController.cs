@@ -41,7 +41,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         //--------------------------------------------------------------------------------------------------------------
         
         [HttpPost(ApiEndpoints.ADD_STUDY_ROOM)]
-        public async Task<ActionResult<CreateStudyRoomResponseDto>> AddNewStudyRoom(CreateStudyRoomRequestDto dto)
+        public async Task<ActionResult<StudyRoomResponseDto>> AddNewStudyRoom(StudyRoomRequestDto dto)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.CreateStudyRoom(dto));
         }

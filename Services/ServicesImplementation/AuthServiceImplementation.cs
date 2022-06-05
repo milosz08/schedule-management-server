@@ -169,7 +169,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="user">reprezentacja obiektowa użytkownika</param>
         /// <param name="customPassword">domyślne hasło (używane tylko dla domyślnego użytkownika)</param>
         /// <returns>informacje o zarejestrowanym użytkowniku</returns>
-        public async Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user, string customPassword)
+        public async Task<RegisterUpdateUserResponseDto> UserRegister(RegisterUpdateUserRequestDto user, string customPassword)
         {
             RegisterUserGeneratedValues defValues = _helper.GenerateUserDetails(user);
             _emailService.AddNewEmailAccount(defValues.Email, defValues.EmailPassword);
@@ -247,7 +247,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     },
                 });    
             }
-            return _mapper.Map<RegisterNewUserResponseDto>(newPerson);
+            return _mapper.Map<RegisterUpdateUserResponseDto>(newPerson);
         }
 
         #endregion

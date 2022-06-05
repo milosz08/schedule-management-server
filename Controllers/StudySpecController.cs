@@ -41,8 +41,8 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpPost(ApiEndpoints.ADD_STUDY_SPECIALIZATION)]
-        public async Task<ActionResult<IEnumerable<CreateStudySpecResponseDto>>> AddNewStudySpecialization(
-            [FromBody] CreateStudySpecRequestDto dto)
+        public async Task<ActionResult<IEnumerable<StudySpecResponseDto>>> AddNewStudySpecialization(
+            [FromBody] StudySpecRequestDto dto)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.AddNewStudySpecialization(dto));
         }

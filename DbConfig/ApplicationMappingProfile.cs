@@ -17,7 +17,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
         {
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<Person, RegisterNewUserResponseDto>()
+            CreateMap<Person, RegisterUpdateUserResponseDto>()
                 .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
                 .ForMember(dist => dist.DepartmentData, from => from
                     .MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
@@ -53,7 +53,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<StudySpecialization, CreateStudySpecResponseDto>()
+            CreateMap<StudySpecialization, StudySpecResponseDto>()
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
                 .ForMember(dist => dist.StudyTypeFullName,
@@ -79,7 +79,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<StudyRoom, CreateStudyRoomResponseDto>()
+            CreateMap<StudyRoom, StudyRoomResponseDto>()
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
                 .ForMember(dist => dist.CathedralFullName,
@@ -103,7 +103,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<StudySubject, CreateStudySubjectResponseDto>()
+            CreateMap<StudySubject, StudySubjectResponseDto>()
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
                 .ForMember(dist => dist.StudySpecFullName,
