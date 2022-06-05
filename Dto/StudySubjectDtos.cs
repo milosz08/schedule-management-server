@@ -3,7 +3,7 @@
 
 namespace asp_net_po_schedule_management_server.Dto
 {
-    public sealed class CreateStudySubjectRequestDto
+    public sealed class StudySubjectRequestDto
     {
         [Required(ErrorMessage = "Pole nazwy przedmiotu nie może być puste")]
         public string Name { get; set; }
@@ -17,7 +17,7 @@ namespace asp_net_po_schedule_management_server.Dto
 
     //------------------------------------------------------------------------------------------------------------------
     
-    public sealed class CreateStudySubjectResponseDto
+    public sealed class StudySubjectResponseDto
     {
         public string Name { get; set; }
         public string Alias { get; set; }
@@ -35,5 +35,14 @@ namespace asp_net_po_schedule_management_server.Dto
         public string SpecAlias { get; set; }
         public string DepartmentName { get; set; }
         public string DepartmentAlias { get; set; }
+    }
+    
+    //------------------------------------------------------------------------------------------------------------------
+    
+    public sealed class StudySubjectEditResDto
+    {
+        public string Name { get; set; }
+        public string DepartmentName { get; set; }
+        public string StudySpecName { get; set; }
     }
 }

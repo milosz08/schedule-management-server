@@ -50,7 +50,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         [HttpPost(ApiEndpoints.REGISTER)]
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
-        public async Task<ActionResult<RegisterNewUserResponseDto>> UserRegister([FromBody] RegisterNewUserRequestDto user)
+        public async Task<ActionResult<RegisterUpdateUserResponseDto>> UserRegister([FromBody] RegisterUpdateUserRequestDto user)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.UserRegister(user, String.Empty));
         }

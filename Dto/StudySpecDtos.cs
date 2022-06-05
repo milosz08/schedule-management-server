@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace asp_net_po_schedule_management_server.Dto
 {
-    public sealed class CreateStudySpecRequestDto
+    public sealed class StudySpecRequestDto
     {
         [Required(ErrorMessage = "Pole nazwy kierunku nie może być puste")]
         public string Name { get; set; }
@@ -24,7 +24,7 @@ namespace asp_net_po_schedule_management_server.Dto
 
     //------------------------------------------------------------------------------------------------------------------
     
-    public sealed class CreateStudySpecResponseDto
+    public sealed class StudySpecResponseDto
     {
         public string Name { get; set; }
         public string Alias { get; set; }
@@ -45,5 +45,16 @@ namespace asp_net_po_schedule_management_server.Dto
         public string DepartmentAlias { get; set; }
         public string StudyDegree { get; set; }
         public string StudyDegreeAlias { get; set; }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    
+    public sealed class StudySpecializationEditResDto
+    {
+        public string Name { get; set; }
+        public string Alias { get; set; }
+        public string DepartmentName { get; set; }
+        public List<long> StudyType { get; set; }
+        public List<long> StudyDegree { get; set; }
     }
 }

@@ -9,6 +9,6 @@ namespace asp_net_po_schedule_management_server.Services
     {
         Task<LoginResponseDto> UserLogin(LoginRequestDto user);
         Task<RefreshTokenResponseDto> UserRefreshToken(RefreshTokenRequestDto dto);
-        Task<RegisterNewUserResponseDto> UserRegister(RegisterNewUserRequestDto user, string customPassword);
+        Task<RegisterUpdateUserResponseDto> UserRegister(RegisterUpdateUserRequestDto user, string customPassword);
     }
 }

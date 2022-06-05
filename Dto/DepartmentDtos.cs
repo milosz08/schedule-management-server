@@ -19,4 +19,12 @@ namespace asp_net_po_schedule_management_server.Dto
         public long Id { get; set; }
         public bool IfRemovable { get; set; }
     }
+    
+    //------------------------------------------------------------------------------------------------------------------
+
+    public sealed class DepartmentEditResDto
+    {
+        public string Name { get; set; }
+        public string Alias { get; set; }
+    }
 }

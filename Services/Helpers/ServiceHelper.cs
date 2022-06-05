@@ -153,7 +153,7 @@ namespace asp_net_po_schedule_management_server.Services.Helpers
         /// </summary>
         /// <param name="user">obiekt transferowy z podstawowymi danymi</param>
         /// <returns>obiekt z wygenerowanymi danymi użytkownika</returns>
-        public RegisterUserGeneratedValues GenerateUserDetails(RegisterNewUserRequestDto user)
+        public RegisterUserGeneratedValues GenerateUserDetails(RegisterUpdateUserRequestDto user)
         {
             string nameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Name);
             string surnameWithoutDiacritics = ApplicationUtils.RemoveAccents(user.Surname);

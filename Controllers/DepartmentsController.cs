@@ -71,6 +71,24 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAllDepartmentsSchedule());
         }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_DEPARTMENT_BASE_ID)]
+        public async Task<ActionResult<DepartmentEditResDto>> GetDepartmentBaseDbId([FromQuery] long deptId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetDepartmentBaseDbId(deptId));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpPut(ApiEndpoints.UPDATE_DEPARTMENT)]
+        public async Task<ActionResult<DepartmentRequestResponseDto>> UpdateDepartment(
+            [FromBody] DepartmentRequestResponseDto dto,
+            [FromQuery] long deptId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateDepartment(dto, deptId));
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         

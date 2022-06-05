@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 
+using System.Collections.Generic;
+
 using asp_net_po_schedule_management_server.Dto;
 using asp_net_po_schedule_management_server.Entities;
 
@@ -15,7 +17,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
         {
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<Person, RegisterNewUserResponseDto>()
+            CreateMap<Person, RegisterUpdateUserResponseDto>()
                 .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
                 .ForMember(dist => dist.DepartmentData, from => from
                     .MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
@@ -34,6 +36,11 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"));
 
+            CreateMap<Person, UserDetailsEditResDto>()
+                .ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.CathedralName, from => from.MapFrom(dir => dir.Cathedral.Name));
+
             //----------------------------------------------------------------------------------------------------------
             
             CreateMap<Cathedral, CathedralResponseDto>()
@@ -45,10 +52,13 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name));
             
             CreateMap<CathedralRequestDto, Cathedral>();
+
+            CreateMap<Cathedral, CathedralEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name));
             
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<StudySpecialization, CreateStudySpecResponseDto>()
+            CreateMap<StudySpecialization, StudySpecResponseDto>()
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
                 .ForMember(dist => dist.StudyTypeFullName,
@@ -66,10 +76,15 @@ namespace asp_net_po_schedule_management_server.DbConfig
             
             CreateMap<StudySpecialization, NameWithDbIdElement>()
                 .ForMember(dist => dist.Name, from => from.MapFrom(dir => $"{dir.Name} ({dir.StudyType.Alias})"));
+
+            CreateMap<StudySpecialization, StudySpecializationEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.StudyType, from => from.MapFrom(dir => new List<long>() { dir.StudyType.Id }))
+                .ForMember(dist => dist.StudyDegree, from => from.MapFrom(dir => new List<long>() { dir.StudyDegree.Id }));
             
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<StudyRoom, CreateStudyRoomResponseDto>()
+            CreateMap<StudyRoom, StudyRoomResponseDto>()
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
                 .ForMember(dist => dist.CathedralFullName,
@@ -84,10 +99,16 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.CathedralAlias, from => from.MapFrom(dir => dir.Cathedral.Alias))
                 .ForMember(dist => dist.DeptWithCathAlias, from => from.MapFrom(dir =>
                     $"{dir.Department.Alias} / {dir.Cathedral.Alias}"));
+
+            CreateMap<StudyRoom, StudyRoomEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.CathedralName, from => from.MapFrom(dir => dir.Cathedral.Name))
+                .ForMember(dist => dist.RoomTypeName,
+                    from => from.MapFrom(dir => $"{dir.RoomType.Name} ({dir.RoomType.Alias})"));
             
             //----------------------------------------------------------------------------------------------------------
             
-            CreateMap<StudySubject, CreateStudySubjectResponseDto>()
+            CreateMap<StudySubject, StudySubjectResponseDto>()
                 .ForMember(dist => dist.DepartmentFullName,
                     from => from.MapFrom(dir => $"{dir.Department.Name} ({dir.Department.Alias})"))
                 .ForMember(dist => dist.StudySpecFullName,
@@ -99,6 +120,12 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .ForMember(dist => dist.SpecName, from => from.MapFrom(dir => dir.StudySpecialization.Name))
                 .ForMember(dist => dist.SpecAlias, from => from.MapFrom(dir =>
                     $"{dir.StudySpecialization.Alias} ({dir.StudySpecialization.StudyType.Alias} " +
+                    $"{dir.StudySpecialization.StudyDegree.Alias})"));
+
+            CreateMap<StudySubject, StudySubjectEditResDto>()
+                .ForMember(dist => dist.DepartmentName, from => from.MapFrom(dir => dir.Department.Name))
+                .ForMember(dist => dist.StudySpecName, from => from.MapFrom(dir => 
+                    $"{dir.StudySpecialization.Name} ({dir.StudySpecialization.StudyType.Alias} " +
                     $"{dir.StudySpecialization.StudyDegree.Alias})"));
             
             //----------------------------------------------------------------------------------------------------------
@@ -121,6 +148,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             CreateMap<Department, DepartmentQueryResponseDto>();
             CreateMap<Department, SearchQueryResponseDto>();
             CreateMap<DepartmentRequestResponseDto, Department>();
+            CreateMap<Department, DepartmentEditResDto>();
             
             //----------------------------------------------------------------------------------------------------------
             

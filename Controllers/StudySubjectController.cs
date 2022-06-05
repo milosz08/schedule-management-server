@@ -40,10 +40,20 @@ namespace asp_net_po_schedule_management_server.Controllers
         //--------------------------------------------------------------------------------------------------------------
 
         [HttpPost(ApiEndpoints.ADD_STUDY_SUBJECT)]
-        public async Task<ActionResult<CreateStudySubjectResponseDto>> AddNewStudySubject(
-            [FromBody] CreateStudySubjectRequestDto dto)
+        public async Task<ActionResult<StudySubjectResponseDto>> AddNewStudySubject(
+            [FromBody] StudySubjectRequestDto dto)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.AddNewStudySubject(dto));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpPut(ApiEndpoints.UPDATE_STUDY_SUBJECT)]
+        public async Task<ActionResult<StudySubjectResponseDto>> UpdateStudySubject(
+            [FromBody] StudySubjectRequestDto dto,
+            [FromQuery] long subjId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateStudySubject(dto, subjId));
         }
         
         //--------------------------------------------------------------------------------------------------------------
@@ -76,6 +86,14 @@ namespace asp_net_po_schedule_management_server.Controllers
             [FromQuery] string deptName)
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableSubjectsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_STUDY_SUBJECT_BASE_ID)]
+        public async Task<ActionResult<StudySubjectEditResDto>> GetStudySubjectBaseDbId([FromQuery] long subjId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetStudySubjectBaseDbId(subjId));
         }
         
         //--------------------------------------------------------------------------------------------------------------

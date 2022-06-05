@@ -49,6 +49,17 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpPut(ApiEndpoints.UPDATE_USER)]
+        public async Task<ActionResult<RegisterUpdateUserResponseDto>> UpdateUserDetails(
+            [FromBody] RegisterUpdateUserRequestDto dto,
+            [FromQuery] long userId,
+            [FromQuery] bool ifUpdateEmailPass)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateUserDetails(dto, userId, ifUpdateEmailPass));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_EMPLOYEERS_SCHEDULE)]
         public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllEmployeersScheduleBaseCath(
@@ -78,6 +89,14 @@ namespace asp_net_po_schedule_management_server.Controllers
         {
             Claim userIdentity = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);   
             return StatusCode((int) HttpStatusCode.OK, await _service.GetDashboardPanelData(userIdentity));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        [HttpGet(ApiEndpoints.GET_USER_BASE_ID)]
+        public async Task<ActionResult<UserDetailsEditResDto>> GetUserBaseDbId([FromQuery] long userId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetUserBaseDbId(userId));
         }
         
         //--------------------------------------------------------------------------------------------------------------

@@ -47,6 +47,16 @@ namespace asp_net_po_schedule_management_server.Controllers
         }
         
         //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpPut(ApiEndpoints.UPDATE_CATHEDRAL)]
+        public async Task<ActionResult<CathedralResponseDto>> UpdateCathedral(
+            [FromBody] CathedralRequestDto dto,
+            [FromQuery] long cathId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateCathedral(dto, cathId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
 
         [HttpGet(ApiEndpoints.GET_ALL_CATHEDRALS_BASE_DEPT)]
         public ActionResult<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName(
@@ -72,6 +82,14 @@ namespace asp_net_po_schedule_management_server.Controllers
         public ActionResult<UserResponseDto> GetCathedrals([FromQuery] SearchQueryRequestDto searchSearchQuery)
         {
             return StatusCode((int) HttpStatusCode.OK, _service.GetAllCathedrals(searchSearchQuery));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpGet(ApiEndpoints.GET_CATHEDRAL_BASE_ID)]
+        public async Task<ActionResult<CathedralEditResDto>> GetCathedralBaseDbId([FromQuery] long cathId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetCathedralBaseDbId(cathId));
         }
         
         //--------------------------------------------------------------------------------------------------------------

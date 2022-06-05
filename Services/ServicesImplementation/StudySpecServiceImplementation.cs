@@ -45,7 +45,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="dto">obiekt transferowy z danymi odnośnie nowego kierunku studiów</param>
         /// <returns>utworzone kierunek/kierunki studiów</returns>
         /// <exception cref="BasicServerException">nieistniejący wydział/duplikat kierunku/brak typu kierunku</exception>
-        public async Task<IEnumerable<CreateStudySpecResponseDto>> AddNewStudySpecialization(CreateStudySpecRequestDto dto)
+        public async Task<IEnumerable<StudySpecResponseDto>> AddNewStudySpecialization(StudySpecRequestDto dto)
         {
             //wyszukanie wydziału pasującego do kierunku, jeśli nie znajdzie wyrzuci wyjątek
             Department findDepartment = await _context.Departments
@@ -100,7 +100,48 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             // zapis do bazy danych
             await _context.StudySpecializations.AddRangeAsync(createdSpecializations);
             await _context.SaveChangesAsync();
-            return createdSpecializations.Select(s => _mapper.Map<CreateStudySpecResponseDto>(s));
+            return createdSpecializations.Select(s => _mapper.Map<StudySpecResponseDto>(s));
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update study specialization
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego kierunku (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="specId">id kierunku studiów podlegającego zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie kierunku/próba wprowadzenia tych samych danych</exception>
+        public async Task<List<StudySpecResponseDto>> UpdateStudySpecialization(StudySpecRequestDto dto, long specId)
+        {
+            // wyszukaj kierunek na podstawie id, jeśli nie znajdzie rzuć wyjątek
+            StudySpecialization findStudySpec = await _context.StudySpecializations
+                .Include(s => s.StudyType)
+                .Include(s => s.Department)
+                .Include(s => s.StudyDegree)
+                .FirstOrDefaultAsync(s => s.Id == specId);
+            if (findStudySpec == null) {
+                throw new BasicServerException("Nie znaleziono kierunku studiów z podanym id", HttpStatusCode.NotFound);
+            }
+            
+            // sprawdź, czy nie zachodzi próba dodania niezaktualizowanych wartości, jeśli tak rzuć wyjątek
+            if (findStudySpec.Name == dto.Name && findStudySpec.Alias == dto.Alias) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+
+            findStudySpec.Name = dto.Name;
+            findStudySpec.Alias = dto.Alias;
+            
+            await _context.SaveChangesAsync();
+            return new List<StudySpecResponseDto>()
+            {
+                _mapper.Map<StudySpecResponseDto>(findStudySpec)
+            };
         }
 
         #endregion
@@ -110,11 +151,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #region Get all available study types based department
 
         /// <summary>
-        /// 
+        /// Metoda odpowiadająca za zwracanie wszystkich typów kierunków na podstawie nazwy wydziału oraz nazwy danego
+        /// kierunku.
         /// </summary>
-        /// <param name="specName"></param>
-        /// <param name="deptName"></param>
-        /// <returns></returns>
+        /// <param name="specName">nazwa kierunku</param>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>obiekt transferowy z przefiltrowaną listą elementów</returns>
         public SearchQueryResponseDto GetAllStudySpecializationsInDepartment(string specName, string deptName)
         {
             // jeśli parametr jest nullem to przypisz wartość pustego stringa
@@ -214,7 +256,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Where(s => s.Department.Id == deptId && s.StudyDegree.Id == degreeId)
                 .ToListAsync();
             studySpecsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
-            return studySpecsBaseDept.Select(d => new NameWithDbIdElement(d.Id, $"{d.Name} ({d.StudyType.Alias})")).ToList();
+            return studySpecsBaseDept.Select(s => new NameWithDbIdElement(s.Id, $"{s.Name} ({s.StudyType.Alias})")).ToList();
         }
 
         #endregion
@@ -240,7 +282,35 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .ToListAsync();
 
             return new AvailableDataResponseDto<NameWithDbIdElement>(findAllStudySpecs
-                .Select(s => _mapper.Map<NameWithDbIdElement>(s)).ToList());
+                .Select(s => new NameWithDbIdElement(s.Id, $"{s.Name} ({s.StudyType.Alias})")).ToList());
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get study specialization data base study specialization id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość kierunku studiów z bazy danych na podstawie przekazywanego parametru id w
+        /// parametrach zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="specId">id kierunku studiów</param>
+        /// <returns>obiekt transferowy z danymi konkretnego kierunku studiów</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia kierunku z podanym id</exception>
+        public async Task<StudySpecializationEditResDto> GetStudySpecializationBaseDbId(long specId)
+        {
+            // wyszukaj katedrę na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            StudySpecialization findStudySpecialization = await _context.StudySpecializations
+                .Include(s => s.Department)
+                .Include(s => s.StudyType)
+                .Include(s => s.StudyDegree)
+                .FirstOrDefaultAsync(s => s.Id == specId);
+            if (findStudySpecialization == null) {
+                throw new BasicServerException("Nie znaleziono kierunku z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<StudySpecializationEditResDto>(findStudySpecialization);
         }
 
         #endregion

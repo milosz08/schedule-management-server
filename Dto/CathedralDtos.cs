@@ -15,6 +15,8 @@ namespace asp_net_po_schedule_management_server.Dto
         public string DepartmentName { get; set; }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    
     public sealed class CathedralResponseDto
     {
         public string Name { get; set; }
@@ -22,10 +24,21 @@ namespace asp_net_po_schedule_management_server.Dto
         public string DepartmentFullName { get; set; }
     }
     
+    //------------------------------------------------------------------------------------------------------------------
+    
     public sealed class CathedralQueryResponseDto : CathedralRequestDto
     {
         public long Id { get; set; }
         public string DepartmentAlias { get; set; }
         public bool IfRemovable { get; set; }
+    }
+    
+    //------------------------------------------------------------------------------------------------------------------
+
+    public sealed class CathedralEditResDto
+    {
+        public string Name { get; set; }
+        public string Alias { get; set; }
+        public string DepartmentName { get; set; }
     }
 }

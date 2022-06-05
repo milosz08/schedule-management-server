@@ -41,10 +41,20 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
         [HttpPost(ApiEndpoints.ADD_STUDY_SPECIALIZATION)]
-        public async Task<ActionResult<IEnumerable<CreateStudySpecResponseDto>>> AddNewStudySpecialization(
-            [FromBody] CreateStudySpecRequestDto dto)
+        public async Task<ActionResult<IEnumerable<StudySpecResponseDto>>> AddNewStudySpecialization(
+            [FromBody] StudySpecRequestDto dto)
         {
             return StatusCode((int) HttpStatusCode.Created, await _service.AddNewStudySpecialization(dto));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [HttpPut(ApiEndpoints.UPDATE_STUDY_SPECIALIZATION)]
+        public async Task<ActionResult<List<StudySpecResponseDto>>> UpdateStudySpecialization(
+            [FromBody] StudySpecRequestDto dto,
+            [FromQuery] long specId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateStudySpecialization(dto, specId));
         }
         
         //--------------------------------------------------------------------------------------------------------------
@@ -88,6 +98,15 @@ namespace asp_net_po_schedule_management_server.Controllers
             [FromQuery] string deptName)
         {
             return StatusCode((int) HttpStatusCode.OK, await _service.GetAvailableStudySpecsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        [AuthorizeRoles(AvailableRoles.ADMINISTRATOR)]
+        [HttpGet(ApiEndpoints.GET_STUDY_SPECIALIZATION_BASE_ID)]
+        public async Task<ActionResult<StudySpecializationEditResDto>> GetStudySpecializationBaseDbId([FromQuery] long specId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetStudySpecializationBaseDbId(specId));
         }
         
         //--------------------------------------------------------------------------------------------------------------

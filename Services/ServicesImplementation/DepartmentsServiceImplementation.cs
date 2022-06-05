@@ -50,8 +50,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 d.Name.Equals(dto.Name, StringComparison.OrdinalIgnoreCase) ||
                 d.Alias.Equals(dto.Alias, StringComparison.OrdinalIgnoreCase));
             if (findDepartment != null) {
-                throw new BasicServerException(
-                    "Podany wydział istnieje już w systemie.", HttpStatusCode.ExpectationFailed);
+                throw new BasicServerException("Podany wydział istnieje już w systemie.", HttpStatusCode.ExpectationFailed);
             }
 
             // mapowanie obiektu DTO na instancję encji dodawaną do bazy danych
@@ -59,6 +58,39 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             await _context.Departments.AddAsync(newDepartment);
             await _context.SaveChangesAsync();
 
+            return dto;
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update department
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego wydziału (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="deptId">id wydziału podlegającego zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie wydziału/próba wprowadzenia tych samych danych</exception>
+        public async Task<DepartmentRequestResponseDto> UpdateDepartment(DepartmentRequestResponseDto dto, long deptId)
+        {
+            // wyszukaj wydział na podstawie id, jeśli nie znajdzie rzuć wyjątek
+            Department findDepartment = await _context.Departments.FirstOrDefaultAsync(d => d.Id == deptId);
+            if (findDepartment == null) {
+                throw new BasicServerException("Nie znaleziono wydziału z podanym id.", HttpStatusCode.NotFound);
+            }
+            // sprawdź czy dane dotyczące wydziału są zmieniane
+            if (findDepartment.Name == dto.Name && findDepartment.Alias == dto.Alias) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+            
+            findDepartment.Name = dto.Name;
+            findDepartment.Alias = dto.Alias;
+            await _context.SaveChangesAsync();
+            
             return dto;
         }
 
@@ -152,6 +184,30 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .Select(d => d).ToListAsync();
             findAllDepartments.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
             return findAllDepartments.Select(d => _mapper.Map<NameWithDbIdElement>(d)).ToList();
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get department data base department id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość wydziału z bazy danych na podstawie przekazywanego parametru id w parametrach
+        /// zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="deptId">id wydziału</param>
+        /// <returns>obiekt transferowy z danymi konkretnego wydziału</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia wydziału z podanym id</exception>
+        public async Task<DepartmentEditResDto> GetDepartmentBaseDbId(long deptId)
+        {
+            // wyszukaj wydział na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            Department findDepartment = await _context.Departments.FirstOrDefaultAsync(d => d.Id == deptId);
+            if (findDepartment == null) {
+                throw new BasicServerException("Nie znaleziono wydziału z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<DepartmentEditResDto>(findDepartment);
         }
 
         #endregion

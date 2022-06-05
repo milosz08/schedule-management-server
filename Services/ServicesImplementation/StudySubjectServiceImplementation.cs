@@ -45,7 +45,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="dto">obiekt transferowy z danymi od klienta</param>
         /// <returns>informacje o stworzonym przedmiocie</returns>
         /// <exception cref="BasicServerException">brak zasobu/próba wprowadzenia duplikatu</exception>
-        public async Task<CreateStudySubjectResponseDto> AddNewStudySubject(CreateStudySubjectRequestDto dto)
+        public async Task<StudySubjectResponseDto> AddNewStudySubject(StudySubjectRequestDto dto)
         {
             //wyszukanie kierunku oraz wydziału studiów pasującego do zapytania, jeśli nie znajdzie wyrzuci wyjątek
             StudySpecialization findSpecialization = await _context.StudySpecializations
@@ -75,7 +75,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             StudySubject studySubject = new StudySubject()
             {
                 Name = dto.Name,
-                Alias = $"{ApplicationUtils.CreateSubjectAlias(dto.Name)}/{findSpecialization.Alias.ToUpper()}" +
+                Alias = $"{ApplicationUtils.CreateSubjectAlias(dto.Name)}/{findSpecialization.Alias}" +
                         $"/{findSpecialization.Department.Alias}",
                 DepartmentId = findSpecialization.DepartmentId,
                 StudySpecializationId = findSpecialization.Id,
@@ -84,7 +84,46 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             await _context.AddAsync(studySubject);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<CreateStudySubjectResponseDto>(studySubject);
+            return _mapper.Map<StudySubjectResponseDto>(studySubject);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update study subject
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego przedmiotu (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="subjId">id przedmiotu podlegającego zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie przedmiotu/próba wprowadzenia tych samych danych</exception>
+        public async Task<StudySubjectResponseDto> UpdateStudySubject(StudySubjectRequestDto dto, long subjId)
+        {
+            // wyszukaj przedmiot w bazie danych, jeśli nie znajdzie rzuć wyjątek
+            StudySubject findStudySubject = await _context.StudySubjects
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization).ThenInclude(sp => sp.Department)
+                .FirstOrDefaultAsync(s => s.Id == subjId);
+            if (findStudySubject == null) {
+                throw new BasicServerException("Nie znaleziono przedmiotu z podanym id", HttpStatusCode.NotFound);
+            }
+            
+            // sprawdź, czy nie zachodzi próba dodania niezaktualizowanych wartości, jeśli tak rzuć wyjątek
+            if (findStudySubject.Name == dto.Name) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+
+            findStudySubject.Name = dto.Name;
+            findStudySubject.Alias = $"{ApplicationUtils.CreateSubjectAlias(dto.Name)}" +
+                                     $"/{findStudySubject.StudySpecialization.Alias}" +
+                                     $"/{findStudySubject.StudySpecialization.Department.Alias}";
+            
+            await _context.SaveChangesAsync();
+            return _mapper.Map<StudySubjectResponseDto>(findStudySubject);
         }
 
         #endregion
@@ -200,6 +239,34 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
             return new AvailableDataResponseDto<NameWithDbIdElement>(findAllStudySubjects
                 .Select(s => _mapper.Map<NameWithDbIdElement>(s)).ToList());
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        #region Get study subject data base study subject id
+
+        /// <summary>
+        /// Metoda pobierająca zawartość przedmiotu z bazy danych na podstawie przekazywanego parametru id w
+        /// parametrach zapytania HTTP. Metoda używana głównie w celu aktualizacji istniejących treści w serwisie.
+        /// </summary>
+        /// <param name="specId">id przedmiotu</param>
+        /// <returns>obiekt transferowy z danymi konkretnego przedmiotu</returns>
+        /// <exception cref="BasicServerException">w przypadku nieznalezienia przedmiotu z podanym id</exception>
+        public async Task<StudySubjectEditResDto> GetStudySubjectBaseDbId(long subjId)
+        {
+            // wyszukaj katedrę na podstawie parametru ID w bazie danych, jeśli nie znajdzie rzuć 404.
+            StudySubject findStudySubject = await _context.StudySubjects
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization).ThenInclude(sp => sp.StudyType)
+                .Include(s => s.StudySpecialization).ThenInclude(sp => sp.StudyDegree)
+                .FirstOrDefaultAsync(s => s.Id == subjId);
+            if (findStudySubject == null) {
+                throw new BasicServerException("Nie znaleziono przedmiotu z podanym numerem id.", HttpStatusCode.NotFound);
+            }
+
+            return _mapper.Map<StudySubjectEditResDto>(findStudySubject);
         }
 
         #endregion
