@@ -79,6 +79,41 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #endregion
         
         //--------------------------------------------------------------------------------------------------------------
+
+        #region Update cathedral
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranej katedry (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="cathId">id katedry podlegającej zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie katedry/próba wprowadzenia tych samych danych</exception>
+        public async Task<CathedralResponseDto> UpdateCathedral(CathedralRequestDto dto, long cathId)
+        {
+            // wyszukaj katedry na podstawie id, jeśli nie znajdzie, rzuć wyjątek
+            Cathedral findCathedral = await _context.Cathedrals
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(c => c.Id == cathId);
+            if (findCathedral == null) {
+                throw new BasicServerException("Nie znaleziono katedry z podanym id", HttpStatusCode.NotFound);
+            }
+            // sprawdź, czy nie zachodzi próba dodania niezaktualizowanych wartości
+            if (findCathedral.Name == dto.Name && findCathedral.Alias == dto.Alias) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+
+            findCathedral.Name = dto.Name;
+            findCathedral.Alias = dto.Alias;
+            await _context.SaveChangesAsync();
+            
+            return _mapper.Map<CathedralResponseDto>(findCathedral);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Get all cathedrals based department name
 

@@ -78,6 +78,101 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
         //--------------------------------------------------------------------------------------------------------------
 
+        #region Update user data
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego użytkownika (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="userId">id użytkownika podlegającego zamianie</param>
+        /// <param name="ifUpdateEmailPass">flaga informująca, czy ma zostać wygenerowane nowego hasło do emailu</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie danych wyszukiwanych z bazy danych</exception>
+        public async Task<RegisterUpdateUserResponseDto> UpdateUserDetails(RegisterUpdateUserRequestDto dto, 
+            long userId, bool ifUpdateEmailPass)
+        {
+            // znajdź użytkownika na podstawie id, jeśli nie znajdzie rzuć wyjątek
+            Person findPerson = await _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Subjects)
+                .Include(p => p.Cathedral)
+                .Include(p => p.Department)
+                .Include(p => p.ScheduleSubjects)
+                .Include(p => p.StudySpecializations)
+                .FirstOrDefaultAsync(p => p.Id == userId);
+            if (findPerson == null) {
+                throw new BasicServerException("Nie znaleziono użytkownika z podanym id.", HttpStatusCode.NotFound);
+            }
+
+            // znajdź rolę na podstawie nazwy, jeśli nie znajdzie rzuć wyjątek
+            Role findRole = await _context.Roles
+                .FirstOrDefaultAsync(r => r.Name.Equals(dto.Role, StringComparison.OrdinalIgnoreCase));
+            if (findRole == null) {
+                throw new BasicServerException("Nie znaleziono roli z podaną nazwą.", HttpStatusCode.NotFound);
+            }
+            
+            // znajdź wydział na podstawie nazwy, jeśli nie znajdzie rzuć wyjątek
+            Department findDepartment = await _context.Departments
+                .FirstOrDefaultAsync(d => d.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
+            if (findDepartment == null) {
+                throw new BasicServerException("Nie znaleziono wydziału z podaną nazwą.", HttpStatusCode.NotFound);
+            }
+            
+            if (!dto.Role.Equals(AvailableRoles.STUDENT)) {
+                // znajdź katedrę na podstawie nazwy, jeśli nie znajdzie rzuć wyjątek
+                Cathedral findCathedral = await _context.Cathedrals
+                    .FirstOrDefaultAsync(c => c.Name.Equals(dto.CathedralName, StringComparison.OrdinalIgnoreCase));
+                if (findDepartment == null) {
+                    throw new BasicServerException("Nie znaleziono katedry z podaną nazwą.", HttpStatusCode.NotFound);
+                }
+                findPerson.Cathedral.Id = findCathedral.Id;
+            } else if (dto.Role.Equals(AvailableRoles.STUDENT)) {
+                // przypisz wybrane kierunki studiów do studentów
+                findPerson.StudySpecializations.Clear();
+                findPerson.StudySpecializations = _context.StudySpecializations
+                    .Where(s => dto.StudySpecsOrSubjects.Any(sid => sid == s.Id)).ToList();
+            }
+            
+            // przypisz wybrane przedmioty do nauczycieli/edytorów
+            if (dto.Role.Equals(AvailableRoles.TEACHER) || dto.Role.Equals(AvailableRoles.EDITOR)) {
+                findPerson.Subjects.Clear();
+                findPerson.Subjects = _context.StudySubjects
+                    .Where(s => dto.StudySpecsOrSubjects.Any(sid => sid == s.Id)).ToList();
+            }
+
+            // usuń przypisane elementy planu zajęć, jeśli zaszła zmiana roli z nauczyciel/edytor na student/admin
+            // oraz jeśli zmieniono wydział/katedrę
+            if (((dto.Role.Equals(AvailableRoles.STUDENT) || 
+                  dto.Role.Equals(AvailableRoles.ADMINISTRATOR)) &&
+                (findPerson.Role.Name.Equals(AvailableRoles.EDITOR) || 
+                 findPerson.Role.Name.Equals(AvailableRoles.TEACHER))) || 
+                !findPerson.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase)) {
+                List<ScheduleSubject> toRemove = findPerson.ScheduleSubjects
+                    .Where(s => s.ScheduleTeachers.Any(st => st.Id == userId)).ToList();
+                findPerson.ScheduleSubjects.Clear();
+                _context.ScheduleSubjects.RemoveRange(_context.ScheduleSubjects.Where(sb => toRemove.Contains(sb)));    
+            }
+            
+            // generowanie nowego hasła do skrzynki email
+            if (ifUpdateEmailPass) {
+                string generatedEmailPassword = ApplicationUtils.GenerateUserFirstPassword();
+                _emailService.AddNewEmailAccount(findPerson.Email, generatedEmailPassword);
+                findPerson.EmailPassword = generatedEmailPassword;
+            }
+
+            findPerson.City = dto.City;
+            findPerson.Nationality = dto.Nationality;
+            findPerson.Role = findRole;
+            findPerson.Department.Id = findDepartment.Id;
+            
+            await _context.SaveChangesAsync();
+            return _mapper.Map<RegisterUpdateUserResponseDto>(findPerson);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
         #region Get all employeers base cathedral database id
 
         /// <summary>

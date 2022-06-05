@@ -82,6 +82,16 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpPut(ApiEndpoints.UPDATE_DEPARTMENT)]
+        public async Task<ActionResult<DepartmentRequestResponseDto>> UpdateDepartment(
+            [FromBody] DepartmentRequestResponseDto dto,
+            [FromQuery] long deptId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateDepartment(dto, deptId));
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveDepartments([FromBody] MassiveDeleteRequestDto deleteDepartments)
         {

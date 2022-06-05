@@ -63,6 +63,39 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         }
 
         #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update department
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego wydziału (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="deptId">id wydziału podlegającego zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie wydziału/próba wprowadzenia tych samych danych</exception>
+        public async Task<DepartmentRequestResponseDto> UpdateDepartment(DepartmentRequestResponseDto dto, long deptId)
+        {
+            // wyszukaj wydział na podstawie id, jeśli nie znajdzie rzuć wyjątek
+            Department findDepartment = await _context.Departments.FirstOrDefaultAsync(d => d.Id == deptId);
+            if (findDepartment == null) {
+                throw new BasicServerException("Nie znaleziono wydziału z podanym id.", HttpStatusCode.NotFound);
+            }
+            // sprawdź czy dane dotyczące wydziału są zmieniane
+            if (findDepartment.Name == dto.Name && findDepartment.Alias == dto.Alias) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+            
+            findDepartment.Name = dto.Name;
+            findDepartment.Alias = dto.Alias;
+            await _context.SaveChangesAsync();
+            
+            return dto;
+        }
+
+        #endregion
 
         //--------------------------------------------------------------------------------------------------------------
 

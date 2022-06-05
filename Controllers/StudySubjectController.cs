@@ -48,6 +48,16 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpPut(ApiEndpoints.UPDATE_STUDY_SUBJECT)]
+        public async Task<ActionResult<StudySubjectResponseDto>> UpdateStudySubject(
+            [FromBody] StudySubjectRequestDto dto,
+            [FromQuery] long subjId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateStudySubject(dto, subjId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_STUDY_SUBJECTS)]
         public ActionResult<StudySubjectQueryResponseDto> GetStudyRooms([FromQuery] SearchQueryRequestDto searchSearchQuery)

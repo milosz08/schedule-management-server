@@ -8,7 +8,8 @@ namespace asp_net_po_schedule_management_server.Services
 {
     public interface IStudyRoomsService
     {
-        Task<CreateStudyRoomResponseDto> CreateStudyRoom(CreateStudyRoomRequestDto dto);
+        Task<StudyRoomResponseDto> CreateStudyRoom(StudyRoomRequestDto dto);
+        Task<StudyRoomResponseDto> UpdateStudyRoom(StudyRoomRequestDto dto, long roomId);
         PaginationResponseDto<StudyRoomQueryResponseDto> GetAllStudyRooms(SearchQueryRequestDto searchQuery);
         Task<List<NameWithDbIdElement>> GetAllStudyRoomsScheduleBaseCath(long deptId, long cathId);
         Task<List<NameWithDbIdElement>> GetAllStudyRoomsScheduleBaseDeptName(long deptId);

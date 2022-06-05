@@ -26,10 +26,12 @@
         //--------------------------------------------------------------------------------------------------------------
         
         // kontroler UsersController
+        public const string UPDATE_USER = "update-user";
         public const string GET_ALL_USERS_PAGINATION = "all-users";
         public const string GET_ALL_EMPLOYEERS_SCHEDULE = "all-employeers-schedule";
         public const string GET_ALL_TEACHERS_BASE_DEPT_AND_SUBJ = "all-teachers-base-dept-and-subj";
         public const string GET_DASHBOARD_DETAILS = "dashboard-details";
+        public const string GET_USER_BASE_ID = "user-base-id";
 
         //--------------------------------------------------------------------------------------------------------------
         
@@ -50,6 +52,7 @@
         
         // kontroler DepartmentsController
         public const string ADD_DEPARTMENT = "add-department";
+        public const string UPDATE_DEPARTMENT = "update-department";
         public const string GET_ALL_DEPARTMENTS_LIST = "all-departments-list";
         public const string GET_ALL_DEPARTMENTS_PAGINATION = "all-departments";
         public const string GET_ALL_DEPARTMENTS_SCHEDULE = "all-departments-schedule";
@@ -59,6 +62,7 @@
         
         // kontroler CathedralsController
         public const string ADD_CATHEDRAL = "add-cathedral";
+        public const string UPDATE_CATHEDRAL = "update-cathedral";
         public const string GET_ALL_CATHEDRALS_BASE_DEPT = "all-cathedrals-dept";
         public const string GET_ALL_CATHEDRALS_PAGINATION = "all-cathedrals";
         public const string GET_ALL_CATHEDRALS_SCHEDULE = "all-cathedrals-schedule";
@@ -68,6 +72,7 @@
         
         // kontroler StudySpecController
         public const string ADD_STUDY_SPECIALIZATION = "add-study-spec";
+        public const string UPDATE_STUDY_SPECIALIZATION = "update-study-spec";
         public const string GET_All_STUDY_SPEC_BASE_DEPT = "all-study-specs-dept";
         public const string GET_ALL_STUDY_SPECS = "all-study-specs";
         public const string GET_ALL_STUDY_SPECS_SCHEDULE = "all-study-specs-schedule";
@@ -78,6 +83,7 @@
         
         // kontroler StudyRoomsController
         public const string ADD_STUDY_ROOM = "add-study-room";
+        public const string UPDATE_STUDY_ROOM = "update-study-room";
         public const string GET_ALL_STUDY_ROOMS = "all-study-rooms";
         public const string GET_ALL_STUDY_ROOMS_SCHEDULE = "all-study-rooms-schedule";
         public const string GET_ALL_STUDY_ROOMS_BASE_DEPT = "all-study-rooms-base-dept";
@@ -87,6 +93,7 @@
         
         // kontroler StudySubjectController
         public const string ADD_STUDY_SUBJECT = "add-study-subject";
+        public const string UPDATE_STUDY_SUBJECT = "update-study-subject";
         public const string GET_ALL_STUDY_SUBJECTS = "all-study-subjects";
         public const string GET_ALL_STUDY_SUBJECT_BASE_DEPT = "all-study-subjects-dept";
         public const string GET_AVAILABLE_SUBJECTS_BASE_DEPT = "available-subjects-base-dept";

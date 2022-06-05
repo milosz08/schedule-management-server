@@ -8,7 +8,8 @@ namespace asp_net_po_schedule_management_server.Services
 {
     public interface IStudySpecService
     {
-        Task<IEnumerable<CreateStudySpecResponseDto>> AddNewStudySpecialization(CreateStudySpecRequestDto dto);
+        Task<IEnumerable<StudySpecResponseDto>> AddNewStudySpecialization(StudySpecRequestDto dto);
+        Task<List<StudySpecResponseDto>> UpdateStudySpecialization(StudySpecRequestDto dto, long specId);
         SearchQueryResponseDto GetAllStudySpecializationsInDepartment(string specName, string deptName);
         PaginationResponseDto<StudySpecQueryResponseDto> GetAllStudySpecializations(SearchQueryRequestDto searchQuery);
         Task<List<NameWithDbIdElement>> GetAllStudySpecsScheduleBaseDept(long deptId, long degreeId);

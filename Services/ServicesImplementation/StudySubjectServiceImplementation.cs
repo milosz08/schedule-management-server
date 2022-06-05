@@ -84,7 +84,46 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             await _context.AddAsync(studySubject);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<CreateStudySubjectResponseDto>(studySubject);
+            return _mapper.Map<StudySubjectResponseDto>(studySubject);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update study subject
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego przedmiotu (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="subjId">id przedmiotu podlegającego zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie przedmiotu/próba wprowadzenia tych samych danych</exception>
+        public async Task<StudySubjectResponseDto> UpdateStudySubject(StudySubjectRequestDto dto, long subjId)
+        {
+            // wyszukaj przedmiot w bazie danych, jeśli nie znajdzie rzuć wyjątek
+            StudySubject findStudySubject = await _context.StudySubjects
+                .Include(s => s.Department)
+                .Include(s => s.StudySpecialization).ThenInclude(sp => sp.Department)
+                .FirstOrDefaultAsync(s => s.Id == subjId);
+            if (findStudySubject == null) {
+                throw new BasicServerException("Nie znaleziono przedmiotu z podanym id", HttpStatusCode.NotFound);
+            }
+            
+            // sprawdź, czy nie zachodzi próba dodania niezaktualizowanych wartości, jeśli tak rzuć wyjątek
+            if (findStudySubject.Name == dto.Name) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+
+            findStudySubject.Name = dto.Name;
+            findStudySubject.Alias = $"{ApplicationUtils.CreateSubjectAlias(dto.Name)}" +
+                                     $"/{findStudySubject.StudySpecialization.Alias}" +
+                                     $"/{findStudySubject.StudySpecialization.Department.Alias}";
+            
+            await _context.SaveChangesAsync();
+            return _mapper.Map<StudySubjectResponseDto>(findStudySubject);
         }
 
         #endregion

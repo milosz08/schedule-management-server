@@ -49,6 +49,16 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpPut(ApiEndpoints.UPDATE_STUDY_SPECIALIZATION)]
+        public async Task<ActionResult<List<StudySpecResponseDto>>> UpdateStudySpecialization(
+            [FromBody] StudySpecRequestDto dto,
+            [FromQuery] long specId)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateStudySpecialization(dto, specId));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [AuthorizeRoles(AvailableRoles.ADMINISTRATOR, AvailableRoles.EDITOR)]
         [HttpGet(ApiEndpoints.GET_All_STUDY_SPEC_BASE_DEPT)]
         public ActionResult<SearchQueryResponseDto> GetAllStudySpecializationsBaseDept(

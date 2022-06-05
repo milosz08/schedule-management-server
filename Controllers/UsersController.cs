@@ -49,6 +49,17 @@ namespace asp_net_po_schedule_management_server.Controllers
         
         //--------------------------------------------------------------------------------------------------------------
         
+        [HttpPut(ApiEndpoints.UPDATE_USER)]
+        public async Task<ActionResult<RegisterUpdateUserResponseDto>> UpdateUserDetails(
+            [FromBody] RegisterUpdateUserRequestDto dto,
+            [FromQuery] long userId,
+            [FromQuery] bool ifUpdateEmailPass)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.UpdateUserDetails(dto, userId, ifUpdateEmailPass));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_EMPLOYEERS_SCHEDULE)]
         public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllEmployeersScheduleBaseCath(

@@ -9,6 +9,7 @@ namespace asp_net_po_schedule_management_server.Services
     public interface ICathedralService
     {
         Task<CathedralResponseDto> CreateCathedral(CathedralRequestDto dto);
+        Task<CathedralResponseDto> UpdateCathedral(CathedralRequestDto dto, long cathId);
         SearchQueryResponseDto GetAllCathedralsBasedDepartmentName(string cathName, string deptName);
         PaginationResponseDto<CathedralQueryResponseDto> GetAllCathedrals(SearchQueryRequestDto searchQuery);
         List<NameWithDbIdElement> GetAllCathedralsScheduleBaseDept(long deptId);

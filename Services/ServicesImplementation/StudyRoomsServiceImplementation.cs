@@ -94,7 +94,57 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             await _context.AddAsync(createStudyRoom);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<CreateStudyRoomResponseDto>(createStudyRoom);
+            return _mapper.Map<StudyRoomResponseDto>(createStudyRoom);
+        }
+
+        #endregion
+        
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update study room
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranej sali (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="roomId">id sali zajęciowej podlegającej zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie sali/próba wprowadzenia tych samych danych</exception>
+        public async Task<StudyRoomResponseDto> UpdateStudyRoom(StudyRoomRequestDto dto, long roomId)
+        {
+            // wyszukaj salę zajęciową do zamiany na podstawie id, jeśli nie znajdzie rzuć wyjątek
+            StudyRoom findStudyRoom = await _context.StudyRooms
+                .Include(r => r.RoomType)
+                .Include(r => r.Cathedral)
+                .Include(r => r.Department)
+                .FirstOrDefaultAsync(r => r.Id == roomId);
+            if (findStudyRoom == null) {
+                throw new BasicServerException("Nie znaleziono sali zajęciowej z podanym id", HttpStatusCode.NotFound);
+            }
+            
+            string roomTypeWithAlias = $"{findStudyRoom.RoomType.Name} ({findStudyRoom.RoomType.Alias})";
+            // sprawdź, czy nie zachodzi próba dodania niezaktualizowanych wartości
+            if (findStudyRoom.Name == dto.Name && findStudyRoom.Description == dto.Description &&
+                findStudyRoom.Capacity == dto.Capacity && roomTypeWithAlias == dto.RoomTypeName) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+
+            // wyszukaj inny typ sali zajęciowej, jeśli nie znajdzie rzuć wyjątek
+            RoomType findRoomType = await _context.RoomTypes
+                .FirstOrDefaultAsync(t => t.Name + " (" + t.Alias + ")" == dto.RoomTypeName);
+            if (findRoomType == null) {
+                throw new BasicServerException("Nie znaleziono typu sali na podstawie nazwy", HttpStatusCode.NotFound);
+            }
+            
+            findStudyRoom.Name = dto.Name;
+            findStudyRoom.Description = dto.Description;
+            findStudyRoom.Capacity = dto.Capacity;
+            findStudyRoom.RoomType.Id = findRoomType.Id;
+            
+            await _context.SaveChangesAsync();
+            
+            return _mapper.Map<StudyRoomResponseDto>(findStudyRoom);
         }
 
         #endregion

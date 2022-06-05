@@ -100,7 +100,48 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             // zapis do bazy danych
             await _context.StudySpecializations.AddRangeAsync(createdSpecializations);
             await _context.SaveChangesAsync();
-            return createdSpecializations.Select(s => _mapper.Map<CreateStudySpecResponseDto>(s));
+            return createdSpecializations.Select(s => _mapper.Map<StudySpecResponseDto>(s));
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Update study specialization
+
+        /// <summary>
+        /// Metoda odpowiedzialna za aktualizowanie danych wybranego kierunku (na podstawie ciała zapytania i parametrów).
+        /// </summary>
+        /// <param name="dto">obiekt z danymi do zamiany</param>
+        /// <param name="specId">id kierunku studiów podlegającego zamianie</param>
+        /// <returns>zamienione dane w postaci obiektu transferowego</returns>
+        /// <exception cref="BasicServerException">jeśli nie znajdzie kierunku/próba wprowadzenia tych samych danych</exception>
+        public async Task<List<StudySpecResponseDto>> UpdateStudySpecialization(StudySpecRequestDto dto, long specId)
+        {
+            // wyszukaj kierunek na podstawie id, jeśli nie znajdzie rzuć wyjątek
+            StudySpecialization findStudySpec = await _context.StudySpecializations
+                .Include(s => s.StudyType)
+                .Include(s => s.Department)
+                .Include(s => s.StudyDegree)
+                .FirstOrDefaultAsync(s => s.Id == specId);
+            if (findStudySpec == null) {
+                throw new BasicServerException("Nie znaleziono kierunku studiów z podanym id", HttpStatusCode.NotFound);
+            }
+            
+            // sprawdź, czy nie zachodzi próba dodania niezaktualizowanych wartości, jeśli tak rzuć wyjątek
+            if (findStudySpec.Name == dto.Name && findStudySpec.Alias == dto.Alias) {
+                throw new BasicServerException("Należy wprowadzić wartości różne od poprzednich.", 
+                    HttpStatusCode.ExpectationFailed);
+            }
+
+            findStudySpec.Name = dto.Name;
+            findStudySpec.Alias = dto.Alias;
+            
+            await _context.SaveChangesAsync();
+            return new List<StudySpecResponseDto>()
+            {
+                _mapper.Map<StudySpecResponseDto>(findStudySpec)
+            };
         }
 
         #endregion

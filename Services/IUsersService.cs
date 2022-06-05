@@ -10,6 +10,7 @@ namespace asp_net_po_schedule_management_server.Services
     public interface IUsersService
     {
         PaginationResponseDto<UserResponseDto> GetAllUsers(SearchQueryRequestDto searchQuery);
+        Task<RegisterUpdateUserResponseDto> UpdateUserDetails(RegisterUpdateUserRequestDto dto, long userId, bool ifUpdateEmailPass);
         Task<List<NameWithDbIdElement>> GetAllEmployeersScheduleBaseCath(long deptId, long cathId);
         Task<List<NameWithDbIdElement>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjName);
         Task<DashboardDetailsResDto> GetDashboardPanelData(Claim userIdentity);
