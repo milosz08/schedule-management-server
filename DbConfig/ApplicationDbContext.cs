@@ -49,6 +49,8 @@ namespace asp_net_po_schedule_management_server.DbConfig
         public DbSet<WeekScheduleOccur> WeekdayScheduleOccurs { get; set; }
         public DbSet<ScheduleSubject> ScheduleSubjects { get; set; }
         public DbSet<ScheduleSubjectType> ScheduleSubjectTypes { get; set; }
+        public DbSet<ContactFormIssueType> ContactFormIssueTypes { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
 
         #endregion
 
@@ -119,7 +121,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
                     b => b.HasOne<StudyRoom>().WithMany().HasForeignKey("room-key"),
                     b => b.HasOne<ScheduleSubject>().WithMany().HasForeignKey("schedule-subject-key"));
             
-            // mapowanie modelu przedmiotu na planie z salami zajęciowymi w relacji MANY-TO-MANY
+            // mapowanie modelu przedmiotu na planie z grupami dziekańskimi w relacji MANY-TO-MANY
             modelBuilder.Entity<ScheduleSubject>()
                 .HasMany(p => p.StudyGroups)
                 .WithMany(p => p.ScheduleSubjects)

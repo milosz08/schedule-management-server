@@ -49,6 +49,7 @@ namespace asp_net_po_schedule_management_server.Controllers
 
         //--------------------------------------------------------------------------------------------------------------
         
+        [AllowAnonymous]
         [HttpGet(ApiEndpoints.GET_ALL_DEPARTMENTS_LIST)]
         public ActionResult<SearchQueryResponseDto> GetAllDepartmentsList([FromQuery] string deptQuerySearch)
         {
