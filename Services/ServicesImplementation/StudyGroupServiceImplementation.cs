@@ -182,7 +182,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="groupName">nazwa grupy</param>
         /// <param name="deptName">nazwa wydziału</param>
         /// <param name="studySpecName">nazwa kierunku studiów</param>
-        /// <returns></returns>
+        /// <returns>obiekt transferowy z wyszukanymi grupami</returns>
         public async Task<SearchQueryResponseDto> GetGroupsBaseStudySpec(string groupName, string deptName, 
             string studySpecName)
         {

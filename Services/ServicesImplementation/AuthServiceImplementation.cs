@@ -245,7 +245,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                         new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
                         new KeyValuePair<string, string>("{{dictionaryHash}}", newPerson.DictionaryHash),
                     },
-                });    
+                });
             }
             return _mapper.Map<RegisterUpdateUserResponseDto>(newPerson);
         }

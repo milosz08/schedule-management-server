@@ -145,7 +145,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <returns>opakowane dane wynikowe w obiekt paginacji</returns>
         public PaginationResponseDto<DepartmentQueryResponseDto> GetAllDepartments(SearchQueryRequestDto searchQuery)
         {
-            // wyszukiwanie użytkowników przy pomocy parametru SearchPhrase
+            // wyszukiwanie wydziałów przy pomocy parametru SearchPhrase
             IQueryable<Department> deparmentsBaseQuery = _context.Departments
                 .Where(d => searchQuery.SearchPhrase == null ||
                             d.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
