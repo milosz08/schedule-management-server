@@ -95,52 +95,33 @@ namespace asp_net_po_schedule_management_server.Services.Helpers
         /// </summary>
         /// <returns>Obiekt z danymi autoryzacji: login, nazwa użytkownika i hasło</returns>
         /// <exception cref="BasicServerException">Brak nagłówków autoryzacji</exception>
-        public UserCredentialsHeaderDto ExtractedUserCredentialsFromHeader(HttpContext context, HttpRequest request)
+        public async Task<UserCredentialsHeaderDto> ExtractedUserCredentialsFromHeader(HttpContext context, 
+             HttpRequest request)
         {
             Claim userLogin = context.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
             IHeaderDictionary headers = request.Headers;
+            Person findPerson = await _context.Persons
+                .Include(p => p.Role)
+                .Include(p => p.Department)
+                .FirstOrDefaultAsync(p => p.Login.Equals(userLogin.Value));
+            if (findPerson == null) {
+                throw new BasicServerException("Nie znaleziono użytkownika na podstawie JWT", HttpStatusCode.NotFound);
+            }
             if (headers.TryGetValue("User-Name", out var username) 
                 && headers.TryGetValue("User-Password", out var password)) {
+                var verificationResult = _passwordHasher.VerifyHashedPassword(findPerson, findPerson.Password, password);
+                if (verificationResult == PasswordVerificationResult.Failed) {
+                    throw new BasicServerException("Podano nieprawidłowe hasło. Spróbuj ponownie.", HttpStatusCode.Forbidden);
+                }
                 return new UserCredentialsHeaderDto()
                 {
                     Login = userLogin?.Value,
                     Username = username.First(),
                     Password = password.First(),
+                    Person = findPerson,
                 };
             }
             throw new BasicServerException("Brak nagłówków autoryzacji.", HttpStatusCode.Forbidden);
-        }
-
-        #endregion
-        
-        //--------------------------------------------------------------------------------------------------------------
-
-        #region Checking credentials on massive content deleting
-        
-        /// <summary>
-        /// Metoda walidująca użytkownika na podstawie wprowadzonego hasła oraz loginu pozyskanego z tokenu JWT
-        /// oraz podanego przez użytkownika.
-        /// </summary>
-        /// <param name="credentials">obiekt przechowujący wartości autoryzacji</param>
-        /// <returns>Zwróci true, jeśli autoryzacja przebiegła prawidłowo.</returns>
-        /// <exception cref="BasicServerException">W przypadku błędu serwera wyrzuci wyjątek</exception>
-        public async Task CheckIfUserCredentialsAreValid(UserCredentialsHeaderDto credentials)
-        {
-            Person findPerson = await _context.Persons
-                .FirstOrDefaultAsync(p => p.Login == credentials.Login && p.Login == credentials.Username);
-
-            // jeśli użytkownik nie istnieje w systemie
-            if (findPerson == null) {
-                throw new BasicServerException("Użytkownik z podanym loginem/nazwą nie istnieje w systemie.", 
-                    HttpStatusCode.Forbidden);
-            }
-            
-            // weryfikacja hasła
-            PasswordVerificationResult verificatrionRes = _passwordHasher
-                .VerifyHashedPassword(findPerson, findPerson.Password, credentials.Password);
-            if (verificatrionRes == PasswordVerificationResult.Failed) {
-                throw new BasicServerException("Nieprawidłowe hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
-            }
         }
 
         #endregion
