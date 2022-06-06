@@ -75,10 +75,12 @@ namespace asp_net_po_schedule_management_server.Services.Helpers
         public void PaginationSorting<T>(Dictionary<string, Expression<Func<T, object>>> colSelect,
             SearchQueryRequestDto query, ref IQueryable<T> baseQuery)
         {
-            Expression<Func<T, object>> selectColumn = colSelect[query.SortBy];
-            baseQuery = query.SortDirection == SortDirection.ASC
-                ? baseQuery.OrderBy(selectColumn)
-                : baseQuery.OrderByDescending(selectColumn);
+            if (colSelect[query.SortBy] != null) {
+                Expression<Func<T, object>> selectColumn = colSelect[query.SortBy];
+                baseQuery = query.SortDirection == SortDirection.ASC
+                    ? baseQuery.OrderBy(selectColumn)
+                    : baseQuery.OrderByDescending(selectColumn);    
+            }
         }
 
         #endregion
