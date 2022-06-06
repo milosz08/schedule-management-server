@@ -25,6 +25,7 @@ namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
 
         private const string _resetPasswordTempl = "ResetPassword";
         private const string _addUserPassUserTempl = "NewUserToUser";
+        private const string _contactFormMessage = "ContactFormMessageCopy";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -56,6 +57,19 @@ namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
         public async Task SendCreatedUserAuthUser(UserEmailOptions userEmailOptions)
         {
             await SendEmailTemplate(userEmailOptions, _addUserPassUserTempl, "Witamy w Systemie Zarządzania Planem");
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Metoda odpowiedzialna za wysyłanie wiadomości email do użytkownika oraz administratorów/moderatorów po
+        /// wysłaniu przez użytkownika wiadomości w formularzu.
+        /// </summary>
+        /// <param name="userEmailOptions">parametry przesyłane do ciała wiadomości email</param>
+        /// <param name="issueIdentified">identyfikator wiadomości</param>
+        public async Task SendNewContactMessage(UserEmailOptions userEmailOptions, string issueIdentified)
+        {
+            await SendEmailTemplate(userEmailOptions, _contactFormMessage, $"Zgłoszenie nr {issueIdentified}");
         }
 
         //--------------------------------------------------------------------------------------------------------------

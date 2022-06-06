@@ -129,6 +129,14 @@
         
         //--------------------------------------------------------------------------------------------------------------
         
+        // kontroler ContactMessagesController
+        public const string ADD_NEW_CONTACT_MESSAGE = "add-contact-message";
+        public const string GET_ALL_CONTACT_MESSAGE_ISSUE_TYPES = "all-contact-message-issue-types";
+        public const string GET_ALL_MESSAGES_BASE_CLAIMS = "all-messages-base-user-claim";
+        public const string GET_MESSAGE_BASE_ID_AND_CLAIMS = "message-base-id-and-claim";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
         // wspólne
         public const string DELETE_MASSIVE = "delete-massive";
         public const string DELETE_ALL = "delete";

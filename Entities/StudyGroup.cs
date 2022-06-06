@@ -33,6 +33,8 @@ namespace asp_net_po_schedule_management_server.Entities
         
         public virtual Semester Semester { get; set; }
         
-        public ICollection<ScheduleSubject> ScheduleSubjects { get; set; }
+        public virtual ICollection<ScheduleSubject> ScheduleSubjects { get; set; }
+        
+        public virtual ICollection<ContactMessage> ContactMessages { get; set; }
     }
 }

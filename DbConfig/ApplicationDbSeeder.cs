@@ -43,6 +43,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
         private const string _semesters = "semesters.mocked.json";
         private const string _weekdays = "weekdays.mocked.json";
         private const string _scheduleTypes = "schedule-types.mocked.json";
+        private const string _contactFormIssueTypes = "contact-form-issue-types.mocked.json";
 
         #endregion
 
@@ -74,6 +75,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 await InsertDefaultStudyTypes();
                 await InsertStudyRoomsTypes();
                 await InsertStudyDegreesTypes();
+                await InsertAllContactFromIssueTypes();
             }
         }
 
@@ -240,6 +242,20 @@ namespace asp_net_po_schedule_management_server.DbConfig
             if (!_context.ScheduleSubjectTypes.Any()) {
                 await _context.ScheduleSubjectTypes.AddRangeAsync(ApplicationUtils
                     .ConvertJsonToList<ScheduleSubjectType>(_scheduleTypes, _hostingEnvironment));
+                await _context.SaveChangesAsync();
+            }
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        /// <summary>
+        /// Umieszczanie wszystkich typów możliwych zgłoszeń przez użytkowników serwisu.
+        /// </summary>
+        private async Task InsertAllContactFromIssueTypes()
+        {
+            if (!_context.ContactFormIssueTypes.Any()) {
+                await _context.ContactFormIssueTypes.AddRangeAsync(ApplicationUtils
+                    .ConvertJsonToList<ContactFormIssueType>(_contactFormIssueTypes, _hostingEnvironment));
                 await _context.SaveChangesAsync();
             }
         }

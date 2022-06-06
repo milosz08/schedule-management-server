@@ -126,6 +126,14 @@ namespace asp_net_po_schedule_management_server.DbConfig
                 .UsingEntity<Dictionary<string, object>>("schedule-groups-binding",
                     b => b.HasOne<StudyGroup>().WithMany().HasForeignKey("group-key"),
                     b => b.HasOne<ScheduleSubject>().WithMany().HasForeignKey("schedule-subject-key"));
+            
+            // mapowanie modelu wiadomości zgłoszeniowej z grupami dziekańskimi w relacji MANY-TO-MANY
+            modelBuilder.Entity<ContactMessage>()
+                .HasMany(p => p.StudyGroups)
+                .WithMany(p => p.ContactMessages)
+                .UsingEntity<Dictionary<string, object>>("contact-messages-groups-binding",
+                    b => b.HasOne<StudyGroup>().WithMany().HasForeignKey("group-key"),
+                    b => b.HasOne<ContactMessage>().WithMany().HasForeignKey("contact-message-key"));
         }
 
         #endregion
