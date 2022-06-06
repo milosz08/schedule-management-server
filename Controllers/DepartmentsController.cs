@@ -96,7 +96,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveDepartments([FromBody] MassiveDeleteRequestDto deleteDepartments)
         {
-            await _service.DeleteMassiveDepartments(deleteDepartments, _helper
+            await _service.DeleteMassiveDepartments(deleteDepartments, await _helper
                 .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
@@ -106,7 +106,8 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllDepartments()
         {
-            await _service.DeleteAllDepartments(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            await _service.DeleteAllDepartments(await _helper
+                .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
     }
