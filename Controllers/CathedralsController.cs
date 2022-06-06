@@ -97,7 +97,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveCathedrals([FromBody] MassiveDeleteRequestDto deleteCathedrals)
         {
-            await _service.DeleteMassiveCathedrals(deleteCathedrals, _helper
+            await _service.DeleteMassiveCathedrals(deleteCathedrals, await _helper
                 .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
@@ -107,7 +107,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllCathedrals()
         {
-            await _service.DeleteAllCathedrals(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            await _service.DeleteAllCathedrals(await _helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
     }

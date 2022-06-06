@@ -3,9 +3,9 @@ using AutoMapper;
 
 using System.Net;
 using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Globalization;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -483,7 +483,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Delete content
+        #region Delete massive
 
         /// <summary>
         /// Metoda usuwająca wybrane przedmioty z planu zajęć (na podstawie wartości id w ciele zapytania).
@@ -493,7 +493,25 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         public async Task DeleteMassiveScheduleSubjects(MassiveDeleteRequestDto scheduleSubjects, 
             UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // wyszukaj przedmiot na podstawie pierwszego id w tabeli, jeśli nie znajdzie rzuć wyjątek
+            ScheduleSubject findScheduleSubject = await _context.ScheduleSubjects
+                .Include(s => s.StudySubject).ThenInclude(sb => sb.Department)
+                .FirstOrDefaultAsync(d =>  scheduleSubjects.ElementsIds.Any(sb => sb == d.Id));
+            if (findScheduleSubject == null) {
+                throw new BasicServerException("Nie znaleziono przedmiotu na podstawie id", HttpStatusCode.NotFound);
+            }
+            
+            // sprawdź, czy usunięcie jest realizowane z konta edytora, jeśli przejdź dalej
+            if ((findScheduleSubject.StudySubject.Department.Id != credentials.Person.Department.Id && 
+                 credentials.Person.Role.Name == AvailableRoles.EDITOR)) {
+                // sprawdź, czy usunięcie jest realizowane z konta administratora jeśli nie wyrzuć wyjątek
+                if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                    throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora " +
+                                                   "lub próba usunięcia chronionego zasobu z rangą edytora.",
+                        HttpStatusCode.Forbidden);
+                }
+            }
+            
             // filtrowanie sal zajęciowych po ID znajdujących się w tablicy
             _context.ScheduleSubjects.RemoveRange(_context.ScheduleSubjects
                 .Where(r => scheduleSubjects.ElementsIds.Any(id => id == r.Id)));

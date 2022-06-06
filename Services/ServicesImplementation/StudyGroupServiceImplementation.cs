@@ -230,7 +230,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Delete content
+        #region Delete massive
 
         /// <summary>
         /// Metoda usuwająca wybrane grupy dziekańskie z bazy danych (na podstawie wartości id w ciele zapytania).
@@ -239,22 +239,36 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteMassiveStudyGroups(MassiveDeleteRequestDto studyGroups, UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             // filtrowanie sal zajęciowych po ID znajdujących się w tablicy
             _context.StudyGroups.RemoveRange(_context.StudyGroups
                 .Where(r => studyGroups.ElementsIds.Any(id => id == r.Id)));
             await _context.SaveChangesAsync();
         }
 
-        //--------------------------------------------------------------------------------------------------------------
+        #endregion
         
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Delete all
+
         /// <summary>
         /// Metoda usuwająca z bazy danych wszystkie grupy dziekańskie.
         /// </summary>
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteAllStudyGroups(UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             _context.StudyGroups.RemoveRange();
             await _context.SaveChangesAsync();
         }
