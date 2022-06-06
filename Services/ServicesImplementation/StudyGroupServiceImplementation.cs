@@ -133,7 +133,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     { nameof(StudyRoom.Id), r => r.Id },
                     { nameof(StudyRoom.Name), r => r.Name },
                     { "DepartmentAlias", r => r.Department.Alias },
-                    { "StudySpecAlias", r => r.StudySpecialization.Alias },
+                    { "SpecTypeAlias", r => r.StudySpecialization.Alias },
                 }, searchQuery, ref studyGroupsBaseQuery);
             }
             
@@ -167,6 +167,29 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                 .ToListAsync();
 
             return findAllStudyGroups.Select(s => new NameWithDbIdElement(s.Id, s.Name)).ToList();
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Get all groups base department name
+
+        /// <summary>
+        /// Metoda filtrująca tablicę ze wszystkimi grupami dziekańskimi na podstawie przypisania do wydziału (na
+        /// podstawie przekazywanych parametrów) oraz samej nazwy grupy. Jeśli nazwa grupy jest pusta, wówczas zwraca
+        /// wszystkie znalezione elementy.
+        /// </summary>
+        /// <param name="groupQuerySearch">nazwa grupy</param>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>wszystkie znalezione grupy dziekańskie opakowane w obiekt transferowy</returns>
+        public async Task<List<NameWithDbIdElement>> GetAllStudyGroupsBaseDept(string deptName)
+        {
+            return await _context.StudyGroups
+                .Include(g => g.Department)
+                .Where(g => g.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .Select(g => new NameWithDbIdElement(g.Id, g.Name))
+                .ToListAsync();
         }
 
         #endregion

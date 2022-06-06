@@ -106,6 +106,7 @@
         public const string GET_ALL_STUDY_GROUPS_PAGINATION = "all-study-groups";
         public const string GET_AVAILABLE_GROUPS_BASE_SPEC_AND_SEM_SCHEDULE = "available-groups-base-study-spec-and-sem";
         public const string GET_AVAILABLE_GROUPS_BASE_SPEC = "available-groups-base-study-spec";
+        public const string GET_ALL_GROUPS_BASE_DEPT = "study-groups-base-dept";
         
         //--------------------------------------------------------------------------------------------------------------
         
