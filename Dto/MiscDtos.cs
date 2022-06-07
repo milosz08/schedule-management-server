@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using asp_net_po_schedule_management_server.Entities;
+
 
 namespace asp_net_po_schedule_management_server.Dto
 {
@@ -15,6 +17,7 @@ namespace asp_net_po_schedule_management_server.Dto
         public string Login { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public Person Person { get; set; }
     }
     
     //------------------------------------------------------------------------------------------------------------------

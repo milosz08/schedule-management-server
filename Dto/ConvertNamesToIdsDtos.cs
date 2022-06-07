@@ -32,6 +32,8 @@ namespace asp_net_po_schedule_management_server.Dto
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    
     public sealed class ConvertToNameWithIdResponseDto
     {
         public ConvertNamesToDataSingleElement DeptData { get; set; }

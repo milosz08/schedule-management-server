@@ -221,7 +221,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Convert names to id's
+        #region Convert names to ids
 
         /// <summary>
         /// Metoda odpowiedzialna za konwertowanie parametrów zapytania grupy z parametrów typu string na parametry
@@ -258,7 +258,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Convert names to id's
+        #region Convert ids to names
 
         /// <summary>
         /// Metoda odpowiedzialna za konwertowanie parametrów zapytania grupy z parametrów numerycznych na parametry

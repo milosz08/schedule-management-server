@@ -11,12 +11,12 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 using asp_net_po_schedule_management_server.Dto;
+using asp_net_po_schedule_management_server.Utils;
 using asp_net_po_schedule_management_server.DbConfig;
 using asp_net_po_schedule_management_server.Entities;
 using asp_net_po_schedule_management_server.Exceptions;
 using asp_net_po_schedule_management_server.Services.Helpers;
 using asp_net_po_schedule_management_server.Ssh.SshEmailService;
-using asp_net_po_schedule_management_server.Utils;
 
 
 namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
@@ -346,7 +346,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt przechowujący dane autentykacji operacji na danych</param>
         public async Task DeleteMassiveUsers(MassiveDeleteRequestDto users, UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
             
             // znajdowanie osób z nieusuwalnym kontem
             IQueryable<long> personsNotRemoveAccounts = _context.Persons.Where(p => !p.IfRemovable).Select(p => p.Id);
@@ -382,6 +386,12 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt przechowujący dane autentykacji operacji na danych</param>
         public async Task DeleteAllUsers(UserCredentialsHeaderDto credentials)
         {
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             IQueryable<Person> findAllRemovingPersons = _context.Persons.Where(p => p.IfRemovable);
             if (findAllRemovingPersons.Count() > 0) {
                 // usuwanie skrzynek email

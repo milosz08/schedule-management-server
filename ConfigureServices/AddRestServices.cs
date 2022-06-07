@@ -29,6 +29,7 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             services.AddScoped<IScheduleSubjectsService, ScheduleSubjectsServiceImplementation>();
             services.AddScoped<ITimeManagementService, TimeManagementServiceImplementation>();
             services.AddScoped<ISearchContentService, SearchContentServiceImplementation>();
+            services.AddScoped<IContactMessagesService, ContactMessagesServiceImplementation>();
 
             // serwisy typu "singleton" (bez interfejsów)
             services.AddTransient<ServiceHelper>();

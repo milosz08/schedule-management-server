@@ -87,7 +87,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpGet(ApiEndpoints.GET_DASHBOARD_DETAILS)]
         public async Task<ActionResult<DashboardDetailsResDto>> GetDashboardPanelData()
         {
-            Claim userIdentity = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);   
+            Claim userIdentity = HttpContext.User.FindFirst(claim => claim.Type == ClaimTypes.Name);
             return StatusCode((int) HttpStatusCode.OK, await _service.GetDashboardPanelData(userIdentity));
         }
         
@@ -104,7 +104,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveUsers([FromBody] MassiveDeleteRequestDto deleteUsers)
         {
-            await _service.DeleteMassiveUsers(deleteUsers, _helper
+            await _service.DeleteMassiveUsers(deleteUsers, await _helper
                 .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
@@ -114,7 +114,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllUsers()
         {
-            await _service.DeleteAllUsers(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            await _service.DeleteAllUsers(await _helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
     }

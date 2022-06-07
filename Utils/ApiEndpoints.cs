@@ -106,6 +106,7 @@
         public const string GET_ALL_STUDY_GROUPS_PAGINATION = "all-study-groups";
         public const string GET_AVAILABLE_GROUPS_BASE_SPEC_AND_SEM_SCHEDULE = "available-groups-base-study-spec-and-sem";
         public const string GET_AVAILABLE_GROUPS_BASE_SPEC = "available-groups-base-study-spec";
+        public const string GET_ALL_GROUPS_BASE_DEPT = "study-groups-base-dept";
         
         //--------------------------------------------------------------------------------------------------------------
         
@@ -126,6 +127,14 @@
         
         // kontroler SearchContentController
         public const string GET_MASSIVE_QUERY_RESULT = "massive-query-result";
+        
+        //--------------------------------------------------------------------------------------------------------------
+        
+        // kontroler ContactMessagesController
+        public const string ADD_NEW_CONTACT_MESSAGE = "add-contact-message";
+        public const string GET_ALL_CONTACT_MESSAGE_ISSUE_TYPES = "all-contact-message-issue-types";
+        public const string GET_ALL_MESSAGES_BASE_CLAIMS = "all-messages-base-user-claim";
+        public const string GET_MESSAGE_BASE_ID_AND_CLAIMS = "message-base-id-and-claim";
         
         //--------------------------------------------------------------------------------------------------------------
         

@@ -145,7 +145,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <returns>opakowane dane wynikowe w obiekt paginacji</returns>
         public PaginationResponseDto<DepartmentQueryResponseDto> GetAllDepartments(SearchQueryRequestDto searchQuery)
         {
-            // wyszukiwanie użytkowników przy pomocy parametru SearchPhrase
+            // wyszukiwanie wydziałów przy pomocy parametru SearchPhrase
             IQueryable<Department> deparmentsBaseQuery = _context.Departments
                 .Where(d => searchQuery.SearchPhrase == null ||
                             d.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
@@ -214,7 +214,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Delete content
+        #region Delete massive
 
         /// <summary>
         /// Metoda usuwająca wybrane wydziały z bazy danych (na podstawie wartości id w ciele zapytania).
@@ -223,7 +223,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteMassiveDepartments(MassiveDeleteRequestDto departments, UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
             
             // znajdowanie nieusuwalnych wydziałów
             IQueryable<long> nonRemovableDepts = _context.Departments.Where(d => !d.IfRemovable).Select(d => d.Id);
@@ -240,15 +244,23 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             }
         }
 
-        //--------------------------------------------------------------------------------------------------------------
+        #endregion
         
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Delete all
+
         /// <summary>
         /// Metoda usuwająca z bazy danych wszystkie wydziały (oprócz domyślnego zapisywanego przy seedowaniu).
         /// </summary>
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteAllDepartments(UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
             
             IQueryable<Department> findAllRemovingDepartments = _context.Departments.Where(d => d.IfRemovable);
             // jeśli znajdzie co najmniej jeden wydział do usunięcia

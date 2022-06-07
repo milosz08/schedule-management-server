@@ -16,7 +16,8 @@ namespace asp_net_po_schedule_management_server.Dto.Validators
         private string[] _allowedSortings =
         {
             "Id", "Surname", "Login", "Role", "Name", "Alias", "DepartmentName", "DepartmentAlias", "CathedralAlias",
-            "Capacity", "RoomTypeAlias", "SpecTypeName", "SpecDegree", "SpecTypeAlias"
+            "Capacity", "RoomTypeAlias", "SpecTypeName", "SpecDegree", "SpecTypeAlias", "IssueType", "IfAnonymous",
+            "CreatedDate",
         };
         
         public UserQueryValidator()

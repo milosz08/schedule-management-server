@@ -36,6 +36,8 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// Metoda zwracająca listę z tygodniami (pierwszy i ostatni dzień, nr tygodnia oraz rok) na podstawie
         /// wyliczonego aktualnego roku akademickiego.
         /// </summary>
+        /// <param name="startYear">rok rozpoczęcia roku akademickiego</param>
+        /// <param name="endYear">rok zakończenia roku akademickiego</param>
         /// <returns>lista tygodni</returns>
         public List<string> GetAllWeeksNameWithWeekNumberInCurrentYear(int startYear, int endYear)
         {

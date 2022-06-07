@@ -249,7 +249,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
 
-        #region Delete content
+        #region Delete massive
 
         /// <summary>
         /// Metoda usuwająca wybrane katedry z bazy danych (na podstawie wartości id w ciele zapytania).
@@ -258,7 +258,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteMassiveCathedrals(MassiveDeleteRequestDto cathedrals, UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
+                    HttpStatusCode.Forbidden);
+            }
             
             // znajdowanie nieusuwalnych katedr
             IQueryable<long> nonRemovableCaths = _context.Cathedrals.Where(c => !c.IfRemovable).Select(c => c.Id);
@@ -275,7 +279,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
             }
         }
 
+        #endregion
+        
         //--------------------------------------------------------------------------------------------------------------
+
+        #region Delete all
         
         /// <summary>
         /// Metoda usuwająca z bazy danych wszystkie katedry (oprócz domyślnej zapisywanej przy seedowaniu).
@@ -283,7 +291,11 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteAllCathedrals(UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
+                    HttpStatusCode.Forbidden);
+            }
             
             IQueryable<Cathedral> findAllRemovingCathedrals = _context.Cathedrals.Where(c => c.IfRemovable);
             // jeśli znajdzie co najmniej jeden wydział do usunięcia

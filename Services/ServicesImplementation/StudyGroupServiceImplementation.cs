@@ -133,7 +133,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
                     { nameof(StudyRoom.Id), r => r.Id },
                     { nameof(StudyRoom.Name), r => r.Name },
                     { "DepartmentAlias", r => r.Department.Alias },
-                    { "StudySpecAlias", r => r.StudySpecialization.Alias },
+                    { "SpecTypeAlias", r => r.StudySpecialization.Alias },
                 }, searchQuery, ref studyGroupsBaseQuery);
             }
             
@@ -172,6 +172,29 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         #endregion
 
         //--------------------------------------------------------------------------------------------------------------
+
+        #region Get all groups base department name
+
+        /// <summary>
+        /// Metoda filtrująca tablicę ze wszystkimi grupami dziekańskimi na podstawie przypisania do wydziału (na
+        /// podstawie przekazywanych parametrów) oraz samej nazwy grupy. Jeśli nazwa grupy jest pusta, wówczas zwraca
+        /// wszystkie znalezione elementy.
+        /// </summary>
+        /// <param name="groupQuerySearch">nazwa grupy</param>
+        /// <param name="deptName">nazwa wydziału</param>
+        /// <returns>wszystkie znalezione grupy dziekańskie opakowane w obiekt transferowy</returns>
+        public async Task<List<NameWithDbIdElement>> GetAllStudyGroupsBaseDept(string deptName)
+        {
+            return await _context.StudyGroups
+                .Include(g => g.Department)
+                .Where(g => g.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
+                .Select(g => new NameWithDbIdElement(g.Id, g.Name))
+                .ToListAsync();
+        }
+
+        #endregion
+
+        //--------------------------------------------------------------------------------------------------------------
         
         #region Get all groups base study specialization name and department name
 
@@ -182,7 +205,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="groupName">nazwa grupy</param>
         /// <param name="deptName">nazwa wydziału</param>
         /// <param name="studySpecName">nazwa kierunku studiów</param>
-        /// <returns></returns>
+        /// <returns>obiekt transferowy z wyszukanymi grupami</returns>
         public async Task<SearchQueryResponseDto> GetGroupsBaseStudySpec(string groupName, string deptName, 
             string studySpecName)
         {
@@ -230,7 +253,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Delete content
+        #region Delete massive
 
         /// <summary>
         /// Metoda usuwająca wybrane grupy dziekańskie z bazy danych (na podstawie wartości id w ciele zapytania).
@@ -239,22 +262,36 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteMassiveStudyGroups(MassiveDeleteRequestDto studyGroups, UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             // filtrowanie sal zajęciowych po ID znajdujących się w tablicy
             _context.StudyGroups.RemoveRange(_context.StudyGroups
                 .Where(r => studyGroups.ElementsIds.Any(id => id == r.Id)));
             await _context.SaveChangesAsync();
         }
 
-        //--------------------------------------------------------------------------------------------------------------
+        #endregion
         
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Delete all
+
         /// <summary>
         /// Metoda usuwająca z bazy danych wszystkie grupy dziekańskie.
         /// </summary>
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteAllStudyGroups(UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             _context.StudyGroups.RemoveRange();
             await _context.SaveChangesAsync();
         }

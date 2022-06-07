@@ -149,6 +149,22 @@ namespace asp_net_po_schedule_management_server.DbConfig
             CreateMap<Department, SearchQueryResponseDto>();
             CreateMap<DepartmentRequestResponseDto, Department>();
             CreateMap<Department, DepartmentEditResDto>();
+
+            //----------------------------------------------------------------------------------------------------------
+
+            CreateMap<ContactMessage, ContactMessagesQueryResponseDto>()
+                .ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir =>
+                    dir.Person == null ? $"{dir.Surname} {dir.Name}" : $"{dir.Person.Surname} {dir.Person.Name}"))
+                .ForMember(dist => dist.IssueType, from => from.MapFrom(dir => dir.ContactFormIssueType.Name))
+                .ForMember(dist => dist.CreatedDate, from => from.MapFrom(dir => dir.CreatedDate.ToString("g")));
+
+            CreateMap<ContactMessage, SingleContactMessageResponseDto>()
+                .ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir =>
+                    dir.Person == null ? $"{dir.Surname} {dir.Name}" : $"{dir.Person.Surname} {dir.Person.Name}"))
+                .ForMember(dist => dist.IssueType, from => from.MapFrom(dir => dir.ContactFormIssueType.Name))
+                .ForMember(dist => dist.CreatedDate, from => from.MapFrom(dir => dir.CreatedDate.ToString("g")))
+                .ForMember(dist => dist.Email,
+                    from => from.MapFrom(dir => dir.Person == null ? dir.Email : dir.Person.Email));
             
             //----------------------------------------------------------------------------------------------------------
             

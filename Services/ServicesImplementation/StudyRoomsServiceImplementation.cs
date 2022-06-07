@@ -1,12 +1,11 @@
 ﻿using System;
 using AutoMapper;
 
+using System.Net;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-
-using System.Net;
-using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -265,7 +264,7 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         
         //--------------------------------------------------------------------------------------------------------------
         
-        #region Delete content
+        #region Delete massive
 
         /// <summary>
         /// Metoda usuwająca wybrane sale zajęciowe z bazy danych (na podstawie wartości id w ciele zapytania).
@@ -274,22 +273,36 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteMassiveStudyRooms(MassiveDeleteRequestDto studyRooms, UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             // filtrowanie sal zajęciowych po ID znajdujących się w tablicy
             _context.StudyRooms.RemoveRange(_context.StudyRooms
                 .Where(r => studyRooms.ElementsIds.Any(id => id == r.Id)));
             await _context.SaveChangesAsync();
         }
 
-        //--------------------------------------------------------------------------------------------------------------
+        #endregion
         
+        //--------------------------------------------------------------------------------------------------------------
+
+        #region Delete all
+
         /// <summary>
         /// Metoda usuwająca z bazy danych wszystkie sale zajęciowe.
         /// </summary>
         /// <param name="credentials">obiekt autoryzacji na podstawie claimów</param>
         public async Task DeleteAllStudyRooms(UserCredentialsHeaderDto credentials)
         {
-            await _helper.CheckIfUserCredentialsAreValid(credentials);
+            // sprawdź, czy usunięcie jest realizowane z konta administratora, jeśli nie wyrzuć wyjątek
+            if (credentials.Person.Role.Name != AvailableRoles.ADMINISTRATOR) {
+                throw new BasicServerException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
+                    HttpStatusCode.Forbidden);
+            }
+            
             _context.StudyRooms.RemoveRange();
             await _context.SaveChangesAsync();
         }

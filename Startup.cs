@@ -43,7 +43,11 @@ namespace asp_net_po_schedule_management_server
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbSeeder seeder)
         {
             // ustawianie polityki cors
-            app.UseCors("AngularClient");
+            if (env.IsDevelopment()) {
+                app.UseCors("AngularDevClient");
+            } else {
+                app.UseCors("AngularClient");
+            }
             
             seeder.Seed().Wait(); // seedowanie (umieszczanie) początkowych danych do encji bazy danych
 

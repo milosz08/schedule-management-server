@@ -81,11 +81,20 @@ namespace asp_net_po_schedule_management_server.Controllers
         }
 
         //--------------------------------------------------------------------------------------------------------------
+
+        [AllowAnonymous]
+        [HttpGet(ApiEndpoints.GET_ALL_GROUPS_BASE_DEPT)]
+        public async Task<ActionResult<List<NameWithDbIdElement>>> GetAllStudyGroupsBaseDept([FromQuery] string deptName)
+        {
+            return StatusCode((int) HttpStatusCode.OK, await _service.GetAllStudyGroupsBaseDept(deptName));
+        }
+        
+        //--------------------------------------------------------------------------------------------------------------
         
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveGroups([FromBody] MassiveDeleteRequestDto deleteGroups)
         {
-            await _service.DeleteMassiveStudyGroups(deleteGroups, _helper
+            await _service.DeleteMassiveStudyGroups(deleteGroups, await _helper
                 .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
@@ -95,7 +104,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllGroups()
         {
-            await _service.DeleteAllStudyGroups(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            await _service.DeleteAllStudyGroups(await _helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
     }

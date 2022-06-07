@@ -21,9 +21,14 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             // zezwolenie na politykę CORS
             services.AddCors(options => {
                 options.AddPolicy("AngularClient", builder =>
-                    builder.AllowAnyMethod()
+                    builder.WithOrigins(GlobalConfigurer.ClientOrigin)
+                        .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithOrigins(GlobalConfigurer.ClientOrigin)
+                );
+                options.AddPolicy("AngularDevClient", builder =>
+                    builder.WithOrigins(GlobalConfigurer.DevClientOrigin)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
                 );
             });
             

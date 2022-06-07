@@ -98,7 +98,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveStudyRooms([FromBody] MassiveDeleteRequestDto deleteRooms)
         {
-            await _service.DeleteMassiveStudyRooms(deleteRooms, _helper
+            await _service.DeleteMassiveStudyRooms(deleteRooms, await _helper
                 .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
@@ -108,7 +108,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_ALL)]
         public async Task<ActionResult> DeleteAllStudyRooms()
         {
-            await _service.DeleteAllStudyRooms(_helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
+            await _service.DeleteAllStudyRooms(await _helper.ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
     }

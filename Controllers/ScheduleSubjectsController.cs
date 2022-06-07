@@ -88,7 +88,7 @@ namespace asp_net_po_schedule_management_server.Controllers
         [HttpDelete(ApiEndpoints.DELETE_MASSIVE)]
         public async Task<ActionResult> DeleteMassiveGroups([FromBody] MassiveDeleteRequestDto deleteScheduleSubjects)
         {
-            await _service.DeleteMassiveScheduleSubjects(deleteScheduleSubjects, _helper
+            await _service.DeleteMassiveScheduleSubjects(deleteScheduleSubjects, await _helper
                 .ExtractedUserCredentialsFromHeader(HttpContext, this.Request));
             return StatusCode((int) HttpStatusCode.NoContent);
         }
