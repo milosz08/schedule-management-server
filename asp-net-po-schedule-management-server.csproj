@@ -33,6 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
+	<Content Include="_StaticPrivateContent\**\*" />
       <Content Update="wwwroot\cdn\mocked\study-room.mocked.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
