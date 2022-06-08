@@ -28,15 +28,21 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations" />
-      <Folder Include="wwwroot\cdn\images" />
+        <Folder Include="Migrations" />
+	    <Folder Include="EmailTemplates" />
+        <Folder Include="wwwroot\cdn\images" />
     </ItemGroup>
 
     <ItemGroup>
-	<Content Include="_StaticPrivateContent\**\*" />
-      <Content Update="wwwroot\cdn\mocked\study-room.mocked.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+	    <Content Include="_StaticPrivateContent\**\*">
+		    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    </Content>
+	    <Content Include="EmailTemplates\*">
+		    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    </Content>
+        <Content Update="wwwroot\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>
