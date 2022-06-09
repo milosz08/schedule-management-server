@@ -23,12 +23,12 @@ namespace asp_net_po_schedule_management_server.Utils
         //--------------------------------------------------------------------------------------------------------------
         
         // obsługa email
-        public static string StmpSenderAddress { get; set; }
-        public static string StmpSenderDisplayName { get; set; }
-        public static string StmpUsername { get; set; }
-        public static string StmpPassword { get; set; }
-        public static string StmpHost { get; set; }
-        public static int StmpPort { get; set; }
+        public static string SmtpSenderAddress { get; set; }
+        public static string SmtpSenderDisplayName { get; set; }
+        public static string SmtpUsername { get; set; }
+        public static string SmtpPassword { get; set; }
+        public static string SmtpHost { get; set; }
+        public static int SmtpPort { get; set; }
         public static bool EnableSSL { get; set; }
         public static bool UseDefaultCredentials { get; set; }
         public static bool IsBodyHTML { get; set; }
