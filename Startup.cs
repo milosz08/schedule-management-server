@@ -55,9 +55,9 @@ namespace asp_net_po_schedule_management_server
                 app.UseHttpsRedirection();
             }
             
-            app.UseSwagger();  
+            app.UseSwagger();
             app.UseSwaggerUI(c => {  
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Test1 Api v1");  
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Schedule Management Server");  
             });  
             
             app.UseStaticFiles(); // zezwól na używanie plików statycznych (logo aplikacji do emailów)
