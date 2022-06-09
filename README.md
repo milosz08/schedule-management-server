@@ -37,7 +37,7 @@ $ git clone https://github.com/Milosz08/ASP.NET_PO_Schedule_Management_Server
 ```
 $ touch appsettings.json
 ```
-The contents of the appsettings.json file located in the root folder of the project:
+The contents of the `appsettings.json` file located in the root folder of the project:
 ```js
 {
     "Logging": {
