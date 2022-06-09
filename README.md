@@ -83,7 +83,7 @@ The contents of the `appsettings.json` file located in the root folder of the pr
 ```
 > Attention: If you provide invalid parameters or there are no parameters in the `appsettings.json` file, the server will not start correctly.
 
-- Edit SshEmailServiceImplementation.cs file:
+- Edit `SshEmailServiceImplementation.cs` file:
 ```c#
 ...
 public void AddNewEmailAccount(string emailAddress, string emailPassword)
