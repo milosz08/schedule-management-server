@@ -102,7 +102,7 @@ namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
             {
                 Subject = userEmailOptions.Subject,
                 Body = userEmailOptions.Body,
-                From = new MailAddress(GlobalConfigurer.StmpSenderAddress, GlobalConfigurer.StmpSenderDisplayName),
+                From = new MailAddress(GlobalConfigurer.SmtpSenderAddress, GlobalConfigurer.SmtpSenderDisplayName),
                 BodyEncoding = Encoding.UTF8,
                 SubjectEncoding = Encoding.Default,
                 IsBodyHtml = GlobalConfigurer.IsBodyHTML,
@@ -116,11 +116,11 @@ namespace asp_net_po_schedule_management_server.Ssh.SmtpEmailService
             // autentykacja z serwerem STMP
             SmtpClient smtpClient = new SmtpClient()
             {
-                Host = GlobalConfigurer.StmpHost,
-                Port = GlobalConfigurer.StmpPort,
+                Host = GlobalConfigurer.SmtpHost,
+                Port = GlobalConfigurer.SmtpPort,
                 EnableSsl = GlobalConfigurer.EnableSSL,
                 UseDefaultCredentials = GlobalConfigurer.UseDefaultCredentials,
-                Credentials = new NetworkCredential(GlobalConfigurer.StmpUsername, GlobalConfigurer.StmpPassword),
+                Credentials = new NetworkCredential(GlobalConfigurer.SmtpUsername, GlobalConfigurer.SmtpPassword),
             };
 
             InsertEbededImage(mail, "main-logo-dark.jpg"); // dodanie zakotwiczonego obrazka

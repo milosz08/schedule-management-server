@@ -127,23 +127,25 @@ namespace asp_net_po_schedule_management_server.Services.ServicesImplementation
 
             string stringifyGroups = string.Join(",", findStudyGroups.Select(g => g.Name));
             string generateMessageId = ApplicationUtils.RandomNumberGenerator(8);
-            
-            // preparowanie oraz wysłanie wiadomości email z kopią wiadomości
-            await _smtpEmailService.SendNewContactMessage(new UserEmailOptions()
-            {
-                ToEmails = senderEmails.Distinct().ToList(), // usuwanie duplikatów
-                Placeholders = new List<KeyValuePair<string, string>>()
+
+            if (!dto.IfAnonymous) {
+                // preparowanie oraz wysłanie wiadomości email z kopią wiadomości
+                await _smtpEmailService.SendNewContactMessage(new UserEmailOptions()
                 {
-                    new KeyValuePair<string, string>("{{messageId}}", generateMessageId),
-                    new KeyValuePair<string, string>("{{userName}}", findPerson == null ? dto.Name : findPerson.Name),
-                    new KeyValuePair<string, string>("{{issueType}}", findIssueType.Name),
-                    new KeyValuePair<string, string>("{{departmentName}}", findDepartment == null ? "brak" : findDepartment.Name),
-                    new KeyValuePair<string, string>("{{groupNames}}", stringifyGroups == "" ? "brak" : stringifyGroups),
-                    new KeyValuePair<string, string>("{{description}}", dto.Description),
-                    new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
-                },
-            }, generateMessageId);
-            
+                    ToEmails = senderEmails.Distinct().ToList(), // usuwanie duplikatów
+                    Placeholders = new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("{{messageId}}", generateMessageId),
+                        new KeyValuePair<string, string>("{{userName}}", findPerson == null ? dto.Name : findPerson.Name),
+                        new KeyValuePair<string, string>("{{issueType}}", findIssueType.Name),
+                        new KeyValuePair<string, string>("{{departmentName}}", findDepartment == null ? "brak" : findDepartment.Name),
+                        new KeyValuePair<string, string>("{{groupNames}}", stringifyGroups == "" ? "brak" : stringifyGroups),
+                        new KeyValuePair<string, string>("{{description}}", dto.Description),
+                        new KeyValuePair<string, string>("{{serverTime}}", ApplicationUtils.GetCurrentUTCdateString()),
+                    },
+                }, generateMessageId);
+            }
+
             ContactMessage contactMessage = new ContactMessage()
             {
                 Name = dto.Name,
