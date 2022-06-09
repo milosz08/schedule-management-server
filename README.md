@@ -33,7 +33,7 @@ The aim of this project is to simulate a schedule management system for an examp
 ```
 $ git clone https://github.com/Milosz08/ASP.NET_PO_Schedule_Management_Server
 ```
-- Create appsettings.json and insert services connections:
+- Create `appsettings.json` and insert services connections:
 ```
 $ touch appsettings.json
 ```
