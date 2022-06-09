@@ -81,6 +81,43 @@ The contents of the appsettings.json file located in the root folder of the proj
 ```
 > Attention: If you provide invalid parameters or there are no parameters in the `appsettings.json` file, the server will not start correctly.
 
+- Edit SshEmailServiceImplementation.cs file:
+```c#
+...
+public void AddNewEmailAccount(string emailAddress, string emailPassword)
+{
+    _sshInterceptor.ExecuteCommand(
+        // insert your ShellScript command to create email accounts on SMTP server
+    );
+    _sshInterceptor.ExecuteCommand(
+        // insert your ShellScript command to added maximum size of created maibox
+    );
+}
+
+public void UpdateEmailPassword(string emailAddress, string newEmailPassword)
+{
+    _sshInterceptor.ExecuteCommand(
+       // insert your ShellScript command to update email account password
+    );
+}
+
+public void DeleteEmailAccount(string emailAddress)
+{
+    _sshInterceptor.ExecuteCommand(
+        // insert your ShellScript command to delete email account
+    );
+}
+...
+```
+
+## Swagger documentation
+
+Swagger documentation has been prepared in the application. To access the documentation, just go to
+```
+http://127.0.0.1:[appPort]/swagger/index.html
+```
+where `appPort` can be, for example 7575.
+
 ## About the project
 
 ### Accounts
