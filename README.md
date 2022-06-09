@@ -27,6 +27,8 @@ The aim of this project is to simulate a schedule management system for an examp
 
 ## Clone, prepare and run
 
+> Note: Before starting the server, you need to configure a server that supports SSH and SMTP or buy such a server from AWS or MS Azure.
+
 - To install the program on your computer use the command (or use the built-in GIT system in your IDE environment):
 ```
 $ git clone https://github.com/Milosz08/ASP.NET_PO_Schedule_Management_Server
