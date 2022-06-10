@@ -22,7 +22,7 @@ The aim of this project is to simulate a schedule management system for an examp
     - [SSH.NET](https://github.com/sshnet/SSH.NET)
 - Other services:     
     - [JWT (JSON Web Token)](https://jwt.io/)
-    - [OAuth2](https://oauth.net/2/)
+    - [OAuth2 (JWT Assertion)](https://oauth.net/2/)
     - [Docker](https://www.docker.com/)
 
 ## Clone, prepare and run
