@@ -4,8 +4,7 @@
     <img src="https://cdn.miloszgilga.pl/schedule-management-project-logo.png" width="140">
 </h1>
 
-> Demo available on: [schedule.miloszgilga.pl](https://schedule.miloszgilga.pl/) <br>
-> Client: [Angular PO Schedule Management Client](https://github.com/Milosz08/Angular_PO_Schedule_Management_Client) <br>
+> Client: [Angular PO Schedule Management Client](https://github.com/Milosz08/Angular_PO_Schedule_Management_Client)
 
 The aim of this project is to simulate a schedule management system for an example technical university. The application is divided into several main modules: admin panel module, schedule editor module and public module. The project was created as part of the credit for the course "Object Oriented Programming" during the pursuit of an engineering degree in Computer Science. <br>
 
