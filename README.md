@@ -30,7 +30,7 @@ The aim of this project is to simulate a schedule management system for an examp
 
 - To install the program on your computer use the command (or use the built-in GIT system in your IDE environment):
 ```
-$ git clone https://github.com/Milosz08/ASP.NET_PO_Schedule_Management_Server
+$ git clone https://github.com/Milosz08/SUoT_Schedule_Management_Server
 ```
 - Create `appsettings.json` and insert services connections:
 ```
