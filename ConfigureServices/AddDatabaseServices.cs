@@ -38,7 +38,7 @@ namespace asp_net_po_schedule_management_server.ConfigureServices
             // Dodawanie kontekstu bazy danych
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
-                    configuration.GetConnectionString("MySequelConnection"),
+                    configuration["MY_SEQUEL_CONNECTION"],
                     new MySqlServerVersion(GlobalConfigurer.DbDriverVersion),
                     opt => {
                         // zezwolenie na dynamiczną translację zapytań do bazy

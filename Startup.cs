@@ -46,6 +46,16 @@ namespace asp_net_po_schedule_management_server
         public void ConfigureServices(IServiceCollection services)
         {
             Configuration.GetSection("ServerConfiguration").Bind(new GlobalConfigurer());
+            GlobalConfigurer.JwtKey = Configuration["JWT_KEY"];
+            GlobalConfigurer.SshServer = Configuration["SSH_SERVER"];
+            GlobalConfigurer.SshUsername = Configuration["SSH_USERNAME"];
+            GlobalConfigurer.SshPassword = Configuration["SSH_PASSWORD"];
+            GlobalConfigurer.SmtpHost = Configuration["SMTP_HOST"];
+            GlobalConfigurer.SmtpUsername = Configuration["SMTP_USERNAME"];
+            GlobalConfigurer.SmtpPassword = Configuration["SMTP_PASSWORD"];
+            GlobalConfigurer.InitialCredentials.AccountName = Configuration["INITIAL_ACCOUNT_NAME"];
+            GlobalConfigurer.InitialCredentials.AccountSurname = Configuration["INITIAL_ACCOUNT_SURNAME"];
+            GlobalConfigurer.InitialCredentials.AccountPassword = Configuration["INITIAL_ACCOUNT_PASSWORD"];
             
             services.AddJwtJsonServiceCollection();
             services.AddRestServicesCollection();

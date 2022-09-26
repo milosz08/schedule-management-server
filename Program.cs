@@ -25,6 +25,7 @@ namespace asp_net_po_schedule_management_server
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load();
             CreateHostBuilder(args).Build().Run();
         }
 
