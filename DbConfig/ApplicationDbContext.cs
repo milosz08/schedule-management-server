@@ -89,7 +89,7 @@ namespace asp_net_po_schedule_management_server.DbConfig
             // konfiguracja połączenia do bazy danych
             optionsBuilder
                 .UseMySql(
-                    _configuration.GetConnectionString("MySequelConnection"),
+                    _configuration["MY_SEQUEL_CONNECTION"],
                     new MySqlServerVersion(GlobalConfigurer.DbDriverVersion))
                 .UseLoggerFactory(LoggerFactory.Create(factory => factory
                     .AddConsole()

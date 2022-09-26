@@ -3,5 +3,6 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-appsettings.json
 /.idea/
+.env
+doc/logging-data.txt
