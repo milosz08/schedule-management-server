@@ -1,8 +1,5 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
-/.idea/
-.env
-doc/logging-data.txt
+ScheduleManagement/bin/
+ScheduleManagement/obj/
+
+ScheduleManagement/.env
+ScheduleManagement/.volumes/**/*volume/

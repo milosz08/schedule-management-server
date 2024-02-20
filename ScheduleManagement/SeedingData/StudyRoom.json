@@ -2,21 +2,21 @@
     {
         "Name": "laboratoryjna",
         "Alias": "lab",
-        "Color": "#00ff00"
+        "Color": "#7cb0f6"
     },
     {
         "Name": "ćwiczeniowa",
         "Alias": "ćw",
-        "Color": "#00ff00"
+        "Color": "#79f9d1"
     },
     {
         "Name": "wykładowa",
         "Alias": "wyk",
-        "Color": "#00ff00"
+        "Color": "#7bf78d"
     },
     {
         "Name": "inna",
         "Alias": "inna",
-        "Color": "#00ff00"
+        "Color": "#f8f054"
     }
 ]
