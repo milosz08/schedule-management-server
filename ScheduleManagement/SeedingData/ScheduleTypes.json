@@ -1,0 +1,37 @@
+﻿[
+    {
+        "Name": "wykłady",
+        "Alias": "wyk",
+        "Color": "#7bf78d"
+    },
+    {
+        "Name": "ćwiczenia",
+        "Alias": "ćw",
+        "Color": "#79f9d1"
+    },
+    {
+        "Name": "laboratoria",
+        "Alias": "lab",
+        "Color": "#7cb0f6"
+    },
+    {
+        "Name": "seminaria",
+        "Alias": "sem",
+        "Color": "#a9fd43"
+    },
+    {
+        "Name": "zajęcia projektowe",
+        "Alias": "proj",
+        "Color": "#ef83dd"
+    },
+    {
+        "Name": "konsultacje",
+        "Alias": "wyk",
+        "Color": "#ffc757"
+    },
+    {
+        "Name": "inne",
+        "Alias": "inne",
+        "Color": "#f8f054"
+    }
+]
