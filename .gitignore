@@ -1,5 +1,9 @@
+bin/
+obj/
+
 ScheduleManagement/bin/
 ScheduleManagement/obj/
 
 ScheduleManagement/.env
 ScheduleManagement/.volumes/**/*volume/
+ScheduleManagement.sln.DotSettings.user
