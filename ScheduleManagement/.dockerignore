@@ -1,0 +1,10 @@
+﻿bin/
+obj/
+
+.env
+example.env
+
+appsettings.Development.json
+
+docker-compose.yml
+Dockerfile
