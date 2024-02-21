@@ -36,7 +36,7 @@ public class ResetPasswordServiceImpl(
 		await mailSenderService.SendEmail(new UserEmailOptions<ResetPasswordViewModel>
 		{
 			ToEmails = [findUser.Email],
-			Subject = "Reset hasła",
+			Subject = "Resetowanie hasła",
 			DataModel = new ResetPasswordViewModel
 			{
 				UserName = $"{findUser.Name} {findUser.Surname}",
