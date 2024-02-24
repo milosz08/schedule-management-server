@@ -3,9 +3,9 @@
 public sealed class SearchMassiveQueryReqDto
 {
 	public string SearchQuery { get; set; }
-	public bool IfGroupsActive { get; set; }
-	public bool IfTeachersActive { get; set; }
-	public bool IfRoomsActive { get; set; }
+	public bool IsGroupsActive { get; set; }
+	public bool IsTeachersActive { get; set; }
+	public bool IsRoomsActive { get; set; }
 }
 
 public sealed class SearchMassiveQueryResDto

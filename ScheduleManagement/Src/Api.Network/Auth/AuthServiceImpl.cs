@@ -13,6 +13,7 @@ using ScheduleManagement.Api.Entity;
 using ScheduleManagement.Api.Exception;
 using ScheduleManagement.Api.Jwt;
 using ScheduleManagement.Api.Network.User;
+using ScheduleManagement.Api.S3;
 using ScheduleManagement.Api.Util;
 
 namespace ScheduleManagement.Api.Network.Auth;
@@ -35,7 +36,7 @@ public class AuthServiceImpl(
 
 		if (findPerson == null)
 		{
-			throw new RestApiException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
+			throw new RestApiException("Podano zły login lub hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
 		}
 		var verificatrionRes = passwordHasher
 			.VerifyHashedPassword(findPerson, findPerson.Password, user.Password);

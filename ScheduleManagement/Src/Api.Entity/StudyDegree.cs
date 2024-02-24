@@ -4,7 +4,7 @@ using ScheduleManagement.Api.Db;
 
 namespace ScheduleManagement.Api.Entity;
 
-[Table("study-degrees")]
+[Table("StudyDegrees")]
 public sealed class StudyDegree : AbstractEntity
 {
 	[Required]

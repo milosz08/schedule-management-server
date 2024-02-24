@@ -9,6 +9,10 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 {
 	public async Task<List<SearchMassiveQueryResDto>> GetAllItemsFromServerQuery(SearchMassiveQueryReqDto query)
 	{
+		if (string.IsNullOrEmpty(query.SearchQuery))
+		{
+			return [];
+		}
 		var responseData = new List<SearchMassiveQueryResDto>();
 
 		var findStudyGroups = await dbContext.StudyGroups
@@ -22,7 +26,7 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 				 g.StudySpecialization.StudyType.Name.Contains(query.SearchQuery,
 					 StringComparison.OrdinalIgnoreCase) ||
 				 g.StudySpecialization.Name.Contains(query.SearchQuery, StringComparison.OrdinalIgnoreCase))
-				&& query.IfGroupsActive)
+				&& query.IsGroupsActive)
 			.ToListAsync();
 
 		foreach (var studyGroup in findStudyGroups)
@@ -49,7 +53,7 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 			.Where(p =>
 				(p.Name.Contains(query.SearchQuery, StringComparison.OrdinalIgnoreCase) ||
 				 p.Surname.Contains(query.SearchQuery, StringComparison.OrdinalIgnoreCase))
-				&& query.IfTeachersActive && !p.Role.Name.Equals(UserRole.Student))
+				&& query.IsTeachersActive && !p.Role.Name.Equals(UserRole.Student))
 			.ToListAsync();
 
 		foreach (var person in findStudyTeachers)
@@ -76,7 +80,7 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 				(p.Name.Contains(query.SearchQuery, StringComparison.OrdinalIgnoreCase) ||
 				 p.Description.Contains(query.SearchQuery, StringComparison.OrdinalIgnoreCase) ||
 				 p.RoomType.Name.Contains(query.SearchQuery, StringComparison.OrdinalIgnoreCase))
-				&& query.IfRoomsActive)
+				&& query.IsRoomsActive)
 			.ToListAsync();
 
 		foreach (var studyRoom in findStudyRooms)
