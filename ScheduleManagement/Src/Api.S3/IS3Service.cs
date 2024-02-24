@@ -2,9 +2,7 @@
 
 public interface IS3Service
 {
-	Task PutFileFromRequest(string bucket, string fileName, IFormFile file);
-
-	Task<(byte[], string)> GetFileFromBucket(string bucket, string key);
+	Task PutFileFromRequest(string bucket, string fileName, byte[] file);
 
 	Task DeleteFileFromBucket(string bucket, string key);
 }

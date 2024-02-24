@@ -62,15 +62,17 @@ public class AuthServiceImpl(
 		{
 			bearerRefreshToken = findRefreshToken.Token;
 		}
-		var response = mapper.Map<LoginResponseDto>(findPerson);
-		response.BearerToken = jwtAuthManager.BearerHandlingService(findPerson);
-		response.TokenExpirationDate = DateTime.UtcNow.Add(ApiConfig.Jwt.ExpiredTimestamp);
-		response.RefreshBearerToken = bearerRefreshToken;
-		response.TokenRefreshInSeconds = ApiConfig.Jwt.ExpiredTimestamp.TotalSeconds;
-		response.ConnectedWithDepartment = findPerson.Department!.Name;
+		var resDto = mapper.Map<LoginResponseDto>(findPerson);
+		resDto.BearerToken = jwtAuthManager.BearerHandlingService(findPerson);
+		resDto.RefreshBearerToken = bearerRefreshToken;
+		resDto.ConnectedWithDepartment = findPerson.Department!.Name;
 
-		logger.LogInformation("Successfully login user: {}", findPerson);
-		return response;
+		if (findPerson.ProfileImageUuid != null)
+		{
+			resDto.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{findPerson.ProfileImageUuid}.jpg";
+		}
+		logger.LogInformation("Successfully logged user: {}", findPerson);
+		return resDto;
 	}
 
 	public async Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto dto)

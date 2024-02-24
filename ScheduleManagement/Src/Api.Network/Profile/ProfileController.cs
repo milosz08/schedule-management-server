@@ -10,13 +10,6 @@ namespace ScheduleManagement.Api.Network.Profile;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class FileController(IProfileService profileService) : ControllerBase
 {
-	[HttpGet("user")]
-	public async Task<ActionResult> GetUserCustomAvatar()
-	{
-		var imageTuple = await profileService.GetUserCustomAvatar(HttpContext.User);
-		return File(imageTuple.Item1, imageTuple.Item2);
-	}
-
 	[HttpPost]
 	[DisableRequestSizeLimit]
 	public async Task<ActionResult<MessageContentResDto>> CreateUserCustomAvatar([FromForm] IFormFile image)

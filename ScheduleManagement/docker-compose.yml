@@ -45,7 +45,7 @@ services:
     environment:
       - 'MINIO_ROOT_USER=${SCHEDULE_DEV_S3_USERNAME}'
       - 'MINIO_ROOT_PASSWORD=${SCHEDULE_DEV_S3_PASSWORD}'
-      - 'MINIO_DEFAULT_BUCKETS=profiles:private'
+      - 'MINIO_DEFAULT_BUCKETS=profiles:public'
       - 'MINIO_SCHEME=http'
     volumes:
       - ./.volumes/s3/s3-volume:/bitnami/minio/data

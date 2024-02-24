@@ -47,8 +47,8 @@ public class Person : AbstractEntity
 	[StringLength(20)]
 	public string EmailPassword { get; set; }
 
-	[Required]
-	public bool HasPicture { get; set; }
+	[StringLength(36)]
+	public string? ProfileImageUuid { get; set; }
 
 	[Required]
 	public bool IfRemovable { get; set; } = true;

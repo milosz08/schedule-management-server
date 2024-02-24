@@ -6,6 +6,9 @@ using ScheduleManagement.Api.Dto;
 using ScheduleManagement.Api.Entity;
 using ScheduleManagement.Api.Exception;
 using ScheduleManagement.Api.S3;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace ScheduleManagement.Api.Network.Profile;
 
@@ -14,23 +17,43 @@ public class ProfileServiceImpl(
 	ILogger<ProfileServiceImpl> logger,
 	IS3Service s3Service) : IProfileService
 {
-	private static readonly string[] AcceptableImageTypes = ["image/jpeg"];
+	private static readonly string[] AcceptableImageTypes = ["image/jpeg", "image/png"];
 
 	public async Task<MessageContentResDto> CreateUserCustomAvatar(IFormFile image, ClaimsPrincipal claimsPrincipal)
 	{
 		var findPerson = await GetPersonFromDb(claimsPrincipal);
 		if (image == null || image.Length == 0)
 		{
-			throw new RestApiException("Błąd podczas dodawania obrazu. Spróbuj ponownie.",
+			throw new RestApiException("Dodawany obraz nie istnieje lub jest uszkodzony. Spróbuj ponownie.",
 				HttpStatusCode.ExpectationFailed);
 		}
 		if (Array.IndexOf(AcceptableImageTypes, image.ContentType) == -1)
 		{
-			throw new RestApiException("Akceptowane rozszerzenia pliku to: .jpeg", HttpStatusCode.ExpectationFailed);
+			throw new RestApiException("Akceptowane rozszerzenia pliku to: png, jpeg.",
+				HttpStatusCode.ExpectationFailed);
 		}
-		await s3Service.PutFileFromRequest(S3Bucket.Profiles, findPerson.Id.ToString(), image);
+		var imageId = Guid.NewGuid().ToString();
+		using (var inputStream = new MemoryStream())
+		{
+			await image.CopyToAsync(inputStream);
+			using (var loadedImage = await Image.LoadAsync(inputStream))
+			{
+				loadedImage.Mutate(x => x.Resize(200, 200));
+				var encoder = new JpegEncoder { Quality = 100 };
+				using (var outputStream = new MemoryStream())
+				{
+					await loadedImage.SaveAsJpegAsync(outputStream, encoder);
+					outputStream.Seek(0, SeekOrigin.Begin);
 
-		findPerson.HasPicture = true;
+					if (findPerson.ProfileImageUuid != null)
+					{
+						await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, $"{findPerson.ProfileImageUuid}.jpg");
+					}
+					await s3Service.PutFileFromRequest(S3Bucket.Profiles, $"{imageId}.jpg", outputStream.ToArray());
+				}
+			}
+		}
+		findPerson.ProfileImageUuid = imageId;
 		await dbContext.SaveChangesAsync();
 
 		logger.LogInformation("Successfully add profile image for user: {}", findPerson);
@@ -43,10 +66,13 @@ public class ProfileServiceImpl(
 	public async Task<MessageContentResDto> RemoveUserCustomAvatar(ClaimsPrincipal claimsPrincipal)
 	{
 		var findPerson = await GetPersonFromDb(claimsPrincipal);
+		if (findPerson.ProfileImageUuid == null)
+		{
+			throw new RestApiException("Użytkownik nie posiada zdjęcia profilowego.", HttpStatusCode.NotFound);
+		}
+		await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, $"{findPerson.ProfileImageUuid}.jpg");
 
-		await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, findPerson.Id.ToString());
-
-		findPerson.HasPicture = false;
+		findPerson.ProfileImageUuid = null;
 		await dbContext.SaveChangesAsync();
 
 		logger.LogInformation("Successfully removed profile image from user: {}", findPerson);
@@ -54,12 +80,6 @@ public class ProfileServiceImpl(
 		{
 			Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało usunięte."
 		};
-	}
-
-	public async Task<(byte[], string)> GetUserCustomAvatar(ClaimsPrincipal claimsPrincipal)
-	{
-		var findPerson = await GetPersonFromDb(claimsPrincipal);
-		return await s3Service.GetFileFromBucket(S3Bucket.Profiles, findPerson.Id.ToString());
 	}
 
 	private async Task<Person> GetPersonFromDb(ClaimsPrincipal claimsPrincipal)

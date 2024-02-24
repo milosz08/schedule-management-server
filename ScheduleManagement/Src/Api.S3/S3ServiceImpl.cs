@@ -28,11 +28,11 @@ public class S3ServiceImpl : IS3Service
 		_client = new AmazonS3Client(credentials, config);
 	}
 
-	public async Task PutFileFromRequest(string bucket, string fileName, IFormFile file)
+	public async Task PutFileFromRequest(string bucket, string fileName, byte[] file)
 	{
 		using var memoryStream = new MemoryStream();
 
-		await file.CopyToAsync(memoryStream);
+		await memoryStream.WriteAsync(file);
 		memoryStream.Position = 0;
 
 		var fileTransferUtility = new TransferUtility(_client);
