@@ -18,39 +18,4 @@ public static class UserRole
 	{
 		return CheckRole(Administrator, person);
 	}
-
-	public static bool IsAdministrator(string role)
-	{
-		return Administrator.Equals(role);
-	}
-
-	public static bool IsStudent(Person person)
-	{
-		return CheckRole(Student, person);
-	}
-
-	public static bool IsStudent(string role)
-	{
-		return Student.Equals(role);
-	}
-
-	public static bool IsTeacher(Person person)
-	{
-		return CheckRole(Teacher, person);
-	}
-
-	public static bool IsTeacher(string role)
-	{
-		return Teacher.Equals(role);
-	}
-
-	public static bool IsEditor(Person person)
-	{
-		return CheckRole(Editor, person);
-	}
-
-	public static bool IsEditor(string role)
-	{
-		return Editor.Equals(role);
-	}
 }

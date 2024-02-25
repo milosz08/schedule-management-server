@@ -61,8 +61,8 @@ public class ContactMessageServiceImpl(
 			senderEmails.AddRange(await dbContext.Persons
 				.Include(p => p.Role)
 				.Include(p => p.Department)
-				.Where(p => UserRole.IsAdministrator(p) ||
-				            (UserRole.IsEditor(p) && p.Department!.Id == findDepartment.Id))
+				.Where(p => p.Role.Name.Equals(UserRole.Administrator) ||
+				            (p.Role.Name.Equals(UserRole.Editor) && p.Department!.Id == findDepartment.Id))
 				.Select(p => p.Email)
 				.ToListAsync()
 			);
@@ -71,12 +71,12 @@ public class ContactMessageServiceImpl(
 		{
 			senderEmails.AddRange(await dbContext.Persons
 				.Include(p => p.Role)
-				.Where(p => UserRole.IsAdministrator(p))
+				.Where(p => p.Role.Name.Equals(UserRole.Administrator))
 				.Select(p => p.Email)
 				.ToListAsync()
 			);
 		}
-		if (dto.IfAnonymous)
+		if (dto.IsAnonymous)
 		{
 			dto.Name = StringUtils.CapitalisedLetter(dto.Name!);
 			dto.Surname = StringUtils.CapitalisedLetter(dto.Surname!);
@@ -97,7 +97,7 @@ public class ContactMessageServiceImpl(
 		}
 		var stringifyGroups = string.Join(",", findStudyGroups.Select(g => g.Name));
 		var generateMessageId = RandomUtils.RandomNumberGenerator(8);
-		if (!dto.IfAnonymous)
+		if (!dto.IsAnonymous)
 		{
 			await mailSenderService.SendEmail(new UserEmailOptions<ContactFormMessageCopyViewModel>
 			{
@@ -123,7 +123,7 @@ public class ContactMessageServiceImpl(
 			DepartmentId = findDepartment?.Id,
 			ContactFormIssueType = findIssueType,
 			Description = dto.Description,
-			IfAnonymous = dto.IfAnonymous,
+			IfAnonymous = dto.IsAnonymous,
 			StudyGroups = findStudyGroups,
 			MessageIdentifier = generateMessageId
 		};
@@ -177,9 +177,9 @@ public class ContactMessageServiceImpl(
 			.Where(m =>
 				(searchQuery.SearchPhrase == null || m.Person!.Surname
 					.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase)) &&
-				((m.Department!.Id == findPerson.Department!.Id && UserRole.IsEditor(findPerson)) ||
+				((m.Department!.Id == findPerson.Department!.Id && findPerson.Role.Name.Equals(UserRole.Editor)) ||
 				 (m.Person!.Login.Equals(userLogin) &&
-				  (UserRole.IsTeacher(findPerson) || UserRole.IsStudent(findPerson))) ||
+				  (findPerson.Role.Name.Equals(UserRole.Teacher) || findPerson.Role.Name.Equals(UserRole.Student))) ||
 				 UserRole.IsAdministrator(findPerson)));
 
 		if (!string.IsNullOrEmpty(searchQuery.SortBy))
@@ -219,13 +219,13 @@ public class ContactMessageServiceImpl(
 			throw new RestApiException("Nie znaleziono wiadomości z podanym id", HttpStatusCode.NotFound);
 		}
 		if ((findContactMessage.IfAnonymous || findContactMessage.ContactFormIssueType.Name.Contains("inne")) &&
-		    !UserRole.IsAdministrator(userRole))
+		    !userRole.Equals(UserRole.Administrator))
 		{
 			throw new RestApiException("Brak autoryzacji do pozyskania wiadomości.", HttpStatusCode.Forbidden);
 		}
-		if ((findContactMessage.Department!.Id != findPerson.Department!.Id && UserRole.IsEditor(userRole)) ||
+		if ((findContactMessage.Department!.Id != findPerson.Department!.Id && userRole.Equals(UserRole.Editor)) ||
 		    (findContactMessage.Person!.Login != findPerson.Login &&
-		     (UserRole.IsTeacher(userRole) || UserRole.IsStudent(userRole))))
+		     (userRole.Equals(UserRole.Teacher) || userRole.Equals(UserRole.Student))))
 		{
 			throw new RestApiException("Brak autoryzacji do pozyskania wiadomości.", HttpStatusCode.Forbidden);
 		}
@@ -248,8 +248,8 @@ public class ContactMessageServiceImpl(
 			.Where(m =>
 				items.ElementsIds.Any(id => m.Id == id) &&
 				((m.Person!.Login.Equals(userCredentialsHeader.Login) &&
-				  (UserRole.IsStudent(findPerson) || UserRole.IsTeacher(findPerson))) ||
-				 (m.Department!.Id == findPerson.Department!.Id && UserRole.IsEditor(findPerson))
+				  (findPerson.Role.Name.Equals(UserRole.Student) || findPerson.Role.Name.Equals(UserRole.Teacher))) ||
+				 (m.Department!.Id == findPerson.Department!.Id && findPerson.Role.Name.Equals(UserRole.Editor))
 				 || UserRole.IsAdministrator(findPerson)))
 			.ToListAsync();
 
@@ -277,8 +277,8 @@ public class ContactMessageServiceImpl(
 			.Include(m => m.Department)
 			.Where(m =>
 				(m.Person!.Login.Equals(userCredentialsHeader.Login) &&
-				 (UserRole.IsStudent(findPerson) || UserRole.IsTeacher(findPerson))) ||
-				(m.Department!.Id == findPerson.Department!.Id && UserRole.IsEditor(findPerson)) ||
+				 (findPerson.Role.Name.Equals(UserRole.Student) || findPerson.Role.Name.Equals(UserRole.Teacher))) ||
+				(m.Department!.Id == findPerson.Department!.Id && findPerson.Role.Name.Equals(UserRole.Editor)) ||
 				UserRole.IsAdministrator(findPerson))
 			.ToListAsync();
 
