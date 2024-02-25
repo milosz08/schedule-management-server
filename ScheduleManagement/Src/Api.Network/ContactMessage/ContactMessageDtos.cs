@@ -17,7 +17,7 @@ public sealed class ContactMessagesReqDto
 	public string Description { get; set; }
 
 	[Required(ErrorMessage = "Pole statusu zalogowania przy zgłoszeniu nie może być puste")]
-	public bool IfAnonymous { get; set; }
+	public bool IsAnonymous { get; set; }
 }
 
 public sealed class ContactMessagesQueryResponseDto
