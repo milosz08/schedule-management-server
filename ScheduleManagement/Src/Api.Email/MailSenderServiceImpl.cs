@@ -18,7 +18,7 @@ public class MailSenderServiceImpl(ILogger<MailSenderServiceImpl> logger, IWebHo
 	public async Task SendEmail<T>(UserEmailOptions<T> userEmailOptions, string templateName)
 		where T : AbstractMailViewModel
 	{
-		var templateFilesPath = Path.Combine(Directory.GetCurrentDirectory(), "Src", "Api.Email", "Templates");
+		var templateFilesPath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates");
 		try
 		{
 			var fileProvider = new PhysicalFileProvider(templateFilesPath);
@@ -41,7 +41,8 @@ public class MailSenderServiceImpl(ILogger<MailSenderServiceImpl> logger, IWebHo
 			userEmailOptions.DataModel.AboutProjectUrl = ApiConfig.AboutUrl;
 			userEmailOptions.DataModel.ClientOrigin = ApiConfig.ClientOrigin;
 
-			var templateRawContent = await File.ReadAllTextAsync($"EmailTemplates/{templateName}.liquid");
+			var templateRawContent =
+				await File.ReadAllTextAsync(Path.Combine("EmailTemplates", $"{templateName}.liquid"));
 
 			List<Address> addresses = [];
 			foreach (var user in userEmailOptions.ToEmails)

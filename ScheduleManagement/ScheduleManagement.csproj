@@ -33,11 +33,12 @@
 
     <ItemGroup>
         <Folder Include="Migrations\"/>
+        <Folder Include="EmailTemplates\"/>
         <Folder Include="wwwroot\images"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Src\Api.Email\Templates\*">
+        <Content Include="EmailTemplates\**\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Update="wwwroot\**\*">
