@@ -97,23 +97,20 @@ public class ContactMessageServiceImpl(
 		}
 		var stringifyGroups = string.Join(",", findStudyGroups.Select(g => g.Name));
 		var generateMessageId = RandomUtils.RandomNumberGenerator(8);
-		if (!dto.IsAnonymous)
+		await mailSenderService.SendEmail(new UserEmailOptions<ContactFormMessageCopyViewModel>
 		{
-			await mailSenderService.SendEmail(new UserEmailOptions<ContactFormMessageCopyViewModel>
+			ToEmails = senderEmails.Distinct().ToList(),
+			Subject = $"Nowe zgłoszenie {generateMessageId}",
+			DataModel = new ContactFormMessageCopyViewModel
 			{
-				ToEmails = senderEmails.Distinct().ToList(),
-				Subject = $"Nowe zgłoszenie {generateMessageId}",
-				DataModel = new ContactFormMessageCopyViewModel
-				{
-					UserName = findPerson == null ? dto.Name! : findPerson.Name,
-					MessageId = generateMessageId,
-					IssueType = findIssueType.Name,
-					DepartmentName = findDepartment == null ? "brak" : findDepartment.Name,
-					GroupNames = stringifyGroups == "" ? "brak" : stringifyGroups,
-					Description = dto.Description
-				}
-			}, LiquidTemplate.ContactFormMessageCopy);
-		}
+				UserName = findPerson == null ? dto.Name! : findPerson.Name,
+				MessageId = generateMessageId,
+				IssueType = findIssueType.Name,
+				DepartmentName = findDepartment == null ? "brak" : findDepartment.Name,
+				GroupNames = stringifyGroups == "" ? "brak" : stringifyGroups,
+				Description = dto.Description
+			}
+		}, LiquidTemplate.ContactFormMessageCopy);
 		var contactMessage = new Entity.ContactMessage
 		{
 			AnonName = dto.Name,
