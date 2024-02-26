@@ -15,24 +15,31 @@ public sealed class AuthController(IAuthService authService)
 {
 	[AllowAnonymous]
 	[HttpPost("login")]
-	public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto user)
+	public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto reqDto)
 	{
-		return Ok(await authService.Login(user));
+		return Ok(await authService.Login(reqDto));
+	}
+
+	[AllowAnonymous]
+	[HttpPost("login/token")]
+	public async Task<ActionResult<LoginResponseDto>> LoginToken([FromBody] TokenLoginRequestDto reqDto)
+	{
+		return Ok(await authService.TokenLogin(reqDto));
 	}
 
 	[HttpPost("register")]
 	[AuthorizeRoles(UserRole.Administrator)]
 	public async Task<ActionResult<RegisterUpdateUserResponseDto>> Register(
-		[FromBody] RegisterUpdateUserRequestDto user)
+		[FromBody] RegisterUpdateUserRequestDto reqDto)
 	{
-		return Created(string.Empty, await authService.Register(user, string.Empty));
+		return Created(string.Empty, await authService.Register(reqDto, string.Empty));
 	}
 
 	[AllowAnonymous]
 	[HttpPatch("token/refresh")]
-	public async Task<ActionResult<RefreshTokenResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+	public async Task<ActionResult<RefreshTokenResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto reqDto)
 	{
-		return Ok(await authService.RefreshToken(dto));
+		return Ok(await authService.RefreshToken(reqDto));
 	}
 
 	[HttpDelete("logout")]

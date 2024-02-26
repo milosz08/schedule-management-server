@@ -27,42 +27,33 @@ public class AuthServiceImpl(
 	ILogger<AuthServiceImpl> logger,
 	IMailSenderService mailSenderService) : IAuthService
 {
-	public async Task<LoginResponseDto> Login(LoginRequestDto user)
+	public async Task<LoginResponseDto> Login(LoginRequestDto reqDto)
 	{
 		var findPerson = await dbContext.Persons
 			.Include(p => p.Role)
 			.Include(p => p.Department)
-			.FirstOrDefaultAsync(p => p.Login == user.Login || p.Email == user.Login);
+			.FirstOrDefaultAsync(p => p.Login == reqDto.Login || p.Email == reqDto.Login);
 
 		if (findPerson == null)
 		{
 			throw new RestApiException("Podano zły login lub hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
 		}
 		var verificatrionRes = passwordHasher
-			.VerifyHashedPassword(findPerson, findPerson.Password, user.Password);
+			.VerifyHashedPassword(findPerson, findPerson.Password, reqDto.Password);
 
 		if (verificatrionRes == PasswordVerificationResult.Failed)
 		{
 			throw new RestApiException("Podano zły login lub hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
 		}
-		string bearerRefreshToken;
+		var bearerRefreshToken = jwtAuthManager.RefreshTokenGenerator();
+		var refreshToken = new RefreshToken
+		{
+			Token = bearerRefreshToken,
+			PersonId = findPerson.Id
+		};
+		await dbContext.Tokens.AddAsync(refreshToken);
+		await dbContext.SaveChangesAsync();
 
-		var findRefreshToken = await dbContext.Tokens.FirstOrDefaultAsync(t => t.PersonId == findPerson.Id);
-		if (findRefreshToken == null)
-		{
-			bearerRefreshToken = jwtAuthManager.RefreshTokenGenerator();
-			var refreshToken = new RefreshToken
-			{
-				Token = bearerRefreshToken,
-				PersonId = findPerson.Id
-			};
-			await dbContext.Tokens.AddAsync(refreshToken);
-			await dbContext.SaveChangesAsync();
-		}
-		else
-		{
-			bearerRefreshToken = findRefreshToken.Token;
-		}
 		var resDto = mapper.Map<LoginResponseDto>(findPerson);
 		resDto.BearerToken = jwtAuthManager.BearerHandlingService(findPerson);
 		resDto.RefreshBearerToken = bearerRefreshToken;
@@ -76,49 +67,56 @@ public class AuthServiceImpl(
 		return resDto;
 	}
 
-	public async Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto dto)
+	public async Task<LoginResponseDto> TokenLogin(TokenLoginRequestDto reqDto)
 	{
-		var tokenHandler = new JwtSecurityTokenHandler();
-		ClaimsPrincipal principal;
-		try
+		var principal = ValidateTokens(reqDto.AccessToken);
+		var userLogin = principal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
+
+		var findRefreshToken = await dbContext.Tokens
+			.Include(p => p.Person).ThenInclude(person => person.Department)
+			.Include(p => p.Person.Role)
+			.FirstOrDefaultAsync(t => t.Token == reqDto.RefreshToken && t.Person.Login.Equals(userLogin));
+		if (findRefreshToken == null)
 		{
-			principal = tokenHandler.ValidateToken(
-				dto.BearerToken,
-				JwtAuthManagerImpl.GetBasicTokenValidationParameters(false),
-				out var validatedToken
-			);
-			if (validatedToken is not JwtSecurityToken jwtToken || !jwtToken.Header.Alg
-				    .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-			{
-				throw new RestApiException("Niepoprawny token.", HttpStatusCode.ExpectationFailed);
-			}
+			throw new RestApiException("Nie odnaleziono aktywnej sesji.", HttpStatusCode.Forbidden);
 		}
-		catch (System.Exception)
-		{
-			throw new RestApiException("Nieoczekiwany błąd podczas odczytywania tokenu.",
-				HttpStatusCode.ExpectationFailed);
-		}
+		var findPerson = findRefreshToken.Person;
+
+		var resDto = mapper.Map<LoginResponseDto>(findPerson);
+		resDto.BearerToken = jwtAuthManager.BearerHandlingRefreshTokenService(principal.Claims.ToArray());
+		resDto.RefreshBearerToken = reqDto.RefreshToken;
+		resDto.ConnectedWithDepartment = findPerson.Department!.Name;
+
+		logger.LogInformation("Successfully logged user via token: {}", findPerson);
+		return resDto;
+	}
+
+	public async Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto reqDto)
+	{
+		var principal = ValidateTokens(reqDto.ExpiredAccessToken);
+		var userLogin = principal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
+
 		var findRefreshToken = await dbContext.Tokens
 			.Include(p => p.Person)
-			.FirstOrDefaultAsync(t => t.Token == dto.RefreshBearerToken && t.PersonId == t.Person.Id);
+			.FirstOrDefaultAsync(t => t.Token == reqDto.RefreshToken && t.Person.Login.Equals(userLogin));
 		if (findRefreshToken == null)
 		{
 			throw new RestApiException("Nie znaleziono tokenu odświeżającego.", HttpStatusCode.Forbidden);
 		}
-		logger.LogInformation("Successfully refresh token for user: {}", findRefreshToken.Person);
-		return new RefreshTokenResponseDto
+		var resDto = new RefreshTokenResponseDto
 		{
-			BearerToken = jwtAuthManager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
-			RefreshBearerToken = findRefreshToken.Token,
-			TokenExpirationDate = DateTime.UtcNow.Add(ApiConfig.Jwt.ExpiredTimestamp),
-			TokenRefreshInSeconds = ApiConfig.Jwt.ExpiredTimestamp.TotalSeconds
+			AccessToken = jwtAuthManager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
+			RefreshToken = findRefreshToken.Token
 		};
+		logger.LogInformation("Successfully refresh token for user: {}", findRefreshToken.Person);
+		return resDto;
 	}
 
-	public async Task<RegisterUpdateUserResponseDto> Register(RegisterUpdateUserRequestDto user, string customPassword)
+	public async Task<RegisterUpdateUserResponseDto> Register(RegisterUpdateUserRequestDto reqDto,
+		string customPassword)
 	{
-		var nameWithoutDiacritics = StringUtils.RemoveAccents(user.Name);
-		var surnameWithoutDiacritics = StringUtils.RemoveAccents(user.Surname);
+		var nameWithoutDiacritics = StringUtils.RemoveAccents(reqDto.Name);
+		var surnameWithoutDiacritics = StringUtils.RemoveAccents(reqDto.Surname);
 		var randomNumbers = RandomUtils.RandomNumberGenerator();
 
 		var shortcut = string.Concat(nameWithoutDiacritics.AsSpan(0, 3), surnameWithoutDiacritics.AsSpan(0, 3));
@@ -133,7 +131,7 @@ public class AuthServiceImpl(
 		};
 		mailboxProxyService.AddNewEmailAccount(defValues.Email, defValues.EmailPassword);
 
-		var findRoleId = await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == user.Role);
+		var findRoleId = await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == reqDto.Role);
 		if (findRoleId == null)
 		{
 			throw new RestApiException("Podana rola nie istnieje w systemie.", HttpStatusCode.NotFound);
@@ -143,44 +141,44 @@ public class AuthServiceImpl(
 			defValues.Password = customPassword;
 		}
 		var findDepartment = await dbContext.Departments
-			.FirstOrDefaultAsync(d => d.Name.Equals(user.DepartmentName, StringComparison.OrdinalIgnoreCase));
+			.FirstOrDefaultAsync(d => d.Name.Equals(reqDto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 
 		var findCathedral = await dbContext.Cathedrals
 			.Include(c => c.Department)
 			.FirstOrDefaultAsync(c =>
-				c.Name.Equals(user.CathedralName, StringComparison.OrdinalIgnoreCase) &&
+				c.Name.Equals(reqDto.CathedralName, StringComparison.OrdinalIgnoreCase) &&
 				c.Department.Name.Equals(findDepartment!.Name, StringComparison.OrdinalIgnoreCase));
 
 		var newPerson = new Person
 		{
-			Name = StringUtils.CapitalisedLetter(user.Name),
-			Surname = StringUtils.CapitalisedLetter(user.Surname),
-			Nationality = StringUtils.CapitalisedLetter(user.Nationality),
-			City = StringUtils.CapitalisedLetter(user.City),
+			Name = StringUtils.CapitalisedLetter(reqDto.Name),
+			Surname = StringUtils.CapitalisedLetter(reqDto.Surname),
+			Nationality = StringUtils.CapitalisedLetter(reqDto.Nationality),
+			City = StringUtils.CapitalisedLetter(reqDto.City),
 			Shortcut = defValues.Shortcut,
 			Email = defValues.Email,
 			Login = defValues.Login,
 			Password = defValues.Password,
 			EmailPassword = defValues.EmailPassword,
 			RoleId = findRoleId.Id,
-			IfRemovable = user.IfRemovable,
+			IfRemovable = reqDto.IfRemovable,
 			DepartmentId = findDepartment!.Id,
 			CathedralId = findCathedral?.Id
 		};
-		if (!UserRole.Administrator.Equals(user.Role))
+		if (!UserRole.Administrator.Equals(reqDto.Role))
 		{
-			if (UserRole.Student.Equals(user.Role))
+			if (UserRole.Student.Equals(reqDto.Role))
 			{
 				var findAllSpecializations = dbContext.StudySpecializations
 					.Include(s => s.StudyType)
-					.Where(s => user.StudySpecsOrSubjects.Any(id => id == s.Id))
+					.Where(s => reqDto.StudySpecsOrSubjects.Any(id => id == s.Id))
 					.AsEnumerable();
 				newPerson.StudySpecializations = findAllSpecializations.ToList();
 			}
 			else
 			{
 				var findAllStudySubjects = dbContext.StudySubjects
-					.Where(b => user.StudySpecsOrSubjects.Any(id => id == b.Id))
+					.Where(b => reqDto.StudySpecsOrSubjects.Any(id => id == b.Id))
 					.AsEnumerable();
 				newPerson.Subjects = findAllStudySubjects.ToList();
 			}
@@ -210,8 +208,49 @@ public class AuthServiceImpl(
 		return resDto;
 	}
 
-	public Task<MessageContentResDto> Logout(string refreshToken, ClaimsPrincipal claimsPrincipal)
+	public async Task<MessageContentResDto> Logout(string refreshToken, ClaimsPrincipal claimsPrincipal)
 	{
-		throw new NotImplementedException();
+		var userLogin = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
+
+		var findRefreshToken = await dbContext.Tokens
+			.Include(p => p.Person).ThenInclude(person => person.Department)
+			.FirstOrDefaultAsync(t => t.Token == refreshToken && t.Person.Login.Equals(userLogin));
+		if (findRefreshToken == null)
+		{
+			throw new RestApiException("Nie odnaleziono aktywnej sesji.", HttpStatusCode.Forbidden);
+		}
+		dbContext.Tokens.Remove(findRefreshToken);
+		await dbContext.SaveChangesAsync();
+
+		logger.LogInformation("Successfully logout user: {}", findRefreshToken.Person);
+		return new MessageContentResDto
+		{
+			Message = "Zostałeś pomyślnie wylogowany z aplikacji."
+		};
+	}
+
+	private static ClaimsPrincipal ValidateTokens(string accessToken)
+	{
+		var tokenHandler = new JwtSecurityTokenHandler();
+		ClaimsPrincipal principal;
+		try
+		{
+			principal = tokenHandler.ValidateToken(
+				accessToken,
+				JwtAuthManagerImpl.GetBasicTokenValidationParameters(false),
+				out var validatedToken
+			);
+			if (validatedToken is not JwtSecurityToken jwtToken || !jwtToken.Header.Alg
+				    .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+			{
+				throw new RestApiException("Niepoprawny token.", HttpStatusCode.ExpectationFailed);
+			}
+		}
+		catch (System.Exception)
+		{
+			throw new RestApiException("Nieoczekiwany błąd podczas odczytywania tokenu.",
+				HttpStatusCode.ExpectationFailed);
+		}
+		return principal;
 	}
 }

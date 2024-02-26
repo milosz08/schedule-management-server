@@ -5,11 +5,13 @@ namespace ScheduleManagement.Api.Network.Auth;
 
 public interface IAuthService
 {
-	Task<LoginResponseDto> Login(LoginRequestDto user);
+	Task<LoginResponseDto> Login(LoginRequestDto reqDto);
 
-	Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto dto);
+	Task<LoginResponseDto> TokenLogin(TokenLoginRequestDto reqDto);
 
-	Task<RegisterUpdateUserResponseDto> Register(RegisterUpdateUserRequestDto user, string customPassword);
+	Task<RefreshTokenResponseDto> RefreshToken(RefreshTokenRequestDto reqDto);
+
+	Task<RegisterUpdateUserResponseDto> Register(RegisterUpdateUserRequestDto reqDto, string customPassword);
 
 	Task<MessageContentResDto> Logout(string refreshToken, ClaimsPrincipal claimsPrincipal);
 }

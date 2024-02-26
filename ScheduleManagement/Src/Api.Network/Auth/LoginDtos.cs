@@ -11,6 +11,15 @@ public sealed class LoginRequestDto
 	public string Password { get; set; }
 }
 
+public sealed class TokenLoginRequestDto
+{
+	[Required(ErrorMessage = "Pole tokenu nie może być puste.")]
+	public string AccessToken { get; set; }
+
+	[Required(ErrorMessage = "Pole tokenu odświeżania nie może być puste.")]
+	public string RefreshToken { get; set; }
+}
+
 public sealed class LoginResponseDto
 {
 	public long Id { get; set; }
