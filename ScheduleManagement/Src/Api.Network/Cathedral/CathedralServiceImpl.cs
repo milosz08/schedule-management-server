@@ -138,7 +138,9 @@ public class CathedralServiceImpl(
 			.ToList();
 		cathedralsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
 
-		return cathedralsBaseDept.Select(mapper.Map<NameIdElementDto>).ToList();
+		return cathedralsBaseDept
+			.Select(mapper.Map<NameIdElementDto>)
+			.ToList();
 	}
 
 	public async Task<CathedralEditResDto> GetCathedralDetails(long cathId)

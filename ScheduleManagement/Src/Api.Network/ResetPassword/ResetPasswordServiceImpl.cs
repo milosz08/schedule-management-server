@@ -127,13 +127,13 @@ public class ResetPasswordServiceImpl(
 	public async Task<MessageContentResDto> ChangePasswordViaAccount(ChangePasswordRequestDto dto,
 		ClaimsPrincipal claimsPrincipal)
 	{
-		var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name));
+		var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
 		var findPerson = await dbContext.Persons.FirstOrDefaultAsync(p => p.Login.Equals(username));
 		if (findPerson == null)
 		{
 			throw new RestApiException("Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
 		}
-		if (dto.OldPassword == dto.NewPassword)
+		if (dto.OldPassword.Equals(dto.NewPassword))
 		{
 			throw new RestApiException(
 				"Nowe hasło nie może być takie same jak hasło poprzednie.", HttpStatusCode.Forbidden);

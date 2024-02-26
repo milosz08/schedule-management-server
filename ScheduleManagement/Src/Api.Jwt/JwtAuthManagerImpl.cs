@@ -47,7 +47,6 @@ public class JwtAuthManagerImpl : IJwtAuthManager
 	{
 		return new TokenValidationParameters
 		{
-			// ustawianie klucza symetrycznego używanego do walidacji
 			ValidateIssuerSigningKey = true,
 			IssuerSigningKey = new SymmetricSecurityKey(TokenKey),
 			ValidateAudience = false,

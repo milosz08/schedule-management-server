@@ -29,7 +29,7 @@ public class ResetPasswordController(IResetPasswordService resetPasswordService)
 		return Ok(await resetPasswordService.ChangePasswordViaEmailToken(dto, token));
 	}
 
-	[HttpPatch("accout/change")]
+	[HttpPatch("account/change")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	public async Task<ActionResult<MessageContentResDto>> ChangePasswordViaAccount(
 		[FromBody] ChangePasswordRequestDto form)

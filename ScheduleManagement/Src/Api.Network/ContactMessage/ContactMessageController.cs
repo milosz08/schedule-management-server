@@ -36,6 +36,7 @@ public sealed class ContactMessageController(IContactMessageService contactMessa
 		return Ok(await contactMessageService.GetContactMessageDetails(messId, HttpContext.User));
 	}
 
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	[HttpPost("new")]
 	public async Task<ActionResult<MessageContentResDto>> CreateMessage([FromBody] ContactMessagesReqDto dto)
 	{
