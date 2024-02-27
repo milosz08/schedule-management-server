@@ -10,9 +10,9 @@ namespace ScheduleManagement.Api.Network.ResetPassword;
 public class ResetPasswordController(IResetPasswordService resetPasswordService) : ControllerBase
 {
 	[HttpPost("email")]
-	public async Task<ActionResult<MessageContentResDto>> SendPasswordResetEmailToken([FromQuery] string userEmail)
+	public async Task<ActionResult<MessageContentResDto>> SendPasswordResetEmailToken([FromQuery] string loginOrEmail)
 	{
-		return Ok(await resetPasswordService.SendPasswordResetEmailToken(userEmail));
+		return Ok(await resetPasswordService.SendPasswordResetEmailToken(loginOrEmail));
 	}
 
 	[HttpPatch("email/check/token/{token}")]

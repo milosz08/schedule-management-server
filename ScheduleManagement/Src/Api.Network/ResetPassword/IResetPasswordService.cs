@@ -5,7 +5,7 @@ namespace ScheduleManagement.Api.Network.ResetPassword;
 
 public interface IResetPasswordService
 {
-	Task<MessageContentResDto> SendPasswordResetEmailToken(string userEmail);
+	Task<MessageContentResDto> SendPasswordResetEmailToken(string loginOrEmail);
 
 	Task<SetNewPasswordViaEmailResponse> ValidateResetEmailToken(string token);
 

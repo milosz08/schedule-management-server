@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ScheduleManagement.Api.Config;
@@ -8,6 +9,7 @@ using ScheduleManagement.Api.Dto;
 using ScheduleManagement.Api.Email;
 using ScheduleManagement.Api.Entity;
 using ScheduleManagement.Api.Exception;
+using ScheduleManagement.Api.S3;
 using ScheduleManagement.Api.Util;
 
 namespace ScheduleManagement.Api.Network.ResetPassword;
@@ -16,42 +18,46 @@ public class ResetPasswordServiceImpl(
 	ApplicationDbContext dbContext,
 	IMailSenderService mailSenderService,
 	ILogger<ResetPasswordServiceImpl> logger,
-	IPasswordHasher<Person> passwordHasher) : IResetPasswordService
+	IPasswordHasher<Person> passwordHasher,
+	IMapper mapper) : IResetPasswordService
 {
-	public async Task<MessageContentResDto> SendPasswordResetEmailToken(string userEmail)
+	public async Task<MessageContentResDto> SendPasswordResetEmailToken(string loginOrEmail)
 	{
-		var findUser = await dbContext.Persons.FirstOrDefaultAsync(person => person.Email == userEmail);
-		if (findUser == null)
+		var findUser = await dbContext.Persons.FirstOrDefaultAsync(person =>
+			person.Login.Equals(loginOrEmail) || person.Email.Equals(loginOrEmail));
+		if (findUser != null)
 		{
-			throw new RestApiException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
-		}
-		var otpToken = RandomUtils.RandomStringGenerator(8);
-		var resetPasswordOpt = new ResetPasswordOtp
-		{
-			Email = findUser.Email,
-			Otp = otpToken,
-			OtpExpired = DateTime.UtcNow.Add(ApiConfig.OtpExpiredTimestamp),
-			PersonId = findUser.Id
-		};
-		await mailSenderService.SendEmail(new UserEmailOptions<ResetPasswordViewModel>
-		{
-			ToEmails = [findUser.Email],
-			Subject = "Resetowanie hasła",
-			DataModel = new ResetPasswordViewModel
+			var otpToken = RandomUtils.RandomStringGenerator(8);
+			var resetPasswordOpt = new ResetPasswordOtp
 			{
-				UserName = $"{findUser.Name} {findUser.Surname}",
-				ExpiredInMinutes = ApiConfig.OtpExpiredTimestamp.Minutes,
-				Token = otpToken
-			}
-		}, LiquidTemplate.ResetPassword);
+				Email = findUser.Email,
+				Otp = otpToken,
+				OtpExpired = DateTime.UtcNow.Add(ApiConfig.OtpExpiredTimestamp),
+				PersonId = findUser.Id
+			};
+			await mailSenderService.SendEmail(new UserEmailOptions<ResetPasswordViewModel>
+			{
+				ToEmails = [findUser.Email],
+				Subject = "Resetowanie hasła",
+				DataModel = new ResetPasswordViewModel
+				{
+					UserName = $"{findUser.Name} {findUser.Surname}",
+					ExpiredInMinutes = ApiConfig.OtpExpiredTimestamp.Minutes,
+					Token = otpToken
+				}
+			}, LiquidTemplate.ResetPassword);
 
-		await dbContext.ResetPasswordOpts.AddAsync(resetPasswordOpt);
-		await dbContext.SaveChangesAsync();
-
-		logger.LogInformation("Successfully send password reset email token to: {}", findUser.Email);
+			await dbContext.ResetPasswordOpts.AddAsync(resetPasswordOpt);
+			await dbContext.SaveChangesAsync();
+			logger.LogInformation("Successfully send password reset email token to: {}", findUser.Email);
+		}
+		else
+		{
+			logger.LogError("Attempt to reset password for non existing account. Login or email: {}", loginOrEmail);
+		}
 		return new MessageContentResDto
 		{
-			Message = $"Token resetujący został wysłany na adres email {findUser.Email}."
+			Message = "Jeśli konto z podanymi danymi istnieje, na adres email został wysłany token."
 		};
 	}
 
@@ -60,22 +66,27 @@ public class ResetPasswordServiceImpl(
 		var findResetOtp = await dbContext.ResetPasswordOpts
 			.Include(p => p.Person)
 			.Include(p => p.Person.Role)
-			.FirstOrDefaultAsync(otp => otp.Otp == token);
+			.FirstOrDefaultAsync(otp => otp.Otp == token && !otp.IfUsed);
 
 		if (findResetOtp == null)
 		{
-			throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.Forbidden);
+			throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.BadRequest);
 		}
 		if (findResetOtp.OtpExpired < DateTime.UtcNow)
 		{
-			throw new RestApiException("Token uległ przedawnieniu.", HttpStatusCode.Forbidden);
+			throw new RestApiException("Token uległ przedawnieniu.", HttpStatusCode.BadRequest);
 		}
 		logger.LogInformation("Successfully validated reset password email token for user: {}", findResetOtp.Person);
-		return new SetNewPasswordViaEmailResponse
+
+		var person = findResetOtp.Person;
+		var resDto = mapper.Map<SetNewPasswordViaEmailResponse>(person);
+		resDto.Token = token;
+		if (person.ProfileImageUuid != null)
 		{
-			Email = findResetOtp.Email,
-			Token = token
-		};
+			resDto.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{person.ProfileImageUuid}.jpg";
+		}
+		logger.LogInformation("Successfully verified token for reset password for user: {}", findResetOtp.Person);
+		return resDto;
 	}
 
 	public async Task<MessageContentResDto> ChangePasswordViaEmailToken(SetResetPasswordRequestDto dto,
@@ -89,20 +100,20 @@ public class ResetPasswordServiceImpl(
 				.FirstOrDefaultAsync(otp => otp.Otp == token && !otp.IfUsed);
 			if (findResetOtp == null)
 			{
-				throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.Forbidden);
+				throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.BadRequest);
 			}
 			if (findResetOtp.IfUsed)
 			{
-				throw new RestApiException("Token został już wykorzystany.", HttpStatusCode.Forbidden);
+				throw new RestApiException("Token został już wykorzystany.", HttpStatusCode.BadRequest);
 			}
 			if (findResetOtp.OtpExpired < DateTime.UtcNow)
 			{
-				throw new RestApiException("Token uległ przedawnieniu.", HttpStatusCode.Forbidden);
+				throw new RestApiException("Token uległ przedawnieniu.", HttpStatusCode.BadRequest);
 			}
 		}
 		catch (System.Exception)
 		{
-			throw new RestApiException("Wadliwy token dostępu.", HttpStatusCode.ExpectationFailed);
+			throw new RestApiException("Wadliwy token dostępu.", HttpStatusCode.BadRequest);
 		}
 		var findPerson = await dbContext.Persons.FirstOrDefaultAsync(person => person.Id == findResetOtp.Person.Id);
 		if (findPerson == null)
@@ -133,16 +144,21 @@ public class ResetPasswordServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
 		}
+		if (!findPerson.FirstAccess)
+		{
+			throw new RestApiException("Użytkownik zmienił już hasło wygenerowane przez system.",
+				HttpStatusCode.BadRequest);
+		}
 		if (dto.OldPassword.Equals(dto.NewPassword))
 		{
 			throw new RestApiException(
-				"Nowe hasło nie może być takie same jak hasło poprzednie.", HttpStatusCode.Forbidden);
+				"Nowe hasło nie może być takie same jak hasło poprzednie.", HttpStatusCode.BadRequest);
 		}
 		var verificationPassword =
 			passwordHasher.VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
 		if (verificationPassword == PasswordVerificationResult.Failed)
 		{
-			throw new RestApiException("Podano złe hasło pierwotne.", HttpStatusCode.Unauthorized);
+			throw new RestApiException("Podano złe hasło pierwotne.", HttpStatusCode.BadRequest);
 		}
 		findPerson.Password = passwordHasher.HashPassword(findPerson, dto.NewPassword);
 		findPerson.FirstAccess = false;

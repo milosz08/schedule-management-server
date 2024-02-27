@@ -6,6 +6,7 @@ using ScheduleManagement.Api.Network.Cathedral;
 using ScheduleManagement.Api.Network.ContactMessage;
 using ScheduleManagement.Api.Network.Department;
 using ScheduleManagement.Api.Network.MemoryStorage;
+using ScheduleManagement.Api.Network.ResetPassword;
 using ScheduleManagement.Api.Network.ScheduleSubject;
 using ScheduleManagement.Api.Network.StudyGroup;
 using ScheduleManagement.Api.Network.StudyRoom;
@@ -59,6 +60,10 @@ public class ApplicationMappingProfile : Profile
 			.ForMember(dist => dist.CathedralName, from => from.MapFrom(dir => dir.Cathedral!.Name));
 
 		CreateMap<Person, SavedAccountDetailsResponseDto>()
+			.ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
+			.ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir => $"{dir.Name} {dir.Surname}"));
+
+		CreateMap<Person, SetNewPasswordViaEmailResponse>()
 			.ForMember(dist => dist.Role, from => from.MapFrom(dir => dir.Role.Name))
 			.ForMember(dist => dist.NameWithSurname, from => from.MapFrom(dir => $"{dir.Name} {dir.Surname}"));
 	}
