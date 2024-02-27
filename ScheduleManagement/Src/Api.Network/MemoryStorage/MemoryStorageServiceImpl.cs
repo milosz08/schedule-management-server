@@ -11,6 +11,7 @@ public class MemoryStorageServiceImpl(ApplicationDbContext dbContext, IMapper ma
 	public async Task<List<SavedAccountDetailsResponseDto>> CheckSavedAccounts(SavedAccountsRequestDto reqDto)
 	{
 		var existingUserAccounts = await dbContext.Persons
+			.Include(p => p.Role)
 			.Where(p => reqDto.SavedAccountIds.Any(a => a == p.Id))
 			.ToListAsync();
 
