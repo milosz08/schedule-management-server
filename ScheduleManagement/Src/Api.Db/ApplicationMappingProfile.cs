@@ -7,7 +7,6 @@ using ScheduleManagement.Api.Network.ContactMessage;
 using ScheduleManagement.Api.Network.Department;
 using ScheduleManagement.Api.Network.MemoryStorage;
 using ScheduleManagement.Api.Network.ResetPassword;
-using ScheduleManagement.Api.Network.ScheduleSubject;
 using ScheduleManagement.Api.Network.StudyGroup;
 using ScheduleManagement.Api.Network.StudyRoom;
 using ScheduleManagement.Api.Network.StudySpec;
@@ -30,7 +29,6 @@ public class ApplicationMappingProfile : Profile
 		AddDepartmentMappers();
 		AddContactMessageMapper();
 		AddNameIdElementMapper();
-		AddBaseScheduleMapper();
 	}
 
 	private void AddPersonMappers()
@@ -222,15 +220,9 @@ public class ApplicationMappingProfile : Profile
 
 		CreateMap<Semester, NameIdElementDto>();
 		CreateMap<StudyRoom, NameIdElementDto>();
+		CreateMap<StudyGroup, NameIdElementDto>();
 		CreateMap<Department, NameIdElementDto>();
 		CreateMap<Cathedral, NameIdElementDto>();
 		CreateMap<StudyDegree, NameIdElementDto>();
-	}
-
-	private void AddBaseScheduleMapper()
-	{
-		CreateMap<BaseScheduleResData, ScheduleGroups>();
-		CreateMap<BaseScheduleResData, ScheduleTeachers>();
-		CreateMap<BaseScheduleResData, ScheduleRooms>();
 	}
 }

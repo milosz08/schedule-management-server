@@ -6,14 +6,11 @@ public interface IScheduleSubjectService : IBaseCrudService
 {
 	Task<MessageContentResDto> AddNewScheduleActivity(ScheduleActivityReqDto dto);
 
-	Task<ScheduleDataRes<ScheduleGroups>> GetAllScheduleSubjectsBaseGroup(ScheduleGroupQuery dto,
-		ScheduleFilteringData filter);
+	Task<ScheduleDataRes> GetAllScheduleSubjectsBaseGroup(ScheduleGroupQuery dto, ScheduleFilteringData filter);
 
-	Task<ScheduleDataRes<ScheduleTeachers>> GetAllScheduleSubjectsBaseTeacher(ScheduleTeacherQuery dto,
-		ScheduleFilteringData filter);
+	Task<ScheduleDataRes> GetAllScheduleSubjectsBaseEmployer(ScheduleEmployerQuery dto, ScheduleFilteringData filter);
 
-	Task<ScheduleDataRes<ScheduleRooms>> GetAllScheduleSubjectsBaseRoom(ScheduleRoomQuery dto,
-		ScheduleFilteringData filter);
+	Task<ScheduleDataRes> GetAllScheduleSubjectsBaseRoom(ScheduleRoomQuery dto, ScheduleFilteringData filter);
 
 	Task<ScheduleSubjectDetailsResDto> GetScheduleSubjectDetails(long schedSubjId);
 }

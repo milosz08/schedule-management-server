@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Net;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -18,8 +17,7 @@ namespace ScheduleManagement.Api.Network.ScheduleSubject;
 public class ScheduleSubjectServiceImpl(
 	ApplicationDbContext dbContext,
 	IPasswordHasher<Person> passwordHasher,
-	ILogger<ScheduleSubjectServiceImpl> logger,
-	IMapper mapper)
+	ILogger<ScheduleSubjectServiceImpl> logger)
 	: AbstractExtendedCrudService(dbContext, passwordHasher), IScheduleSubjectService
 {
 	private readonly TimeSpan _endTime = TimeSpan.ParseExact("22:00", "h\\:mm", new CultureInfo("pl-PL"));
@@ -167,7 +165,7 @@ public class ScheduleSubjectServiceImpl(
 		};
 	}
 
-	public async Task<ScheduleDataRes<ScheduleGroups>> GetAllScheduleSubjectsBaseGroup(ScheduleGroupQuery dto,
+	public async Task<ScheduleDataRes> GetAllScheduleSubjectsBaseGroup(ScheduleGroupQuery dto,
 		ScheduleFilteringData filter)
 	{
 		var findStudyGroup = await dbContext.StudyGroups
@@ -182,7 +180,7 @@ public class ScheduleSubjectServiceImpl(
 		{
 			throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
 		}
-		var response = new ScheduleDataRes<ScheduleGroups>
+		var response = new ScheduleDataRes
 		{
 			TraceDetails =
 			[
@@ -193,7 +191,7 @@ public class ScheduleSubjectServiceImpl(
 				findStudyGroup.StudySpecialization.Name,
 				findStudyGroup.Semester.Name
 			],
-			ScheduleHeaderData = $"Plan zajęć - {findStudyGroup.Name}, rok {filter.SelectedYears}"
+			ScheduleHeaderData = $"Plan zajęć - {findStudyGroup.Name}{GetYearsAsString(filter)}"
 		};
 		var allWeekdays = await dbContext.Weekdays
 			.Where(d => findStudyGroup.StudySpecialization.StudyType.Alias.Equals(StudySpecType.St)
@@ -205,7 +203,7 @@ public class ScheduleSubjectServiceImpl(
 		var dayIncrement = findStudyGroup.StudySpecialization.StudyType.Alias == StudySpecType.St ? 0 : 4;
 		foreach (var weekday in allWeekdays)
 		{
-			var singleDay = new ScheduleCanvasData<ScheduleGroups>();
+			var singleDay = new ScheduleCanvasData();
 			var findAllScheduleSubjects = await dbContext.ScheduleSubjects
 				.Include(s => s.Weekday)
 				.Include(s => s.StudyRooms).ThenInclude(studyRoom => studyRoom.Department)
@@ -219,18 +217,16 @@ public class ScheduleSubjectServiceImpl(
 				.Where(s => s.Weekday.Id == weekday.Id && s.StudyGroups.Any(stg => stg.Id == dto.GroupId))
 				.ToListAsync();
 
-			var allScheduleSubjectsBaseGroup = new List<ScheduleGroups>();
-
+			var allScheduleSubjectsBaseGroup = new List<WeekdayData>();
 			foreach (var scheduleSubject in findAllScheduleSubjects)
 			{
 				var baseData = ScheduleSubjectFilledFieldData(scheduleSubject, filter);
-				var scheduleGroups = mapper.Map<ScheduleGroups>(baseData);
-
-				scheduleGroups.TeachersAliases = MappingScheduleTeachers(scheduleSubject);
-				scheduleGroups.RoomsAliases = MappingStudyRooms(scheduleSubject);
-
-				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseGroup,
-					ref scheduleGroups);
+				baseData.Aliases = new Dictionary<string, List<AliasData>>
+				{
+					{ "teachers", MappingScheduleTeachers(scheduleSubject) },
+					{ "rooms", MappingStudyRooms(scheduleSubject) }
+				};
+				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseGroup, ref baseData);
 			}
 			AddBaseValuesForSingleDay(ref singleDay, weekday, filter, ref dayIncrement);
 			singleDay.WeekdayData = allScheduleSubjectsBaseGroup;
@@ -241,7 +237,7 @@ public class ScheduleSubjectServiceImpl(
 		return response;
 	}
 
-	public async Task<ScheduleDataRes<ScheduleTeachers>> GetAllScheduleSubjectsBaseTeacher(ScheduleTeacherQuery dto,
+	public async Task<ScheduleDataRes> GetAllScheduleSubjectsBaseEmployer(ScheduleEmployerQuery dto,
 		ScheduleFilteringData filter)
 	{
 		var findTeacher = await dbContext.Persons
@@ -250,13 +246,14 @@ public class ScheduleSubjectServiceImpl(
 			.Include(t => t.Cathedral)
 			.Where(t => !t.Role.Name.Equals(UserRole.Administrator))
 			.FirstOrDefaultAsync(t =>
-				t.Id == dto.EmployeerId && t.Department!.Id == dto.DeptId && t.Cathedral!.Id == dto.CathId);
+				t.Id == dto.EmployerId && t.Department!.Id == dto.DeptId && t.Cathedral!.Id == dto.CathId);
 
 		if (findTeacher == null)
 		{
-			throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
+			throw new RestApiException("Nie znaleziono planu na podstawie szukanych parametrów.",
+				HttpStatusCode.NotFound);
 		}
-		var response = new ScheduleDataRes<ScheduleTeachers>
+		var response = new ScheduleDataRes
 		{
 			TraceDetails =
 			[
@@ -264,12 +261,12 @@ public class ScheduleSubjectServiceImpl(
 				findTeacher.Department!.Name,
 				findTeacher.Cathedral!.Name
 			],
-			ScheduleHeaderData = $"Plan zajęć - {findTeacher.Surname} {findTeacher.Name}, rok {filter.SelectedYears}"
+			ScheduleHeaderData = $"Plan zajęć - {findTeacher.Surname} {findTeacher.Name}{GetYearsAsString(filter)}"
 		};
 		var dayIncrement = 0;
 		foreach (var weekday in await dbContext.Weekdays.Select(d => d).ToListAsync())
 		{
-			var singleDay = new ScheduleCanvasData<ScheduleTeachers>();
+			var singleDay = new ScheduleCanvasData();
 
 			var findAllScheduleTeachers = await dbContext.ScheduleSubjects
 				.Include(s => s.Weekday)
@@ -281,20 +278,19 @@ public class ScheduleSubjectServiceImpl(
 				.Include(s => s.StudyRooms).ThenInclude(ste => ste.Cathedral)
 				.Include(s => s.ScheduleTeachers).ThenInclude(ste => ste.Department)
 				.Include(s => s.StudyGroups).ThenInclude(ste => ste.StudySpecialization)
-				.Where(s => s.Weekday.Id == weekday.Id && s.ScheduleTeachers.Any(st => st.Id == dto.EmployeerId))
+				.Where(s => s.Weekday.Id == weekday.Id && s.ScheduleTeachers.Any(st => st.Id == dto.EmployerId))
 				.ToListAsync();
 
-			var allScheduleSubjectsBaseTeacher = new List<ScheduleTeachers>();
+			var allScheduleSubjectsBaseTeacher = new List<WeekdayData>();
 			foreach (var scheduleSubject in findAllScheduleTeachers)
 			{
 				var baseData = ScheduleSubjectFilledFieldData(scheduleSubject, filter);
-				var scheduleTeachers = mapper.Map<ScheduleTeachers>(baseData);
-
-				scheduleTeachers.StudyGroupAliases = MappingScheduleGroups(scheduleSubject);
-				scheduleTeachers.RoomsAliases = MappingStudyRooms(scheduleSubject);
-
-				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseTeacher,
-					ref scheduleTeachers);
+				baseData.Aliases = new Dictionary<string, List<AliasData>>
+				{
+					{ "groups", MappingScheduleGroups(scheduleSubject) },
+					{ "rooms", MappingStudyRooms(scheduleSubject) }
+				};
+				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseTeacher, ref baseData);
 			}
 			AddBaseValuesForSingleDay(ref singleDay, weekday, filter, ref dayIncrement);
 			singleDay.WeekdayData = allScheduleSubjectsBaseTeacher;
@@ -305,7 +301,7 @@ public class ScheduleSubjectServiceImpl(
 		return response;
 	}
 
-	public async Task<ScheduleDataRes<ScheduleRooms>> GetAllScheduleSubjectsBaseRoom(ScheduleRoomQuery dto,
+	public async Task<ScheduleDataRes> GetAllScheduleSubjectsBaseRoom(ScheduleRoomQuery dto,
 		ScheduleFilteringData filter)
 	{
 		var findStudyRoom = await dbContext.StudyRooms
@@ -319,7 +315,7 @@ public class ScheduleSubjectServiceImpl(
 		{
 			throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
 		}
-		var response = new ScheduleDataRes<ScheduleRooms>
+		var response = new ScheduleDataRes
 		{
 			TraceDetails =
 			[
@@ -328,14 +324,16 @@ public class ScheduleSubjectServiceImpl(
 				findStudyRoom.Cathedral.Name
 			]
 		};
-		var ifRoomDescription = string.Empty.Equals(findStudyRoom.Description) ? $"({findStudyRoom.Description})" : "";
+		var isRoomDescription = string.Empty.Equals(findStudyRoom.Description)
+			? $"({findStudyRoom.Description})"
+			: string.Empty;
 		response.ScheduleHeaderData =
-			$"Plan zajęć - {findStudyRoom.Name} {ifRoomDescription}, rok {filter.SelectedYears}";
+			$"Plan zajęć - {findStudyRoom.Name} {isRoomDescription}{GetYearsAsString(filter)}";
 
 		var dayIncrement = 0;
 		foreach (var weekday in await dbContext.Weekdays.Select(d => d).ToListAsync())
 		{
-			var singleDay = new ScheduleCanvasData<ScheduleRooms>();
+			var singleDay = new ScheduleCanvasData();
 			var findAllScheduleStudyRooms = await dbContext.ScheduleSubjects
 				.Include(s => s.Weekday)
 				.Include(s => s.StudyGroups)
@@ -349,18 +347,16 @@ public class ScheduleSubjectServiceImpl(
 				.Where(s => s.Weekday.Id == weekday.Id && s.StudyRooms.Any(st => st.Id == dto.RoomId))
 				.ToListAsync();
 
-			var allScheduleSubjectsBaseRoom = new List<ScheduleRooms>();
-
+			var allScheduleSubjectsBaseRoom = new List<WeekdayData>();
 			foreach (var scheduleSubject in findAllScheduleStudyRooms)
 			{
 				var baseData = ScheduleSubjectFilledFieldData(scheduleSubject, filter);
-				var scheduleRooms = mapper.Map<ScheduleRooms>(baseData);
-
-				scheduleRooms.StudyGroupAliases = MappingScheduleGroups(scheduleSubject);
-				scheduleRooms.TeachersAliases = MappingScheduleTeachers(scheduleSubject);
-
-				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseRoom,
-					ref scheduleRooms);
+				baseData.Aliases = new Dictionary<string, List<AliasData>>
+				{
+					{ "groups", MappingScheduleGroups(scheduleSubject) },
+					{ "teachers", MappingScheduleTeachers(scheduleSubject) }
+				};
+				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseRoom, ref baseData);
 			}
 			AddBaseValuesForSingleDay(ref singleDay, weekday, filter, ref dayIncrement);
 			singleDay.WeekdayData = allScheduleSubjectsBaseRoom;
@@ -384,11 +380,12 @@ public class ScheduleSubjectServiceImpl(
 
 		if (findSubject == null)
 		{
-			throw new RestApiException("Nie znaleziono przedmiotu z planu zajęć z podanym ID",
+			throw new RestApiException("Nie znaleziono szukanego przedmiotu w wybranym planie zajęć.",
 				HttpStatusCode.NotFound);
 		}
 		return new ScheduleSubjectDetailsResDto
 		{
+			Id = findSubject.Id,
 			SubjectName = $"{findSubject.StudySubject.Name}",
 			SubjectTypeColor = findSubject.ScheduleSubjectType.Color,
 			SubjectHours = DateUtils.FormatTime(findSubject),
@@ -445,6 +442,13 @@ public class ScheduleSubjectServiceImpl(
 		});
 	}
 
+	private static string GetYearsAsString(ScheduleFilteringData filter)
+	{
+		return filter.SelectedYears.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase)
+			? string.Empty
+			: $", {filter.SelectedYears}";
+	}
+
 	private static void FilteringScheduleSubject<T>(Entity.ScheduleSubject scheduleSubject,
 		ScheduleFilteringData filter, ref List<T> allElements, ref T element)
 	{
@@ -468,10 +472,10 @@ public class ScheduleSubjectServiceImpl(
 		}
 	}
 
-	private static BaseScheduleResData ScheduleSubjectFilledFieldData(Entity.ScheduleSubject subj,
+	private static WeekdayData ScheduleSubjectFilledFieldData(Entity.ScheduleSubject subj,
 		ScheduleFilteringData filter)
 	{
-		return new BaseScheduleResData
+		return new WeekdayData
 		{
 			ScheduleSubjectId = subj.Id,
 			SubjectWithTypeAlias = StringUtils.CreateSubjectAlias(subj),
@@ -480,55 +484,83 @@ public class ScheduleSubjectServiceImpl(
 			PositionFromTop = DateUtils.ComputedPositionFromTopAndHeight(subj.StartTime, subj.EndTime).pxFromTop,
 			ElementHeight = DateUtils.ComputedPositionFromTopAndHeight(subj.StartTime, subj.EndTime).pxHegith,
 			SubjectOccuredData = DateUtils.ConvertScheduleOccur(subj),
-			IfNotShowingOccuredDates =
+			IsNotShowingOccuredDates =
 				!filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase)
 		};
 	}
 
-	private static List<ScheduleMultipleValues<ScheduleGroupQuery>> MappingScheduleGroups(
+	private static List<AliasData> MappingScheduleGroups(
 		Entity.ScheduleSubject scheduleSubject)
 	{
 		return scheduleSubject.StudyGroups
-			.Select(g => new ScheduleMultipleValues<ScheduleGroupQuery>(
-				g.Name,
-				new ScheduleGroupQuery(g.Department.Id, g.StudySpecialization.Id, g.Id))
+			.Select(g => new AliasData
+				{
+					Alias = g.Name,
+					PathValues = new Dictionary<string, long>
+					{
+						{ "deptId", g.Department.Id },
+						{ "specId", g.StudySpecialization.Id },
+						{ "groupId", g.Id }
+					}
+				}
 			).ToList();
 	}
 
-	private static List<ScheduleMultipleValues<ScheduleTeacherQuery>> MappingScheduleTeachers(
+	private static List<AliasData> MappingScheduleTeachers(
 		Entity.ScheduleSubject scheduleSubject)
 	{
 		return scheduleSubject.ScheduleTeachers
-			.Select(t => new ScheduleMultipleValues<ScheduleTeacherQuery>(
-				t.Shortcut,
-				new ScheduleTeacherQuery(t.Department!.Id, t.Cathedral!.Id, t.Id))
+			.Select(t => new AliasData
+				{
+					Alias = t.Shortcut,
+					PathValues = new Dictionary<string, long>
+					{
+						{ "deptId", t.Department!.Id },
+						{ "cathId", t.Cathedral!.Id },
+						{ "employerId", t.Id }
+					}
+				}
 			).ToList();
 	}
 
-
-	private static List<ScheduleMultipleValues<ScheduleRoomQuery>> MappingStudyRooms(
+	private static List<AliasData> MappingStudyRooms(
 		Entity.ScheduleSubject scheduleSubject)
 	{
 		return scheduleSubject.StudyRooms
-			.Select(r => new ScheduleMultipleValues<ScheduleRoomQuery>(
-				r.Name,
-				new ScheduleRoomQuery(r.Department.Id, r.Cathedral.Id, r.Id))
+			.Select(r => new AliasData
+				{
+					Alias = r.Name,
+					PathValues = new Dictionary<string, long>
+					{
+						{ "deptId", r.Department.Id },
+						{ "cathId", r.Cathedral.Id },
+						{ "roomId", r.Id }
+					}
+				}
 			).ToList();
 	}
 
-	private static void AddBaseValuesForSingleDay<T>(ref ScheduleCanvasData<T> canvasData, Weekday weekday,
+	private static void AddBaseValuesForSingleDay(ref ScheduleCanvasData canvasData, Weekday weekday,
 		ScheduleFilteringData filter, ref int dayIncrement)
 	{
-		canvasData.WeekdayNameWithId = new NameIdElementDto(weekday.Id, weekday.Alias);
-		canvasData.IfNotShowingOccuredDates = filter.WeekInputOptions
+		canvasData.WeekdayNameWithId = new NameIdElementDto
+		{
+			Id = weekday.Id,
+			Name = weekday.Alias
+		};
+		canvasData.IsNotShowingOccuredDates = filter.WeekInputOptions
 			.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase);
 		if (!filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase))
 		{
 			var options = filter
 				.WeekInputOptions[(filter.WeekInputOptions.IndexOf("(", StringComparison.OrdinalIgnoreCase) + 1)..]
-				.Replace(")", "").Split(", ").Select(int.Parse).ToList();
+				.Replace(")", string.Empty)
+				.Split(", ")
+				.Select(int.Parse)
+				.ToList();
 			canvasData.WeekdayDateTime = DateUtils.FirstDateOfWeekBasedWeekNumber(options[0], options[1])
-				.AddDays(dayIncrement++).ToString("dd\\.MM");
+				.AddDays(dayIncrement++)
+				.ToString("dd\\.MM");
 		}
 		else
 		{

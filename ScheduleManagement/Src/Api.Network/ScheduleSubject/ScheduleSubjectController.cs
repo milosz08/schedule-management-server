@@ -31,7 +31,7 @@ public class ScheduleSubjectController(IScheduleSubjectService scheduleSubjectSe
 
 	[AllowAnonymous]
 	[HttpPost("all/filter/group")]
-	public async Task<ActionResult<ScheduleDataRes<ScheduleGroups>>> GetAllScheduleSubjectsBaseGroup(
+	public async Task<ActionResult<ScheduleDataRes>> GetAllScheduleSubjectsBaseGroup(
 		[FromQuery] ScheduleGroupQuery dto,
 		[FromBody] ScheduleFilteringData filter)
 	{
@@ -39,17 +39,17 @@ public class ScheduleSubjectController(IScheduleSubjectService scheduleSubjectSe
 	}
 
 	[AllowAnonymous]
-	[HttpPost("all/filter/teacher")]
-	public async Task<ActionResult<ScheduleDataRes<ScheduleTeachers>>> GetAllScheduleSubjectsBaseTeacher(
-		[FromQuery] ScheduleTeacherQuery dto,
+	[HttpPost("all/filter/employer")]
+	public async Task<ActionResult<ScheduleDataRes>> GetAllScheduleSubjectsBaseEmployer(
+		[FromQuery] ScheduleEmployerQuery dto,
 		[FromBody] ScheduleFilteringData filter)
 	{
-		return Ok(await scheduleSubjectService.GetAllScheduleSubjectsBaseTeacher(dto, filter));
+		return Ok(await scheduleSubjectService.GetAllScheduleSubjectsBaseEmployer(dto, filter));
 	}
 
 	[AllowAnonymous]
 	[HttpPost("all/filter/room")]
-	public async Task<ActionResult<ScheduleDataRes<ScheduleRooms>>> GetAllScheduleSubjectsBaseRoom(
+	public async Task<ActionResult<ScheduleDataRes>> GetAllScheduleSubjectsBaseRoom(
 		[FromQuery] ScheduleRoomQuery dto,
 		[FromBody] ScheduleFilteringData filter)
 	{

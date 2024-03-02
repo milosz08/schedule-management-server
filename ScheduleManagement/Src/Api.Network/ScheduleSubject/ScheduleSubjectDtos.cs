@@ -2,41 +2,23 @@
 
 namespace ScheduleManagement.Api.Network.ScheduleSubject;
 
-public sealed class ScheduleDataRes<T>
+public sealed class ScheduleDataRes
 {
 	public List<string> TraceDetails { get; set; } = [];
 	public string ScheduleHeaderData { get; set; }
 	public string CurrentChooseWeek { get; set; }
-	public List<ScheduleCanvasData<T>> ScheduleCanvasData { get; set; } = [];
+	public List<ScheduleCanvasData> ScheduleCanvasData { get; set; } = [];
 }
 
-public sealed class ScheduleCanvasData<T>
+public sealed class ScheduleCanvasData
 {
 	public NameIdElementDto WeekdayNameWithId { get; set; }
 	public string WeekdayDateTime { get; set; }
-	public bool IfNotShowingOccuredDates { get; set; }
-	public List<T> WeekdayData { get; set; } = [];
+	public bool IsNotShowingOccuredDates { get; set; }
+	public List<WeekdayData> WeekdayData { get; set; } = [];
 }
 
-public class ScheduleGroups : BaseScheduleResData
-{
-	public List<ScheduleMultipleValues<ScheduleTeacherQuery>> TeachersAliases { get; set; }
-	public List<ScheduleMultipleValues<ScheduleRoomQuery>> RoomsAliases { get; set; }
-}
-
-public class ScheduleTeachers : BaseScheduleResData
-{
-	public List<ScheduleMultipleValues<ScheduleGroupQuery>> StudyGroupAliases { get; set; } = [];
-	public List<ScheduleMultipleValues<ScheduleRoomQuery>> RoomsAliases { get; set; } = [];
-}
-
-public sealed class ScheduleRooms : BaseScheduleResData
-{
-	public List<ScheduleMultipleValues<ScheduleGroupQuery>> StudyGroupAliases { get; set; } = [];
-	public List<ScheduleMultipleValues<ScheduleTeacherQuery>> TeachersAliases { get; set; } = [];
-}
-
-public class BaseScheduleResData
+public class WeekdayData
 {
 	public long ScheduleSubjectId { get; set; }
 	public string SubjectWithTypeAlias { get; set; }
@@ -45,70 +27,32 @@ public class BaseScheduleResData
 	public int PositionFromTop { get; set; }
 	public int ElementHeight { get; set; }
 	public string SubjectOccuredData { get; set; }
-	public bool IfNotShowingOccuredDates { get; set; }
+	public bool IsNotShowingOccuredDates { get; set; }
+	public Dictionary<string, List<AliasData>> Aliases { get; set; }
 }
 
-public sealed class ScheduleMultipleValues<T>
+public sealed class AliasData
 {
-	public ScheduleMultipleValues(string alias, T pathValues)
-	{
-		Alias = alias;
-		PathValues = pathValues;
-	}
-
 	public string Alias { get; set; }
-	public T PathValues { get; set; }
+	public Dictionary<string, long> PathValues { get; set; }
 }
 
 public class ScheduleGroupQuery
 {
-	public ScheduleGroupQuery()
-	{
-	}
-
-	public ScheduleGroupQuery(long deptId, long specId, long groupId)
-	{
-		DeptId = deptId;
-		SpecId = specId;
-		GroupId = groupId;
-	}
-
 	public long DeptId { get; set; }
 	public long SpecId { get; set; }
 	public long GroupId { get; set; }
 }
 
-public class ScheduleTeacherQuery
+public class ScheduleEmployerQuery
 {
-	public ScheduleTeacherQuery()
-	{
-	}
-
-	public ScheduleTeacherQuery(long deptId, long cathId, long employeerId)
-	{
-		DeptId = deptId;
-		CathId = cathId;
-		EmployeerId = employeerId;
-	}
-
 	public long DeptId { get; set; }
 	public long CathId { get; set; }
-	public long EmployeerId { get; set; }
+	public long EmployerId { get; set; }
 }
 
 public class ScheduleRoomQuery
 {
-	public ScheduleRoomQuery()
-	{
-	}
-
-	public ScheduleRoomQuery(long deptId, long cathId, long roomId)
-	{
-		DeptId = deptId;
-		CathId = cathId;
-		RoomId = roomId;
-	}
-
 	public long DeptId { get; set; }
 	public long CathId { get; set; }
 	public long RoomId { get; set; }
@@ -133,6 +77,7 @@ public sealed class ScheduleActivityReqDto
 
 public sealed class ScheduleSubjectDetailsResDto
 {
+	public long Id { get; set; }
 	public string SubjectName { get; set; }
 	public string SubjectTypeColor { get; set; }
 	public string SubjectHours { get; set; }
