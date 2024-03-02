@@ -1,7 +1,7 @@
 ﻿namespace ScheduleManagement.Api.Dto;
 
-public class NameIdElementDto(long id, string name)
+public class NameIdElementDto
 {
-	private long Id { get; set; } = id;
-	public string Name { get; init; } = name;
+	public long Id { get; set; }
+	public string Name { get; init; }
 }

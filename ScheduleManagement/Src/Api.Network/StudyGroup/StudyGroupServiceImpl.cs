@@ -121,7 +121,7 @@ public class StudyGroupServiceImpl(
 			.ToListAsync();
 
 		return findAllStudyGroups
-			.Select(s => new NameIdElementDto(s.Id, s.Name))
+			.Select(mapper.Map<NameIdElementDto>)
 			.ToList();
 	}
 
@@ -166,11 +166,14 @@ public class StudyGroupServiceImpl(
 
 	public async Task<List<NameIdElementDto>> GetAllStudyGroupsBaseDept(string deptName)
 	{
-		return await dbContext.StudyGroups
+		var studyGroupsBaseDept = await dbContext.StudyGroups
 			.Include(g => g.Department)
 			.Where(g => g.Department.Name.Equals(deptName, StringComparison.OrdinalIgnoreCase))
-			.Select(g => new NameIdElementDto(g.Id, g.Name))
 			.ToListAsync();
+
+		return studyGroupsBaseDept
+			.Select(mapper.Map<NameIdElementDto>)
+			.ToList();
 	}
 
 	protected override async Task<MessageContentResDto> OnDeleteSelected(DeleteSelectedRequestDto items,

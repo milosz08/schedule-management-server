@@ -159,7 +159,7 @@ public class ApplicationDbSeeder(
 	{
 		var roomTypesPath = Path.Combine(environment.ContentRootPath, "SeedingData", $"{fileName}.json");
 		var jsonString = File.ReadAllText(roomTypesPath);
-		List<T> deserialisedArray;
+		List<T>? deserialisedArray;
 		try
 		{
 			deserialisedArray = JsonSerializer.Deserialize<List<T>>(jsonString);

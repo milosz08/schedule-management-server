@@ -144,7 +144,9 @@ public class UserServiceImpl(
 		allUsersWithoutStudents
 			.Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
 
-		return allUsersWithoutStudents.Select(d => new NameIdElementDto(d.Id, $"{d.Surname} {d.Name}")).ToList();
+		return allUsersWithoutStudents
+			.Select(mapper.Map<NameIdElementDto>)
+			.ToList();
 	}
 
 	public async Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjName)
@@ -163,7 +165,8 @@ public class UserServiceImpl(
 			selectedUsersWithoutStudents
 				.Sort((first, second) => string.Compare(first.Surname, second.Surname, StringComparison.Ordinal));
 
-			return selectedUsersWithoutStudents.Select(d => new NameIdElementDto(d.Id, $"{d.Surname} {d.Name}"))
+			return selectedUsersWithoutStudents
+				.Select(mapper.Map<NameIdElementDto>)
 				.ToList();
 		}
 		return [];

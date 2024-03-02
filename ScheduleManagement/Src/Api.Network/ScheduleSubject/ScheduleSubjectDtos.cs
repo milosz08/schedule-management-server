@@ -119,7 +119,7 @@ public sealed class ScheduleActivityReqDto
 	public long DeptId { get; set; }
 	public long StudySpecId { get; set; }
 	public long StudyGroupId { get; set; }
-	public bool IfAddForAllGroups { get; set; }
+	public bool IsAddForAllGroups { get; set; }
 	public string StudyYear { get; set; }
 	public long WeekDayId { get; set; }
 	public string SubjectOrActivityName { get; set; }

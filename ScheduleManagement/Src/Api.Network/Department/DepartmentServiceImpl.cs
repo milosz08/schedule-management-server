@@ -103,9 +103,7 @@ public class DepartmentServiceImpl(
 
 	public async Task<List<NameIdElementDto>> GetAllDepartmentsSchedule()
 	{
-		var findAllDepartments = await dbContext.Departments
-			.Select(d => d)
-			.ToListAsync();
+		var findAllDepartments = await dbContext.Departments.ToListAsync();
 
 		findAllDepartments.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
 

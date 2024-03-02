@@ -28,9 +28,9 @@ public class ContactMessageServiceImpl(
 		var userLogin = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
 
 		var resMessage = "Zgłoszenie zostało pomyślnie wysłane.";
-		Entity.Department findDepartment = null;
+		Entity.Department? findDepartment = null;
 		List<Entity.StudyGroup> findStudyGroups = [];
-		Person findPerson = null;
+		Person? findPerson = null;
 		List<string> senderEmails = [];
 
 		var findIssueType = await dbContext.ContactFormIssueTypes

@@ -31,7 +31,7 @@ public class ScheduleSubjectServiceImpl(
 		var findStudyGroups = await dbContext.StudyGroups
 			.Include(g => g.Department)
 			.Include(g => g.StudySpecialization)
-			.Where(g => (g.Id == dto.StudyGroupId || dto.IfAddForAllGroups) && g.Department.Id == dto.DeptId &&
+			.Where(g => (g.Id == dto.StudyGroupId || dto.IsAddForAllGroups) && g.Department.Id == dto.DeptId &&
 			            g.StudySpecialization.Id == dto.StudySpecId)
 			.ToListAsync();
 		if (findStudyGroups.Count == 0)

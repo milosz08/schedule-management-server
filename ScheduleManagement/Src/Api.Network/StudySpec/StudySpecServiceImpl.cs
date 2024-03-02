@@ -143,7 +143,7 @@ public class StudySpecServiceImpl(
 		studySpecsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
 
 		return studySpecsBaseDept
-			.Select(s => new NameIdElementDto(s.Id, $"{s.Name} ({s.StudyType.Alias})"))
+			.Select(mapper.Map<NameIdElementDto>)
 			.ToList();
 	}
 
@@ -159,7 +159,7 @@ public class StudySpecServiceImpl(
 		return new AvailableDataResponseDto<NameIdElementDto>
 		{
 			DataElements = findAllStudySpecs
-				.Select(s => new NameIdElementDto(s.Id, $"{s.Name} ({s.StudyType.Alias})"))
+				.Select(mapper.Map<NameIdElementDto>)
 				.ToList()
 		};
 	}

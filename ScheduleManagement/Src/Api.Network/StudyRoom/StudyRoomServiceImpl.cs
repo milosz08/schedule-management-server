@@ -149,7 +149,7 @@ public class StudyRoomServiceImpl(
 			string.Compare(first.Name, second.Name, StringComparison.Ordinal));
 
 		return studyRoomBaseDeptAndCath
-			.Select(d => new NameIdElementDto(d.Id, d.Name))
+			.Select(mapper.Map<NameIdElementDto>)
 			.ToList();
 	}
 
@@ -158,13 +158,14 @@ public class StudyRoomServiceImpl(
 		var studyRoomBaseDeptAndCath = await dbContext.StudyRooms
 			.Include(r => r.Department)
 			.Where(r => r.Department.Id == deptId)
-			.Select(d => new NameIdElementDto(d.Id, d.Name))
 			.ToListAsync();
 
 		studyRoomBaseDeptAndCath.Sort((first, second) =>
 			string.Compare(first.Name, second.Name, StringComparison.Ordinal));
 
-		return studyRoomBaseDeptAndCath;
+		return studyRoomBaseDeptAndCath
+			.Select(mapper.Map<NameIdElementDto>)
+			.ToList();
 	}
 
 	public async Task<StudyRoomEditResDto> GetStudyRoomDetails(long roomId)
