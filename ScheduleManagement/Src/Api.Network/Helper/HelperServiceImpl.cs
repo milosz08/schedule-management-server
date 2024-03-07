@@ -10,12 +10,9 @@ namespace ScheduleManagement.Api.Network.Helper;
 
 public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) : IHelperService
 {
-	public AvailablePaginationSizes GetAvailablePaginationTypes()
+	public List<int> GetAvailablePaginationTypes()
 	{
-		return new AvailablePaginationSizes
-		{
-			AvailablePaginations = PaginationConfig.AllowedPageSizes.ToList()
-		};
+		return PaginationConfig.AllowedPageSizes.ToList();
 	}
 
 	public async Task<AvailableDataResponseDto<NameIdElementDto>> GetAvailableStudyTypes()

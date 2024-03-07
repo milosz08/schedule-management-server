@@ -14,11 +14,6 @@ public sealed class CurrentActivePages
 	public bool MaxEnabled { get; set; }
 }
 
-public sealed class AvailablePaginationSizes
-{
-	public List<int> AvailablePaginations { get; set; }
-}
-
 public sealed class DeleteSelectedRequestDto
 {
 	public long[] Ids { get; set; }

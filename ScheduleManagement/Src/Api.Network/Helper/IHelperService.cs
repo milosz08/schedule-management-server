@@ -1,12 +1,11 @@
 ﻿using ScheduleManagement.Api.Db;
 using ScheduleManagement.Api.Dto;
-using ScheduleManagement.Api.Pagination;
 
 namespace ScheduleManagement.Api.Network.Helper;
 
 public interface IHelperService
 {
-	AvailablePaginationSizes GetAvailablePaginationTypes();
+	List<int> GetAvailablePaginationTypes();
 
 	Task<AvailableDataResponseDto<NameIdElementDto>> GetAvailableStudyTypes();
 

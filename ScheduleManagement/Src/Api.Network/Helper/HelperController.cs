@@ -3,7 +3,6 @@ using ScheduleManagement.Api.Attribute;
 using ScheduleManagement.Api.Db;
 using ScheduleManagement.Api.Dto;
 using ScheduleManagement.Api.Network.User;
-using ScheduleManagement.Api.Pagination;
 
 namespace ScheduleManagement.Api.Network.Helper;
 
@@ -43,7 +42,7 @@ public class HelperController(IHelperService helperService) : ControllerBase
 	}
 
 	[HttpGet("pagination/all")]
-	public ActionResult<AvailablePaginationSizes> GetAvailablePaginationSizes()
+	public ActionResult<List<int>> GetAvailablePaginationSizes()
 	{
 		return Ok(helperService.GetAvailablePaginationTypes());
 	}
