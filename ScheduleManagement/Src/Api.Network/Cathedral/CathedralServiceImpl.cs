@@ -164,7 +164,7 @@ public class CathedralServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var nonRemovableCaths = dbContext.Cathedrals.Where(c => !c.IfRemovable).Select(c => c.Id);
-		var filteredDeletedCathedrals = items.ElementsIds.Where(id => !nonRemovableCaths.Contains(id)).ToArray();
+		var filteredDeletedCathedrals = items.Ids.Where(id => !nonRemovableCaths.Contains(id)).ToArray();
 
 		var removeMessage = "Nie usunięto żadnej katedry.";
 		if (filteredDeletedCathedrals.Length != 0)

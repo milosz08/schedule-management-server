@@ -21,5 +21,5 @@ public sealed class AvailablePaginationSizes
 
 public sealed class DeleteSelectedRequestDto
 {
-	public long[] ElementsIds { get; set; }
+	public long[] Ids { get; set; }
 }

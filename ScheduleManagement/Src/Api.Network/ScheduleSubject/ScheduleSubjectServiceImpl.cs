@@ -403,7 +403,7 @@ public class ScheduleSubjectServiceImpl(
 	{
 		var findScheduleSubject = await dbContext.ScheduleSubjects
 			.Include(s => s.StudySubject).ThenInclude(sb => sb.Department)
-			.FirstOrDefaultAsync(d => items.ElementsIds.Any(sb => sb == d.Id));
+			.FirstOrDefaultAsync(d => items.Ids.Any(sb => sb == d.Id));
 
 		if (findScheduleSubject == null)
 		{
@@ -418,7 +418,7 @@ public class ScheduleSubjectServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnego przedmiotu z planu.";
-		var toRemoved = dbContext.ScheduleSubjects.Where(s => items.ElementsIds.Any(id => id == s.Id));
+		var toRemoved = dbContext.ScheduleSubjects.Where(s => items.Ids.Any(id => id == s.Id));
 		if (toRemoved.Any())
 		{
 			message = $"Pomyślnie usunięto wybrane przedmioty z planu. " +

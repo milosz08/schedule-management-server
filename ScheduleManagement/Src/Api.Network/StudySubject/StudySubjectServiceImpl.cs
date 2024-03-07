@@ -187,7 +187,7 @@ public class StudySubjectServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnego przedmiotu.";
-		var toRemoved = dbContext.StudySubjects.Where(s => items.ElementsIds.Any(id => id == s.Id));
+		var toRemoved = dbContext.StudySubjects.Where(s => items.Ids.Any(id => id == s.Id));
 		if (toRemoved.Any())
 		{
 			message = $"Pomyślnie usunięto wybrane przedmioty. Liczba usuniętych przedmiotów: {toRemoved.Count()}.";

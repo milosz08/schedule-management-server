@@ -220,7 +220,7 @@ public class StudySpecServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnego kierunku.";
-		var toRemoved = dbContext.StudySpecializations.Where(s => items.ElementsIds.Any(id => id == s.Id));
+		var toRemoved = dbContext.StudySpecializations.Where(s => items.Ids.Any(id => id == s.Id));
 		if (toRemoved.Any())
 		{
 			message = $"Pomyślnie usunięto wybrane kierunki. Liczba usuniętych kierunków: {toRemoved.Count()}.";

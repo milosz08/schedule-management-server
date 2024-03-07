@@ -265,7 +265,7 @@ public class UserServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var personsNotRemoveAccounts = dbContext.Persons.Where(p => !p.IfRemovable).Select(p => p.Id);
-		var filteredDeletedPersons = items.ElementsIds.Where(id => !personsNotRemoveAccounts.Contains(id)).ToArray();
+		var filteredDeletedPersons = items.Ids.Where(id => !personsNotRemoveAccounts.Contains(id)).ToArray();
 
 		var removeMessage = "Nie usunięto żadnego użytkownika.";
 		if (filteredDeletedPersons.Length != 0)

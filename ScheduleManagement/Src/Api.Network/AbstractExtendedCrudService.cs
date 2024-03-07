@@ -38,8 +38,8 @@ public abstract class AbstractExtendedCrudService(
 		{
 			throw new RestApiException("Nie znaleziono użytkownika na podstawie tokenu.", HttpStatusCode.NotFound);
 		}
-		if (!headers.TryGetValue("User-Name", out var username) ||
-		    !headers.TryGetValue("User-Password", out var password))
+		if (!headers.TryGetValue("X-UserName", out var username) ||
+		    !headers.TryGetValue("X-UserPassword", out var password))
 		{
 			throw new RestApiException("Brak nagłówków autoryzacji.", HttpStatusCode.Forbidden);
 		}

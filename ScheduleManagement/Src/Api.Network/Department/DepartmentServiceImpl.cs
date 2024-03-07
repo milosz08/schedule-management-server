@@ -134,7 +134,7 @@ public class DepartmentServiceImpl(
 
 		var nonRemovableIds = dbContext.Departments.Where(d => !d.IsRemovable).Select(d => d.Id);
 		var toRemoved = dbContext.Departments
-			.Where(d => items.ElementsIds
+			.Where(d => items.Ids
 				.Where(e => !nonRemovableIds.Contains(e))
 				.Any(id => id == d.Id));
 

@@ -243,7 +243,7 @@ public class ContactMessageServiceImpl(
 			.Include(m => m.Person)
 			.Include(m => m.Department)
 			.Where(m =>
-				items.ElementsIds.Any(id => m.Id == id) &&
+				items.Ids.Any(id => m.Id == id) &&
 				((m.Person!.Login.Equals(userCredentialsHeader.Login) &&
 				  (findPerson.Role.Name.Equals(UserRole.Student) || findPerson.Role.Name.Equals(UserRole.Teacher))) ||
 				 (m.Department!.Id == findPerson.Department!.Id && findPerson.Role.Name.Equals(UserRole.Editor))

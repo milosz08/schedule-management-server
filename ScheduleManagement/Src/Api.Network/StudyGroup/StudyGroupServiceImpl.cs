@@ -185,7 +185,7 @@ public class StudyGroupServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnej grupy.";
-		var toRemoved = dbContext.StudyGroups.Where(s => items.ElementsIds.Any(id => id == s.Id));
+		var toRemoved = dbContext.StudyGroups.Where(s => items.Ids.Any(id => id == s.Id));
 		if (toRemoved.Any())
 		{
 			message = $"Pomyślnie usunięto wybrane grupy. Liczba usuniętych grup: {toRemoved.Count()}.";
