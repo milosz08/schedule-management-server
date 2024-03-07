@@ -9,22 +9,23 @@ public sealed class PaginationResponseDto<T>
 	public PaginationResponseDto(List<T> elements, int totalCount, int pageSize, int pageNumber)
 	{
 		Elements = elements;
-		TotalElementsCount = totalCount;
-		ElementsFrom = pageSize * (pageNumber - 1) + 1;
-		ElementsTo = ElementsFrom + pageSize - 1;
+		var elementsFrom = pageSize * (pageNumber - 1) + 1;
 		var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-		TotalPagesCount = totalPages;
+		Pagination = new PaginationData
+		{
+			ElementsFrom = elementsFrom,
+			ElementsTo = elementsFrom + pageSize - 1,
+			TotalElementsCount = totalCount,
+			TotalPagesCount = totalPages
+		};
 		CurrentActivePages = ComputedCurrentPageRange(pageNumber, totalPages);
 	}
 
 	public List<T> Elements { get; set; }
-	public int TotalPagesCount { get; set; }
-	public int ElementsFrom { get; set; }
-	public int ElementsTo { get; set; }
-	public int TotalElementsCount { get; set; }
+	public PaginationData Pagination { get; set; }
 	public CurrentActivePages CurrentActivePages { get; set; }
 
-	private CurrentActivePages ComputedCurrentPageRange(int currentPage, int maxPagesCount)
+	private static CurrentActivePages ComputedCurrentPageRange(int currentPage, int maxPagesCount)
 	{
 		var pages = new int[MaxPagesPlaceholder];
 		if (maxPagesCount < MaxPagesPlaceholder)
@@ -45,4 +46,12 @@ public sealed class PaginationResponseDto<T>
 		// all others
 		return new CurrentActivePages([currentPage - 1, currentPage, currentPage + 1], true, true);
 	}
+}
+
+public sealed class PaginationData
+{
+	public int TotalPagesCount { get; set; }
+	public int ElementsFrom { get; set; }
+	public int ElementsTo { get; set; }
+	public int TotalElementsCount { get; set; }
 }
