@@ -163,7 +163,7 @@ public class CathedralServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
 				HttpStatusCode.Forbidden);
 		}
-		var nonRemovableCaths = dbContext.Cathedrals.Where(c => !c.IfRemovable).Select(c => c.Id);
+		var nonRemovableCaths = dbContext.Cathedrals.Where(c => !c.IsRemovable).Select(c => c.Id);
 		var filteredDeletedCathedrals = items.Ids.Where(id => !nonRemovableCaths.Contains(id)).ToArray();
 
 		var removeMessage = "Nie usunięto żadnej katedry.";
@@ -189,7 +189,7 @@ public class CathedralServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
 				HttpStatusCode.Forbidden);
 		}
-		var findAllRemovingCathedrals = dbContext.Cathedrals.Where(c => c.IfRemovable);
+		var findAllRemovingCathedrals = dbContext.Cathedrals.Where(c => c.IsRemovable);
 		if (findAllRemovingCathedrals.Any())
 		{
 			dbContext.Cathedrals.RemoveRange(findAllRemovingCathedrals);

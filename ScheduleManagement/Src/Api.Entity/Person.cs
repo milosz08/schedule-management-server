@@ -51,7 +51,7 @@ public class Person : AbstractEntity
 	public string? ProfileImageUuid { get; set; }
 
 	[Required]
-	public bool IfRemovable { get; set; } = true;
+	public bool IsRemovable { get; set; } = true;
 
 	[ForeignKey(nameof(Role))]
 	public long RoleId { get; set; }

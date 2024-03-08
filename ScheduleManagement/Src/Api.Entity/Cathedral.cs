@@ -16,7 +16,7 @@ public class Cathedral : AbstractEntity
 	public string Alias { get; set; }
 
 	[Required]
-	public bool IfRemovable { get; set; } = true;
+	public bool IsRemovable { get; set; } = true;
 
 	[ForeignKey(nameof(Department))]
 	public long DepartmentId { get; set; }

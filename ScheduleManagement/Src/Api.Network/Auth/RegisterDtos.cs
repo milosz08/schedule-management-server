@@ -30,7 +30,7 @@ public class RegisterUpdateUserRequestDto
 	[Required(ErrorMessage = "Dodatkowa zawartość przedmiotów/kierunków nie może być pusta")]
 	public List<long> StudySpecsOrSubjects { get; set; }
 
-	public bool IfRemovable { get; set; } = true;
+	public bool IsRemovable { get; set; } = true;
 }
 
 public sealed class RegisterUpdateUserResponseDto

@@ -161,7 +161,7 @@ public class AuthServiceImpl(
 			Password = defValues.Password,
 			EmailPassword = defValues.EmailPassword,
 			RoleId = findRoleId.Id,
-			IfRemovable = reqDto.IfRemovable,
+			IsRemovable = reqDto.IsRemovable,
 			DepartmentId = findDepartment!.Id,
 			CathedralId = findCathedral?.Id
 		};

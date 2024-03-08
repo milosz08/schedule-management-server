@@ -14,7 +14,7 @@ public class DepartmentRequestResponseDto
 public sealed class DepartmentQueryResponseDto : DepartmentRequestResponseDto
 {
     public long Id { get; set; }
-    public bool IfRemovable { get; set; }
+    public bool IsRemovable { get; set; }
 }
 
 public sealed class DepartmentEditResDto

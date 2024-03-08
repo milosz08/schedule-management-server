@@ -86,7 +86,7 @@ public class ApplicationDbSeeder(
 		{
 			var initialCathedrals = ConvertJsonToList<Cathedral>("Cathedrals");
 			initialCathedrals[0].DepartmentId = dbContext.Departments.First().Id;
-			initialCathedrals[0].IfRemovable = false;
+			initialCathedrals[0].IsRemovable = false;
 			await dbContext.Cathedrals.AddAsync(initialCathedrals[0]);
 			await dbContext.SaveChangesAsync();
 		}
@@ -109,7 +109,7 @@ public class ApplicationDbSeeder(
 				Surname = account.Surname,
 				Nationality = "Polska",
 				City = "Gliwice",
-				IfRemovable = false,
+				IsRemovable = false,
 				Role = UserRole.Administrator,
 				DepartmentName = findCathedral!.Department.Name,
 				CathedralName = findCathedral.Name

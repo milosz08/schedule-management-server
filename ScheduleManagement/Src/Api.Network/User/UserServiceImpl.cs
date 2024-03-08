@@ -264,7 +264,7 @@ public class UserServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
 		}
-		var personsNotRemoveAccounts = dbContext.Persons.Where(p => !p.IfRemovable).Select(p => p.Id);
+		var personsNotRemoveAccounts = dbContext.Persons.Where(p => !p.IsRemovable).Select(p => p.Id);
 		var filteredDeletedPersons = items.Ids.Where(id => !personsNotRemoveAccounts.Contains(id)).ToArray();
 
 		var removeMessage = "Nie usunięto żadnego użytkownika.";
@@ -295,7 +295,7 @@ public class UserServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
 		}
-		var findAllRemovingPersons = dbContext.Persons.Where(p => p.IfRemovable);
+		var findAllRemovingPersons = dbContext.Persons.Where(p => p.IsRemovable);
 		if (findAllRemovingPersons.Any())
 		{
 			foreach (var person in findAllRemovingPersons)
