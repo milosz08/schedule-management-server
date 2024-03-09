@@ -158,7 +158,7 @@ public class CathedralServiceImpl(
 	protected override async Task<MessageContentResDto> OnDeleteSelected(DeleteSelectedRequestDto items,
 		UserCredentialsHeaderDto userCredentialsHeader)
 	{
-		if (UserRole.IsAdministrator(userCredentialsHeader.Person))
+		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
 		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
 				HttpStatusCode.Forbidden);
@@ -184,7 +184,7 @@ public class CathedralServiceImpl(
 
 	protected override async Task<MessageContentResDto> OnDeleteAll(UserCredentialsHeaderDto userCredentialsHeader)
 	{
-		if (UserRole.IsAdministrator(userCredentialsHeader.Person))
+		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
 		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
 				HttpStatusCode.Forbidden);
