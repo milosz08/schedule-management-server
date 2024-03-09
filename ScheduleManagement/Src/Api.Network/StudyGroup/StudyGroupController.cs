@@ -39,7 +39,7 @@ public class StudyGroupController(IStudyGroupService studyGroupService) : Contro
 		return Ok(await studyGroupService.GetAllStudyGroupsBaseDept(dept));
 	}
 
-	[HttpGet("all/pagination")]
+	[HttpGet("all/pageable")]
 	public ActionResult<StudyGroupQueryResponseDto> GetStudyRooms([FromQuery] SearchQueryRequestDto searchQuery)
 	{
 		return Ok(studyGroupService.GetAllStudyGroups(searchQuery));

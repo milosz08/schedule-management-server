@@ -14,7 +14,7 @@ namespace ScheduleManagement.Api.Network.Cathedral;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public sealed class CathedralController(ICathedralService cathedralService) : ControllerBase
 {
-	[HttpGet]
+	[HttpGet("all/pageable")]
 	public ActionResult<UserResponseDto> GetCathedrals([FromQuery] SearchQueryRequestDto searchQuery)
 	{
 		return Ok(cathedralService.GetAllCathedrals(searchQuery));

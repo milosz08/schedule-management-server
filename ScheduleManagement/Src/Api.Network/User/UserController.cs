@@ -14,7 +14,7 @@ namespace ScheduleManagement.Api.Network.User;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserController(IUserService userService) : ControllerBase
 {
-	[HttpGet("paginate/all")]
+	[HttpGet("all/pageable")]
 	public ActionResult<UserResponseDto> GetAllUsers([FromQuery] SearchQueryRequestDto searchQuery)
 	{
 		return Ok(userService.GetAllUsers(searchQuery));

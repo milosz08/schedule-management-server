@@ -15,9 +15,8 @@ namespace ScheduleManagement.Api.Network.StudySubject;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class StudySubjectController(IStudySubjectService studySubjectService) : ControllerBase
 {
-	[AllowAnonymous]
-	[HttpGet("all")]
-	public ActionResult<StudySubjectQueryResponseDto> GetStudyRooms([FromQuery] SearchQueryRequestDto searchQuery)
+	[HttpGet("all/pageable")]
+	public ActionResult<StudySubjectQueryResponseDto> GetStudySubjects([FromQuery] SearchQueryRequestDto searchQuery)
 	{
 		return Ok(studySubjectService.GetAllStudySubjects(searchQuery));
 	}

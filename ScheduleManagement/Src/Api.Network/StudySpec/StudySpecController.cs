@@ -32,7 +32,7 @@ public class StudySpecController(IStudySpecService studySpecService) : Controlle
 	}
 
 	[AuthorizeRoles(UserRole.Administrator)]
-	[HttpGet("all")]
+	[HttpGet("all/pageable")]
 	public ActionResult<PaginationResponseDto<StudySpecQueryResponseDto>> GetAllStudySpecializations(
 		[FromQuery] SearchQueryRequestDto searchSearchQuery)
 	{
