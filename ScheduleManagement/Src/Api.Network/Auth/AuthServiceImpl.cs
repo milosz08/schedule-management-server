@@ -83,7 +83,8 @@ public class AuthServiceImpl(
 		var findPerson = findRefreshToken.Person;
 
 		var resDto = mapper.Map<LoginResponseDto>(findPerson);
-		resDto.BearerToken = jwtAuthManager.BearerHandlingRefreshTokenService(principal.Claims.ToArray());
+		resDto.BearerToken =
+			jwtAuthManager.BearerHandlingRefreshTokenService(principal.Claims.Where(c => !c.Type.Equals("aud")));
 		resDto.RefreshBearerToken = reqDto.RefreshToken;
 		resDto.ConnectedWithDepartment = findPerson.Department!.Name;
 
