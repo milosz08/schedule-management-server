@@ -132,20 +132,23 @@ public class DepartmentServiceImpl(
 		}
 		var message = "Nie usunięto żadnego wydziału.";
 
-		var nonRemovableIds = dbContext.Departments.Where(d => !d.IsRemovable).Select(d => d.Id);
-		var toRemoved = dbContext.Departments
-			.Where(d => items.Ids
-				.Where(e => !nonRemovableIds.Contains(e))
-				.Any(id => id == d.Id));
+		var nonRemovableIds = dbContext.Departments
+			.Where(d => !d.IsRemovable)
+			.Select(d => d.Id);
 
-		if (toRemoved.Any())
+		var removableIds = items.Ids.Where(e => !nonRemovableIds.Contains(e)).AsQueryable();
+		var toRemoved = await dbContext.Departments
+			.Where(d => removableIds.Any(id => id == d.Id))
+			.ToListAsync();
+
+		if (toRemoved.Count != 0)
 		{
-			message = $"Pomyślnie usunięto wybrane wydziały. Liczba usuniętych wydziałów: {toRemoved.Count()}.";
+			message = $"Pomyślnie usunięto wybrane wydziały. Liczba usuniętych wydziałów: {toRemoved.Count}.";
 		}
 		dbContext.Departments.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
-		logger.LogInformation("Successfully removed: {} departments", toRemoved.Count());
+		logger.LogInformation("Successfully removed: {} departments", toRemoved.Count);
 		return new MessageContentResDto
 		{
 			Message = message
