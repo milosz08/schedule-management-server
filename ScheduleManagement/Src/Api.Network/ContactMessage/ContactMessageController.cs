@@ -21,7 +21,7 @@ public sealed class ContactMessageController(IContactMessageService contactMessa
 	}
 
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-	[HttpGet("user/all")]
+	[HttpGet("user/all/pageable")]
 	public async Task<ActionResult<PaginationResponseDto<ContactMessagesQueryResponseDto>>> GetAllMessagesBaseUser(
 		[FromQuery] SearchQueryRequestDto searchQuery)
 	{

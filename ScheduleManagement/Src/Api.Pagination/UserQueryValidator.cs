@@ -7,7 +7,7 @@ public class UserQueryValidator : AbstractValidator<SearchQueryRequestDto>
 	private readonly string[] _allowedSortings =
 	[
 		"Id", "Surname", "Login", "Role", "Name", "Alias", "DepartmentName", "DepartmentAlias", "CathedralAlias",
-		"Capacity", "RoomTypeAlias", "SpecTypeName", "SpecDegree", "SpecTypeAlias", "IssueType", "IfAnonymous",
+		"Capacity", "RoomTypeAlias", "SpecTypeName", "SpecDegree", "SpecTypeAlias", "IssueType", "IsAnonymous",
 		"CreatedDate"
 	];
 
