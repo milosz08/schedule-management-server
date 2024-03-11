@@ -37,7 +37,6 @@ public class UserController(IUserService userService) : ControllerBase
 		return Ok(await userService.GetAllTeachersScheduleBaseDeptAndSpec(deptId, subjName));
 	}
 
-	[AllowAnonymous]
 	[HttpGet("dashboard/details")]
 	public async Task<ActionResult<DashboardDetailsResDto>> GetDashboardPanelData()
 	{
