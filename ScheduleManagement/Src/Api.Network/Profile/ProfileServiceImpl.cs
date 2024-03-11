@@ -34,24 +34,20 @@ public class ProfileServiceImpl(
 				HttpStatusCode.ExpectationFailed);
 		}
 		var imageId = Guid.NewGuid().ToString();
-		using (var inputStream = new MemoryStream())
+		using (var loadedImage = await Image.LoadAsync(image.OpenReadStream()))
 		{
-			await image.CopyToAsync(inputStream);
-			using (var loadedImage = await Image.LoadAsync(inputStream))
+			loadedImage.Mutate(x => x.Resize(200, 200));
+			var encoder = new JpegEncoder { Quality = 100 };
+			using (var outputStream = new MemoryStream())
 			{
-				loadedImage.Mutate(x => x.Resize(200, 200));
-				var encoder = new JpegEncoder { Quality = 100 };
-				using (var outputStream = new MemoryStream())
-				{
-					await loadedImage.SaveAsJpegAsync(outputStream, encoder);
-					outputStream.Seek(0, SeekOrigin.Begin);
+				await loadedImage.SaveAsJpegAsync(outputStream, encoder);
+				outputStream.Seek(0, SeekOrigin.Begin);
 
-					if (findPerson.ProfileImageUuid != null)
-					{
-						await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, $"{findPerson.ProfileImageUuid}.jpg");
-					}
-					await s3Service.PutFileFromRequest(S3Bucket.Profiles, $"{imageId}.jpg", outputStream.ToArray());
+				if (findPerson.ProfileImageUuid != null)
+				{
+					await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, $"{findPerson.ProfileImageUuid}.jpg");
 				}
+				await s3Service.PutFileFromRequest(S3Bucket.Profiles, $"{imageId}.jpg", outputStream.ToArray());
 			}
 		}
 		findPerson.ProfileImageUuid = imageId;
