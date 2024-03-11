@@ -63,6 +63,7 @@ public class StudySpecController(IStudySpecService studySpecService) : Controlle
 		return Created(string.Empty, await studySpecService.CreateStudySpecialization(dto));
 	}
 
+	[AuthorizeRoles(UserRole.Administrator)]
 	[HttpPut("{specId:long}")]
 	public async Task<ActionResult<List<StudySpecResponseDto>>> UpdateStudySpecialization(
 		[FromBody] StudySpecRequestDto dto,

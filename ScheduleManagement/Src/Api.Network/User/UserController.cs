@@ -53,9 +53,9 @@ public class UserController(IUserService userService) : ControllerBase
 	public async Task<ActionResult<RegisterUpdateUserResponseDto>> UpdateUserDetails(
 		[FromBody] RegisterUpdateUserRequestDto dto,
 		[FromRoute] long userId,
-		[FromQuery] bool ifUpdateEmailPass)
+		[FromQuery] bool isUpdateEmailPass)
 	{
-		return Ok(await userService.UpdateUserDetails(dto, userId, ifUpdateEmailPass));
+		return Ok(await userService.UpdateUserDetails(dto, userId, isUpdateEmailPass));
 	}
 
 	[HttpDelete("selected")]

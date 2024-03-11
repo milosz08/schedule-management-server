@@ -49,7 +49,7 @@ public class StudyRoomController(IStudyRoomService studyRoomService) : Controlle
 		return Created(string.Empty, await studyRoomService.CreateStudyRoom(dto));
 	}
 
-	[HttpPut("room/{roomId:long}")]
+	[HttpPut("{roomId:long}")]
 	public async Task<ActionResult<StudyRoomResponseDto>> UpdateStudyRoom(
 		[FromBody] StudyRoomRequestDto dto,
 		[FromRoute] long roomId)
