@@ -88,6 +88,10 @@ public class AuthServiceImpl(
 		resDto.RefreshBearerToken = reqDto.RefreshToken;
 		resDto.ConnectedWithDepartment = findPerson.Department!.Name;
 
+		if (findPerson.ProfileImageUuid != null)
+		{
+			resDto.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{findPerson.ProfileImageUuid}.jpg";
+		}
 		logger.LogInformation("Successfully logged user via token: {}", findPerson);
 		return resDto;
 	}

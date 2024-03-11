@@ -245,13 +245,15 @@ public class UserServiceImpl(
 		}
 		var response = mapper.Map<UserDetailsEditResDto>(findPerson);
 
-		if (UserRole.Teacher.Equals(findPerson.Role.Name) || UserRole.Editor.Equals(findPerson.Role.Name))
+		switch (findPerson.Role.Name)
 		{
-			response.StudySpecsOrSubjects = findPerson.Subjects.Select(s => s.Id).ToList();
-		}
-		else if (findPerson.Role.Name.Equals(UserRole.Student))
-		{
-			response.StudySpecsOrSubjects = findPerson.StudySpecializations.Select(s => s.Id).ToList();
+			case UserRole.Teacher:
+			case UserRole.Editor:
+				response.StudySpecsOrSubjects = findPerson.Subjects.Select(s => s.Id).ToList();
+				break;
+			case UserRole.Student:
+				response.StudySpecsOrSubjects = findPerson.StudySpecializations.Select(s => s.Id).ToList();
+				break;
 		}
 		return response;
 	}
