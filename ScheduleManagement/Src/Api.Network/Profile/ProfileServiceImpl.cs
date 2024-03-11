@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using ScheduleManagement.Api.Config;
 using ScheduleManagement.Api.Db;
 using ScheduleManagement.Api.Dto;
 using ScheduleManagement.Api.Entity;
@@ -19,7 +20,7 @@ public class ProfileServiceImpl(
 {
 	private static readonly string[] AcceptableImageTypes = ["image/jpeg", "image/jpg", "image/png"];
 
-	public async Task<MessageContentResDto> CreateUserCustomAvatar(IFormFile image, ClaimsPrincipal claimsPrincipal)
+	public async Task<ProfileResDto> CreateUserCustomAvatar(IFormFile image, ClaimsPrincipal claimsPrincipal)
 	{
 		var findPerson = await GetPersonFromDb(claimsPrincipal);
 		if (image == null || image.Length == 0)
@@ -57,9 +58,10 @@ public class ProfileServiceImpl(
 		await dbContext.SaveChangesAsync();
 
 		logger.LogInformation("Successfully add profile image for user: {}", findPerson);
-		return new MessageContentResDto
+		return new ProfileResDto
 		{
-			Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione."
+			Message = $"Zdjęcie profilowe użytkownika {findPerson.Name} {findPerson.Surname} zostało ustawione.",
+			ResourceUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{imageId}.jpg"
 		};
 	}
 

@@ -12,7 +12,7 @@ public class FileController(IProfileService profileService) : ControllerBase
 {
 	[HttpPost]
 	[DisableRequestSizeLimit]
-	public async Task<ActionResult<MessageContentResDto>> CreateUserCustomAvatar([FromForm] IFormFile image)
+	public async Task<ActionResult<ProfileResDto>> CreateUserCustomAvatar([FromForm] IFormFile image)
 	{
 		return Ok(await profileService.CreateUserCustomAvatar(image, HttpContext.User));
 	}
