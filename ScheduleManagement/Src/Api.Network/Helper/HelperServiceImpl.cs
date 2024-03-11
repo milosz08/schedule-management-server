@@ -76,7 +76,7 @@ public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) :
 			.ToList();
 	}
 
-	public async Task<ConvertToNameWithIdResponseDto> ConvertNamesToIds(ConvertNamesToIdsRequestDto dto)
+	public async Task<ConvertToTupleResponseDto> ConvertNamesToTuples(ConvertNamesToTuplesRequestDto dto)
 	{
 		var findStudyGroup = await dbContext.StudyGroups
 			.Include(g => g.Department)
@@ -92,13 +92,13 @@ public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) :
 		{
 			throw new RestApiException("Nie znaleziono grupy z podanymi parametrami.", HttpStatusCode.NotFound);
 		}
-		return new ConvertToNameWithIdResponseDto(
+		return new ConvertToTupleResponseDto(
 			findStudyGroup.Department,
 			findStudyGroup.StudySpecialization,
 			findStudyGroup);
 	}
 
-	public async Task<ConvertToNameWithIdResponseDto> ConvertIdsToNames(ConvertIdsToNamesRequestDto dto)
+	public async Task<ConvertToTupleResponseDto> ConvertIdsToTuples(ConvertIdsToTuplesRequestDto dto)
 	{
 		if (dto.StudySpecId == null || dto.StudyGroupId == null || dto.DepartmentId == null)
 		{
@@ -114,7 +114,7 @@ public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) :
 		{
 			throw new RestApiException("Nie znaleziono grupy z podanymi parametrami.", HttpStatusCode.NotFound);
 		}
-		return new ConvertToNameWithIdResponseDto(
+		return new ConvertToTupleResponseDto(
 			findStudyGroup.Department,
 			findStudyGroup.StudySpecialization,
 			findStudyGroup);

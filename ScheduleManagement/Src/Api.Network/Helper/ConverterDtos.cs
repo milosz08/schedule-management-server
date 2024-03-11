@@ -2,14 +2,14 @@
 
 namespace ScheduleManagement.Api.Network.Helper;
 
-public sealed class ConvertNamesToIdsRequestDto
+public sealed class ConvertNamesToTuplesRequestDto
 {
 	public string DepartmentName { get; set; }
 	public string StudySpecName { get; set; }
 	public string StudyGroupName { get; set; }
 }
 
-public sealed class ConvertIdsToNamesRequestDto
+public sealed class ConvertIdsToTuplesRequestDto
 {
 	public long? DepartmentId { get; set; }
 	public long? StudySpecId { get; set; }
@@ -22,7 +22,7 @@ public sealed class ConvertNamesToDataSingleElement(long id, string name)
 	public string Name { get; set; } = name;
 }
 
-public sealed class ConvertToNameWithIdResponseDto(
+public sealed class ConvertToTupleResponseDto(
 	Entity.Department deptData,
 	StudySpecialization specData,
 	Entity.StudyGroup groupData)

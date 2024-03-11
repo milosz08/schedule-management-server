@@ -17,9 +17,9 @@ public interface IHelperService
 
 	Task<List<NameIdElementDto>> GetAvailableSemBaseStudyGroups(long deptId, long studySpecId);
 
-	Task<ConvertToNameWithIdResponseDto> ConvertNamesToIds(ConvertNamesToIdsRequestDto dto);
+	Task<ConvertToTupleResponseDto> ConvertNamesToTuples(ConvertNamesToTuplesRequestDto dto);
 
-	Task<ConvertToNameWithIdResponseDto> ConvertIdsToNames(ConvertIdsToNamesRequestDto dto);
+	Task<ConvertToTupleResponseDto> ConvertIdsToTuples(ConvertIdsToTuplesRequestDto dto);
 
 	Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string? subjTypeName);
 
