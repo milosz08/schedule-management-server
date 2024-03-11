@@ -17,7 +17,7 @@ public class ProfileServiceImpl(
 	ILogger<ProfileServiceImpl> logger,
 	IS3Service s3Service) : IProfileService
 {
-	private static readonly string[] AcceptableImageTypes = ["image/jpeg", "image/png"];
+	private static readonly string[] AcceptableImageTypes = ["image/jpeg", "image/jpg", "image/png"];
 
 	public async Task<MessageContentResDto> CreateUserCustomAvatar(IFormFile image, ClaimsPrincipal claimsPrincipal)
 	{
@@ -29,7 +29,7 @@ public class ProfileServiceImpl(
 		}
 		if (Array.IndexOf(AcceptableImageTypes, image.ContentType) == -1)
 		{
-			throw new RestApiException("Akceptowane rozszerzenia pliku to: png, jpeg.",
+			throw new RestApiException("Akceptowane rozszerzenia pliku to: png, jpg, jpeg.",
 				HttpStatusCode.ExpectationFailed);
 		}
 		var imageId = Guid.NewGuid().ToString();
