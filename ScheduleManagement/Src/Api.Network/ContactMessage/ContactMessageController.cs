@@ -30,7 +30,7 @@ public sealed class ContactMessageController(IContactMessageService contactMessa
 	}
 
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-	[HttpGet("user/details/{messId:long}")]
+	[HttpGet("{messId:long}/details")]
 	public async Task<ActionResult<SingleContactMessageResponseDto>> GetContactMessageDetails([FromRoute] long messId)
 	{
 		return Ok(await contactMessageService.GetContactMessageDetails(messId, HttpContext.User));
