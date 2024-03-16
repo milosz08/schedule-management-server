@@ -9,7 +9,7 @@ public interface IDepartmentService : IBaseCrudService
 
 	Task<DepartmentRequestResponseDto> UpdateDepartment(DepartmentRequestResponseDto dto, long deptId);
 
-	SearchQueryResponseDto GetAllDepartments(string? name);
+	Task<SearchQueryResponseDto> GetAllDepartments(string? name);
 
 	PaginationResponseDto<DepartmentQueryResponseDto> GetPageableDepartments(SearchQueryRequestDto searchQuery);
 

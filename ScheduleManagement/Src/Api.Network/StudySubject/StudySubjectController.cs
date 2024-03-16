@@ -23,11 +23,11 @@ public class StudySubjectController(IStudySubjectService studySubjectService) : 
 
 	[AllowAnonymous]
 	[HttpGet("dept/{deptId:long}/spec/{specId:long}/all")]
-	public ActionResult<SearchQueryResponseDto> GetAllStudySubjectsBaseDept([FromQuery] string? subjectName,
+	public async Task<ActionResult<SearchQueryResponseDto>> GetAllStudySubjectsBaseDept([FromQuery] string? subjectName,
 		[FromRoute] long deptId,
 		[FromRoute] long specId)
 	{
-		return Ok(studySubjectService.GetAllStudySubjectsBaseDeptAndSpec(subjectName, deptId, specId));
+		return Ok(await studySubjectService.GetAllStudySubjectsBaseDeptAndSpec(subjectName, deptId, specId));
 	}
 
 	[AllowAnonymous]

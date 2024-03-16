@@ -16,9 +16,9 @@ public class DepartmentController(IDepartmentService departmentService) : Contro
 {
 	[AllowAnonymous]
 	[HttpGet("all")]
-	public ActionResult<SearchQueryResponseDto> GetAllDepartments([FromQuery] string? name)
+	public async Task<ActionResult<SearchQueryResponseDto>> GetAllDepartments([FromQuery] string? name)
 	{
-		return Ok(departmentService.GetAllDepartments(name));
+		return Ok(await departmentService.GetAllDepartments(name));
 	}
 
 	[HttpGet("all/pageable")]

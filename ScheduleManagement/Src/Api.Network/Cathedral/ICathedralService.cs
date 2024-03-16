@@ -9,11 +9,11 @@ public interface ICathedralService : IBaseCrudService
 
 	Task<CathedralResponseDto> UpdateCathedral(CathedralRequestDto dto, long cathId);
 
-	SearchQueryResponseDto GetAllCathedralsBasedDepartmentName(string? deptName, string? cathName);
+	Task<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName(string? deptName, string? cathName);
 
 	PaginationResponseDto<CathedralQueryResponseDto> GetAllCathedrals(SearchQueryRequestDto searchQuery);
 
-	List<NameIdElementDto> GetAllCathedralsScheduleBaseDept(long deptId);
+	Task<List<NameIdElementDto>> GetAllCathedralsScheduleBaseDept(long deptId);
 
 	Task<CathedralEditResDto> GetCathedralDetails(long cathId);
 }

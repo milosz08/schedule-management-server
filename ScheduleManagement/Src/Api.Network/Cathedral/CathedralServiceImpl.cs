@@ -78,33 +78,6 @@ public class CathedralServiceImpl(
 		return resDto;
 	}
 
-	public SearchQueryResponseDto GetAllCathedralsBasedDepartmentName(string? deptName, string? cathName)
-	{
-		deptName ??= string.Empty;
-		cathName ??= string.Empty;
-
-		var findAllCathedralsNames = dbContext.Cathedrals
-			.Include(c => c.Department)
-			.Where(c => deptName.Equals(c.Department.Name, StringComparison.OrdinalIgnoreCase) &&
-			            c.Name.Contains(cathName, StringComparison.OrdinalIgnoreCase))
-			.Select(c => c.Name)
-			.ToList();
-		findAllCathedralsNames.Sort();
-
-		if (findAllCathedralsNames.Count > 0)
-		{
-			return new SearchQueryResponseDto(findAllCathedralsNames);
-		}
-		var findAllCathedrals = dbContext.Cathedrals
-			.Include(c => c.Department)
-			.Where(c => deptName.Equals(c.Department.Name, StringComparison.OrdinalIgnoreCase))
-			.Select(c => c.Name)
-			.ToList();
-
-		findAllCathedrals.Sort();
-		return new SearchQueryResponseDto(findAllCathedrals);
-	}
-
 	public PaginationResponseDto<CathedralQueryResponseDto> GetAllCathedrals(SearchQueryRequestDto searchQuery)
 	{
 		var cathedralsBaseQuery = dbContext.Cathedrals
@@ -130,19 +103,6 @@ public class CathedralServiceImpl(
 			allCathedrals, cathedralsBaseQuery.Count(), searchQuery.PageSize, searchQuery.PageNumber);
 	}
 
-	public List<NameIdElementDto> GetAllCathedralsScheduleBaseDept(long deptId)
-	{
-		var cathedralsBaseDept = dbContext.Cathedrals
-			.Include(s => s.Department)
-			.Where(s => s.Department.Id == deptId)
-			.ToList();
-		cathedralsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
-
-		return cathedralsBaseDept
-			.Select(mapper.Map<NameIdElementDto>)
-			.ToList();
-	}
-
 	public async Task<CathedralEditResDto> GetCathedralDetails(long cathId)
 	{
 		var findCathedral = await dbContext.Cathedrals
@@ -153,6 +113,46 @@ public class CathedralServiceImpl(
 			throw new RestApiException("Nie znaleziono katedry z podanym numerem id.", HttpStatusCode.NotFound);
 		}
 		return mapper.Map<CathedralEditResDto>(findCathedral);
+	}
+
+	public async Task<List<NameIdElementDto>> GetAllCathedralsScheduleBaseDept(long deptId)
+	{
+		var cathedralsBaseDept = await dbContext.Cathedrals
+			.Include(s => s.Department)
+			.Where(s => s.Department.Id == deptId)
+			.ToListAsync();
+		cathedralsBaseDept.Sort((first, second) => string.Compare(first.Name, second.Name, StringComparison.Ordinal));
+
+		return cathedralsBaseDept
+			.Select(mapper.Map<NameIdElementDto>)
+			.ToList();
+	}
+
+	public async Task<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName(string? deptName, string? cathName)
+	{
+		deptName ??= string.Empty;
+		cathName ??= string.Empty;
+
+		var findAllCathedralsNames = await dbContext.Cathedrals
+			.Include(c => c.Department)
+			.Where(c => deptName.Equals(c.Department.Name, StringComparison.OrdinalIgnoreCase) &&
+			            c.Name.Contains(cathName, StringComparison.OrdinalIgnoreCase))
+			.Select(c => c.Name)
+			.ToListAsync();
+		findAllCathedralsNames.Sort();
+
+		if (findAllCathedralsNames.Count > 0)
+		{
+			return new SearchQueryResponseDto(findAllCathedralsNames);
+		}
+		var findAllCathedrals = await dbContext.Cathedrals
+			.Include(c => c.Department)
+			.Where(c => deptName.Equals(c.Department.Name, StringComparison.OrdinalIgnoreCase))
+			.Select(c => c.Name)
+			.ToListAsync();
+
+		findAllCathedrals.Sort();
+		return new SearchQueryResponseDto(findAllCathedrals);
 	}
 
 	protected override async Task<MessageContentResDto> OnDeleteSelected(DeleteSelectedRequestDto items,

@@ -121,33 +121,6 @@ public class StudySubjectServiceImpl(
 			allDepts, studySubjectsBaseQuery.Count(), searchQuery.PageSize, searchQuery.PageNumber);
 	}
 
-	public SearchQueryResponseDto GetAllStudySubjectsBaseDeptAndSpec(string? subjcName, long deptId, long studySpecId)
-	{
-		subjcName ??= string.Empty;
-
-		var findAllSubjects = dbContext.StudySubjects
-			.Include(s => s.Department)
-			.Include(s => s.StudySpecialization)
-			.Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId &&
-			            s.Name.Contains(subjcName, StringComparison.OrdinalIgnoreCase))
-			.Select(s => s.Name)
-			.ToList();
-		findAllSubjects.Sort();
-
-		if (findAllSubjects.Count > 0)
-		{
-			return new SearchQueryResponseDto(findAllSubjects);
-		}
-		var findAllElements = dbContext.StudySubjects
-			.Include(s => s.Department)
-			.Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId)
-			.Select(s => s.Name)
-			.ToList();
-		findAllElements.Sort();
-
-		return new SearchQueryResponseDto(findAllElements);
-	}
-
 	public async Task<StudySubjectEditResDto> GetStudySubjectBaseDbId(long subjId)
 	{
 		var findStudySubject = await dbContext.StudySubjects
@@ -176,6 +149,34 @@ public class StudySubjectServiceImpl(
 		{
 			DataElements = findAllStudySubjects.Select(mapper.Map<NameIdElementDto>).ToList()
 		};
+	}
+
+	public async Task<SearchQueryResponseDto> GetAllStudySubjectsBaseDeptAndSpec(string? subjcName, long deptId,
+		long studySpecId)
+	{
+		subjcName ??= string.Empty;
+
+		var findAllSubjects = await dbContext.StudySubjects
+			.Include(s => s.Department)
+			.Include(s => s.StudySpecialization)
+			.Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId &&
+			            s.Name.Contains(subjcName, StringComparison.OrdinalIgnoreCase))
+			.Select(s => s.Name)
+			.ToListAsync();
+		findAllSubjects.Sort();
+
+		if (findAllSubjects.Count > 0)
+		{
+			return new SearchQueryResponseDto(findAllSubjects);
+		}
+		var findAllElements = await dbContext.StudySubjects
+			.Include(s => s.Department)
+			.Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId)
+			.Select(s => s.Name)
+			.ToListAsync();
+		findAllElements.Sort();
+
+		return new SearchQueryResponseDto(findAllElements);
 	}
 
 	protected override async Task<MessageContentResDto> OnDeleteSelected(DeleteSelectedRequestDto items,

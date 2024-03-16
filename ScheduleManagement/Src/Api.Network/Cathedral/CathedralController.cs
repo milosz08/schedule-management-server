@@ -21,18 +21,19 @@ public sealed class CathedralController(ICathedralService cathedralService) : Co
 	}
 
 	[HttpGet("dept/all")]
-	public ActionResult<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName([FromQuery] string? deptName,
+	public async Task<ActionResult<SearchQueryResponseDto>> GetAllCathedralsBasedDepartmentName(
+		[FromQuery] string? deptName,
 		[FromQuery] string? cathName
 	)
 	{
-		return Ok(cathedralService.GetAllCathedralsBasedDepartmentName(deptName, cathName));
+		return Ok(await cathedralService.GetAllCathedralsBasedDepartmentName(deptName, cathName));
 	}
 
 	[AllowAnonymous]
 	[HttpGet("schedule/department/{deptId:long}")]
-	public ActionResult<List<NameIdElementDto>> GetAllCathedralsScheduleBaseDept([FromRoute] long deptId)
+	public async Task<ActionResult<List<NameIdElementDto>>> GetAllCathedralsScheduleBaseDept([FromRoute] long deptId)
 	{
-		return Ok(cathedralService.GetAllCathedralsScheduleBaseDept(deptId));
+		return Ok(await cathedralService.GetAllCathedralsScheduleBaseDept(deptId));
 	}
 
 	[HttpGet("{cathId:long}/details")]

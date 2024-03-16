@@ -12,7 +12,7 @@ public interface IStudySubjectService : IBaseCrudService
 
 	PaginationResponseDto<StudySubjectQueryResponseDto> GetAllStudySubjects(SearchQueryRequestDto searchQuery);
 
-	SearchQueryResponseDto GetAllStudySubjectsBaseDeptAndSpec(string? subjcName, long deptId, long studySpecId);
+	Task<SearchQueryResponseDto> GetAllStudySubjectsBaseDeptAndSpec(string? subjcName, long deptId, long studySpecId);
 
 	Task<AvailableDataResponseDto<NameIdElementDto>> GetAvailableSubjectsBaseDept(string deptName);
 

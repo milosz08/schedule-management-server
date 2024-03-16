@@ -58,20 +58,20 @@ public class DepartmentServiceImpl(
 		return dto;
 	}
 
-	public SearchQueryResponseDto GetAllDepartments(string? name)
+	public async Task<SearchQueryResponseDto> GetAllDepartments(string? name)
 	{
 		if (string.IsNullOrEmpty(name))
 		{
-			var allDepartments = dbContext.Departments
+			var allDepartments = await dbContext.Departments
 				.Select(d => d.Name)
-				.ToList();
+				.ToListAsync();
 			allDepartments.Sort();
 			return new SearchQueryResponseDto(allDepartments);
 		}
-		var findAllDepartments = dbContext.Departments
+		var findAllDepartments = await dbContext.Departments
 			.Where(d => d.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
 			.Select(d => d.Name)
-			.ToList();
+			.ToListAsync();
 		findAllDepartments.Sort();
 
 		return findAllDepartments.Count > 0
