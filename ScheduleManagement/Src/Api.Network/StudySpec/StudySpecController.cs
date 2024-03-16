@@ -40,11 +40,12 @@ public class StudySpecController(IStudySpecService studySpecService) : Controlle
 	}
 
 	[AuthorizeRoles(UserRole.Administrator, UserRole.Editor)]
-	[HttpGet("all/dept")]
-	public async Task<ActionResult<SearchQueryResponseDto>> GetAllStudySpecializationsBaseDept([FromQuery] string? spec,
-		[FromQuery] string? dept)
+	[HttpGet("dept/all")]
+	public async Task<ActionResult<SearchQueryResponseDto>> GetAllStudySpecializationsBaseDept(
+		[FromQuery] string? specName,
+		[FromQuery] string? deptName)
 	{
-		return Ok(await studySpecService.GetAllStudySpecializationsInDepartment(spec, dept));
+		return Ok(await studySpecService.GetAllStudySpecializationsInDepartment(specName, deptName));
 	}
 
 	[AuthorizeRoles(UserRole.Administrator)]
