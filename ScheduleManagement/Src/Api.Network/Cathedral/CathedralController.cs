@@ -20,8 +20,8 @@ public sealed class CathedralController(ICathedralService cathedralService) : Co
 		return Ok(cathedralService.GetAllCathedrals(searchQuery));
 	}
 
-	[HttpGet("department/{deptName}")]
-	public ActionResult<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName([FromRoute] string? deptName,
+	[HttpGet("dept/all")]
+	public ActionResult<SearchQueryResponseDto> GetAllCathedralsBasedDepartmentName([FromQuery] string? deptName,
 		[FromQuery] string? cathName
 	)
 	{
