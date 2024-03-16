@@ -24,7 +24,7 @@ public class ContactMessage : AbstractEntity
 	[StringLength(300)]
 	public string Description { get; set; }
 
-	public bool IfAnonymous { get; set; }
+	public bool IsAnonymous { get; set; }
 
 	[ForeignKey(nameof(Department))]
 	public long? DepartmentId { get; set; }

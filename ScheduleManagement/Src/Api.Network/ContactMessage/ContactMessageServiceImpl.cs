@@ -120,7 +120,7 @@ public class ContactMessageServiceImpl(
 			DepartmentId = findDepartment?.Id,
 			ContactFormIssueType = findIssueType,
 			Description = dto.Description,
-			IfAnonymous = dto.IsAnonymous,
+			IsAnonymous = dto.IsAnonymous,
 			StudyGroups = findStudyGroups,
 			MessageIdentifier = generateMessageId
 		};
@@ -187,7 +187,7 @@ public class ContactMessageServiceImpl(
 				{ "Surname", d => d.Person == null ? d.AnonSurname! : d.Person.Surname },
 				{ "IssueType", d => d.ContactFormIssueType.Name },
 				{ nameof(Entity.ContactMessage.CreatedDate), d => d.CreatedDate },
-				{ nameof(Entity.ContactMessage.IfAnonymous), d => d.IfAnonymous }
+				{ nameof(Entity.ContactMessage.IsAnonymous), d => d.IsAnonymous }
 			}, searchQuery, ref contactMessagesBaseQuery);
 		}
 		var allmessages = mapper.Map<List<ContactMessagesQueryResponseDto>>(PaginationConfig
@@ -215,7 +215,7 @@ public class ContactMessageServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono wiadomości z podanym id", HttpStatusCode.NotFound);
 		}
-		if ((findContactMessage.IfAnonymous || findContactMessage.ContactFormIssueType.Name.Contains("inne")) &&
+		if ((findContactMessage.IsAnonymous || findContactMessage.ContactFormIssueType.Name.Contains("inne")) &&
 		    !userRole.Equals(UserRole.Administrator))
 		{
 			throw new RestApiException("Brak autoryzacji do pozyskania wiadomości.", HttpStatusCode.Forbidden);

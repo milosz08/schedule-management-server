@@ -37,7 +37,7 @@ public sealed class SingleContactMessageResponseDto
 	public string IssueType { get; set; }
 	public string DepartmentName { get; set; } = "brak";
 	public List<string> Groups { get; set; } = [];
-	public bool IfAnonymous { get; set; }
+	public bool IsAnonymous { get; set; }
 	public string Description { get; set; }
 	public string CreatedDate { get; set; }
 }
