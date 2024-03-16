@@ -185,15 +185,17 @@ public class StudyGroupServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnej grupy.";
-		var toRemoved = dbContext.StudyGroups.Where(s => items.Ids.Any(id => id == s.Id));
-		if (toRemoved.Any())
+		var toRemoved = await dbContext.StudyGroups
+			.Where(s => items.Ids.Any(id => id == s.Id))
+			.ToListAsync();
+		if (toRemoved.Count != 0)
 		{
-			message = $"Pomyślnie usunięto wybrane grupy. Liczba usuniętych grup: {toRemoved.Count()}.";
+			message = $"Pomyślnie usunięto wybrane grupy. Liczba usuniętych grup: {toRemoved.Count}.";
 		}
 		dbContext.StudyGroups.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
-		logger.LogInformation("Successfully removed: {} study groups", toRemoved.Count());
+		logger.LogInformation("Successfully removed: {} study groups", toRemoved.Count);
 		return new MessageContentResDto
 		{
 			Message = message

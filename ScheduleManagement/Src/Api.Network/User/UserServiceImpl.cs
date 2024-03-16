@@ -272,7 +272,9 @@ public class UserServiceImpl(
 		var removeMessage = "Nie usunięto żadnego użytkownika.";
 		if (filteredDeletedPersons.Length != 0)
 		{
-			var personsToRemove = dbContext.Persons.Where(p => filteredDeletedPersons.Any(id => id == p.Id));
+			var personsToRemove = await dbContext.Persons
+				.Where(p => filteredDeletedPersons.Any(id => id == p.Id))
+				.ToListAsync();
 			foreach (var person in personsToRemove)
 			{
 				mailboxProxyService.DeleteEmailAccount(person.Email);
@@ -281,8 +283,8 @@ public class UserServiceImpl(
 			await dbContext.SaveChangesAsync();
 
 			removeMessage =
-				$"Pomyślnie usunięto wybranych użytkowników. Liczba usuniętych użytkowników: {personsToRemove.Count()}.";
-			logger.LogInformation("Successfully removed: {} users", personsToRemove.Count());
+				$"Pomyślnie usunięto wybranych użytkowników. Liczba usuniętych użytkowników: {personsToRemove.Count}.";
+			logger.LogInformation("Successfully removed: {} users", personsToRemove.Count);
 		}
 		return new MessageContentResDto
 		{

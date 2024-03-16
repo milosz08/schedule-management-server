@@ -169,12 +169,14 @@ public class CathedralServiceImpl(
 		var removeMessage = "Nie usunięto żadnej katedry.";
 		if (filteredDeletedCathedrals.Length != 0)
 		{
-			var toRemove = dbContext.Cathedrals.Where(c => filteredDeletedCathedrals.Any(id => id == c.Id));
+			var toRemove = await dbContext.Cathedrals
+				.Where(c => filteredDeletedCathedrals.Any(id => id == c.Id))
+				.ToListAsync();
 			dbContext.Cathedrals.RemoveRange(toRemove);
 			await dbContext.SaveChangesAsync();
 
-			removeMessage = $"Pomyślnie usunięto wybrane katedry. Liczba usuniętych katedr: {toRemove.Count()}.";
-			logger.LogInformation("Successfully deleted: {} cathedrals", toRemove.Count());
+			removeMessage = $"Pomyślnie usunięto wybrane katedry. Liczba usuniętych katedr: {toRemove.Count}.";
+			logger.LogInformation("Successfully deleted: {} cathedrals", toRemove.Count);
 		}
 		return new MessageContentResDto
 		{

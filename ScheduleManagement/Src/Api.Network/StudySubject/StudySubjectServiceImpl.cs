@@ -187,15 +187,17 @@ public class StudySubjectServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnego przedmiotu.";
-		var toRemoved = dbContext.StudySubjects.Where(s => items.Ids.Any(id => id == s.Id));
-		if (toRemoved.Any())
+		var toRemoved = await dbContext.StudySubjects
+			.Where(s => items.Ids.Any(id => id == s.Id))
+			.ToListAsync();
+		if (toRemoved.Count != 0)
 		{
-			message = $"Pomyślnie usunięto wybrane przedmioty. Liczba usuniętych przedmiotów: {toRemoved.Count()}.";
+			message = $"Pomyślnie usunięto wybrane przedmioty. Liczba usuniętych przedmiotów: {toRemoved.Count}.";
 		}
 		dbContext.StudySubjects.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
-		logger.LogInformation("Successfully removed: {} schedule subjects", toRemoved.Count());
+		logger.LogInformation("Successfully removed: {} schedule subjects", toRemoved.Count);
 		return new MessageContentResDto
 		{
 			Message = message

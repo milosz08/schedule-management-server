@@ -220,15 +220,17 @@ public class StudySpecServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnego kierunku.";
-		var toRemoved = dbContext.StudySpecializations.Where(s => items.Ids.Any(id => id == s.Id));
-		if (toRemoved.Any())
+		var toRemoved = await dbContext.StudySpecializations
+			.Where(s => items.Ids.Any(id => id == s.Id))
+			.ToListAsync();
+		if (toRemoved.Count != 0)
 		{
-			message = $"Pomyślnie usunięto wybrane kierunki. Liczba usuniętych kierunków: {toRemoved.Count()}.";
+			message = $"Pomyślnie usunięto wybrane kierunki. Liczba usuniętych kierunków: {toRemoved.Count}.";
 		}
 		dbContext.StudySpecializations.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
-		logger.LogInformation("Successfully removed: {} study specializations", toRemoved.Count());
+		logger.LogInformation("Successfully removed: {} study specializations", toRemoved.Count);
 		return new MessageContentResDto
 		{
 			Message = message

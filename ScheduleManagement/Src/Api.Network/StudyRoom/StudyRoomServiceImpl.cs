@@ -192,15 +192,17 @@ public class StudyRoomServiceImpl(
 				HttpStatusCode.Forbidden);
 		}
 		var message = "Nie usunięto żadnej sali.";
-		var toRemoved = dbContext.StudyRooms.Where(s => items.Ids.Any(id => id == s.Id));
-		if (toRemoved.Any())
+		var toRemoved = await dbContext.StudyRooms
+			.Where(s => items.Ids.Any(id => id == s.Id))
+			.ToListAsync();
+		if (toRemoved.Count != 0)
 		{
-			message = $"Pomyślnie usunięto wybrane sale. Liczba usuniętych sal: {toRemoved.Count()}.";
+			message = $"Pomyślnie usunięto wybrane sale. Liczba usuniętych sal: {toRemoved.Count}.";
 		}
 		dbContext.StudyRooms.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
-		logger.LogInformation("Successfully removed: {} study rooms", toRemoved.Count());
+		logger.LogInformation("Successfully removed: {} study rooms", toRemoved.Count);
 		return new MessageContentResDto
 		{
 			Message = message
