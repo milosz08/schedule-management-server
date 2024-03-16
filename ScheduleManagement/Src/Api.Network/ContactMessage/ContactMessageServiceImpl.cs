@@ -220,7 +220,7 @@ public class ContactMessageServiceImpl(
 		{
 			throw new RestApiException("Brak autoryzacji do pozyskania wiadomości.", HttpStatusCode.Forbidden);
 		}
-		if ((findContactMessage.Department!.Id != findPerson.Department!.Id && userRole.Equals(UserRole.Editor)) ||
+		if ((findContactMessage.Department?.Id != findPerson.Department?.Id && userRole.Equals(UserRole.Editor)) ||
 		    (findContactMessage.Person!.Login != findPerson.Login &&
 		     (userRole.Equals(UserRole.Teacher) || userRole.Equals(UserRole.Student))))
 		{
