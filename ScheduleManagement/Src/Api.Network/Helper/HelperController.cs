@@ -61,9 +61,9 @@ public class HelperController(IHelperService helperService) : ControllerBase
 
 	[HttpGet("subject/type/all")]
 	public async Task<ActionResult<AvailableDataResponseDto<string>>> GetAvailableSubjectTypes(
-		[FromQuery] string? subjTypeName)
+		[FromQuery] string? subjectTypeName)
 	{
-		return Ok(await helperService.GetAvailableSubjectTypes(subjTypeName));
+		return Ok(await helperService.GetAvailableSubjectTypes(subjectTypeName));
 	}
 
 	[AuthorizeRoles(UserRole.Administrator, UserRole.Editor)]

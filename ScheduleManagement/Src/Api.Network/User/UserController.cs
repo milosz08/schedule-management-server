@@ -32,9 +32,9 @@ public class UserController(IUserService userService) : ControllerBase
 	[HttpGet("teacher/dept/{deptId:long}/all")]
 	public async Task<ActionResult<List<NameIdElementDto>>> GetAllTeachersScheduleBaseDeptAndSpec(
 		[FromRoute] long deptId,
-		[FromQuery] string subjName)
+		[FromQuery] string subjectName)
 	{
-		return Ok(await userService.GetAllTeachersScheduleBaseDeptAndSpec(deptId, subjName));
+		return Ok(await userService.GetAllTeachersScheduleBaseDeptAndSpec(deptId, subjectName));
 	}
 
 	[HttpGet("dashboard/details")]

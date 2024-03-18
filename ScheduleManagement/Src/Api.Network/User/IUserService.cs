@@ -14,7 +14,7 @@ public interface IUserService : IBaseCrudService
 
 	Task<List<NameIdElementDto>> GetAllEmployeersScheduleBaseCath(long deptId, long cathId);
 
-	Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjName);
+	Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjectName);
 
 	Task<DashboardDetailsResDto> GetDashboardPanelData(ClaimsPrincipal claimsPrincipal);
 

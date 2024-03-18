@@ -25,11 +25,12 @@ public class StudyGroupController(IStudyGroupService studyGroupService) : Contro
 
 	[AllowAnonymous]
 	[HttpGet("spec")]
-	public async Task<ActionResult<SearchQueryResponseDto>> GetAvailableStudyGroupsBaseSpec([FromQuery] string? group,
-		[FromQuery] string? dept,
-		[FromQuery] string? studySpec)
+	public async Task<ActionResult<SearchQueryResponseDto>> GetAvailableStudyGroupsBaseSpec(
+		[FromQuery] string? groupName,
+		[FromQuery] string? deptName,
+		[FromQuery] string? studySpecName)
 	{
-		return Ok(await studyGroupService.GetGroupsBaseStudySpec(group, dept, studySpec));
+		return Ok(await studyGroupService.GetGroupsBaseStudySpec(groupName, deptName, studySpecName));
 	}
 
 	[AllowAnonymous]

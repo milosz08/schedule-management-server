@@ -120,13 +120,13 @@ public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) :
 			findStudyGroup);
 	}
 
-	public async Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string? subjTypeName)
+	public async Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string? subjectTypeName)
 	{
-		subjTypeName ??= string.Empty;
+		subjectTypeName ??= string.Empty;
 
 		var findAllScheduleSubjectTypes = await dbContext.ScheduleSubjectTypes
-			.Where(t => t.Name.Contains(subjTypeName, StringComparison.OrdinalIgnoreCase) ||
-			            subjTypeName.Equals(string.Empty))
+			.Where(t => t.Name.Contains(subjectTypeName, StringComparison.OrdinalIgnoreCase) ||
+			            subjectTypeName.Equals(string.Empty))
 			.Select(t => t.Name)
 			.ToListAsync();
 

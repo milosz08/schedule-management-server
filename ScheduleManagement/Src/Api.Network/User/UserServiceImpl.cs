@@ -149,14 +149,14 @@ public class UserServiceImpl(
 			.ToList();
 	}
 
-	public async Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjName)
+	public async Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjectName)
 	{
 		var selectedUsersWithoutStudents = await dbContext.Persons
 			.Include(p => p.Role)
 			.Include(p => p.Department)
 			.Include(p => p.Subjects)
 			.Where(p => p.Department!.Id == deptId &&
-			            p.Subjects.Any(s => s.Name.Equals(subjName, StringComparison.OrdinalIgnoreCase))
+			            p.Subjects.Any(s => s.Name.Equals(subjectName, StringComparison.OrdinalIgnoreCase))
 			            && !p.Role.Name.Equals(UserRole.Student, StringComparison.OrdinalIgnoreCase))
 			.ToListAsync();
 
