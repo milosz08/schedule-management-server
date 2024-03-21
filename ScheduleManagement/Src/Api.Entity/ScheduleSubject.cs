@@ -15,7 +15,7 @@ public class ScheduleSubject : AbstractEntity
 	public TimeSpan EndTime { get; set; }
 
 	[Required]
-	[StringLength(5)]
+	[StringLength(9)]
 	public string StudyYear { get; set; }
 
 	[ForeignKey(nameof(Weekday))]
