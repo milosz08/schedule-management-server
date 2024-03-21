@@ -149,7 +149,7 @@ public class UserServiceImpl(
 			.ToList();
 	}
 
-	public async Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string subjectName)
+	public async Task<List<NameIdElementDto>> GetAllTeachersScheduleBaseDeptAndSpec(long deptId, string? subjectName)
 	{
 		var selectedUsersWithoutStudents = await dbContext.Persons
 			.Include(p => p.Role)
