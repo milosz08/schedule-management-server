@@ -10,11 +10,11 @@ namespace ScheduleManagement.Api.Network.User;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
-[AuthorizeRoles(UserRole.Administrator)]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserController(IUserService userService) : ControllerBase
 {
 	[HttpGet("all/pageable")]
+	[AuthorizeRoles(UserRole.Administrator)]
 	public ActionResult<UserResponseDto> GetAllUsers([FromQuery] SearchQueryRequestDto searchQuery)
 	{
 		return Ok(userService.GetAllUsers(searchQuery));
@@ -44,12 +44,14 @@ public class UserController(IUserService userService) : ControllerBase
 	}
 
 	[HttpGet("{userId:long}/details")]
+	[AuthorizeRoles(UserRole.Administrator)]
 	public async Task<ActionResult<UserDetailsEditResDto>> GetUserDetails([FromRoute] long userId)
 	{
 		return Ok(await userService.GetUserDetails(userId));
 	}
 
 	[HttpPut("{userId:long}")]
+	[AuthorizeRoles(UserRole.Administrator)]
 	public async Task<ActionResult<RegisterUpdateUserResponseDto>> UpdateUserDetails(
 		[FromBody] RegisterUpdateUserRequestDto dto,
 		[FromRoute] long userId,
@@ -59,12 +61,14 @@ public class UserController(IUserService userService) : ControllerBase
 	}
 
 	[HttpDelete("selected")]
+	[AuthorizeRoles(UserRole.Administrator)]
 	public async Task<ActionResult> DeleteMassiveUsers([FromBody] DeleteSelectedRequestDto users)
 	{
 		return Ok(await userService.Delete2WayFactorSelected(users, HttpContext, Request));
 	}
 
 	[HttpDelete("all")]
+	[AuthorizeRoles(UserRole.Administrator)]
 	public async Task<ActionResult> DeleteAllUsers()
 	{
 		return Ok(await userService.Delete2WayFactorAll(HttpContext, Request));
