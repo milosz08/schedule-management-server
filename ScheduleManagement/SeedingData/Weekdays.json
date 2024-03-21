@@ -1,37 +1,37 @@
 ﻿[
-    {
-        "Name": "poniedziałek",
-        "Alias": "pn",
-        "Number": 1
-    },
-    {
-        "Name": "wtorek",
-        "Alias": "wt",
-        "Number": 2
-    },
-    {
-        "Name": "środa",
-        "Alias": "śr",
-        "Number": 3
-    },
-    {
-        "Name": "czwartek",
-        "Alias": "czw",
-        "Number": 4
-    },
-    {
-        "Name": "piątek",
-        "Alias": "pt",
-        "Number": 5
-    },
-    {
-        "Name": "sobota",
-        "Alias": "sb",
-        "Number": 6
-    },
-    {
-        "Name": "niedziela",
-        "Alias": "nd",
-        "Number": 7
-    }
+  {
+    "Name": "poniedziałek",
+    "Alias": "pn",
+    "Identifier": 1
+  },
+  {
+    "Name": "wtorek",
+    "Alias": "wt",
+    "Identifier": 2
+  },
+  {
+    "Name": "środa",
+    "Alias": "śr",
+    "Identifier": 3
+  },
+  {
+    "Name": "czwartek",
+    "Alias": "czw",
+    "Identifier": 4
+  },
+  {
+    "Name": "piątek",
+    "Alias": "pt",
+    "Identifier": 5
+  },
+  {
+    "Name": "sobota",
+    "Alias": "sb",
+    "Identifier": 6
+  },
+  {
+    "Name": "niedziela",
+    "Alias": "nd",
+    "Identifier": 7
+  }
 ]
