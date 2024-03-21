@@ -98,28 +98,6 @@ public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) :
 			findStudyGroup);
 	}
 
-	public async Task<ConvertToTupleResponseDto> ConvertIdsToTuples(ConvertIdsToTuplesRequestDto dto)
-	{
-		if (dto.StudySpecId == null || dto.StudyGroupId == null || dto.DepartmentId == null)
-		{
-			throw new RestApiException("Niepoprawne parametry planu.", HttpStatusCode.NotFound);
-		}
-		var findStudyGroup = await dbContext.StudyGroups
-			.Include(g => g.Department)
-			.Include(g => g.StudySpecialization)
-			.FirstOrDefaultAsync(g => g.Id == dto.StudyGroupId && g.Department.Id == dto.DepartmentId &&
-			                          g.StudySpecialization.Id == dto.StudySpecId);
-
-		if (findStudyGroup == null)
-		{
-			throw new RestApiException("Nie znaleziono grupy z podanymi parametrami.", HttpStatusCode.NotFound);
-		}
-		return new ConvertToTupleResponseDto(
-			findStudyGroup.Department,
-			findStudyGroup.StudySpecialization,
-			findStudyGroup);
-	}
-
 	public async Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string? subjectTypeName)
 	{
 		subjectTypeName ??= string.Empty;

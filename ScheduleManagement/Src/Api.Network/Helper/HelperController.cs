@@ -72,11 +72,4 @@ public class HelperController(IHelperService helperService) : ControllerBase
 	{
 		return Ok(await helperService.ConvertNamesToTuples(dto));
 	}
-
-	[AuthorizeRoles(UserRole.Administrator, UserRole.Editor)]
-	[HttpPost("schedule/id/to/tuple")]
-	public async Task<ActionResult<ConvertToTupleResponseDto>> ConvertIdsToTuples(ConvertIdsToTuplesRequestDto dto)
-	{
-		return Ok(await helperService.ConvertIdsToTuples(dto));
-	}
 }

@@ -9,13 +9,6 @@ public sealed class ConvertNamesToTuplesRequestDto
 	public string StudyGroupName { get; set; }
 }
 
-public sealed class ConvertIdsToTuplesRequestDto
-{
-	public long? DepartmentId { get; set; }
-	public long? StudySpecId { get; set; }
-	public long? StudyGroupId { get; set; }
-}
-
 public sealed class ConvertNamesToDataSingleElement(long id, string name)
 {
 	public long Id { get; set; } = id;

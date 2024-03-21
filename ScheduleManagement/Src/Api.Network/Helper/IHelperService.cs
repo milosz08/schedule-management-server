@@ -19,8 +19,6 @@ public interface IHelperService
 
 	Task<ConvertToTupleResponseDto> ConvertNamesToTuples(ConvertNamesToTuplesRequestDto dto);
 
-	Task<ConvertToTupleResponseDto> ConvertIdsToTuples(ConvertIdsToTuplesRequestDto dto);
-
 	Task<AvailableDataResponseDto<string>> GetAvailableSubjectTypes(string? subjectTypeName);
 
 	Task<AvailableDataResponseDto<string>> GetAvailableRoomTypes();
