@@ -1,14 +1,14 @@
 ﻿[
-    {
-        "Name": "administrator"
-    },
-    {
-        "Name": "edytor"
-    },
-    {
-        "Name": "nauczyciel"
-    },
-    {
-        "Name": "student"
-    }
+  {
+    "Name": "administrator"
+  },
+  {
+    "Name": "edytor"
+  },
+  {
+    "Name": "nauczyciel"
+  },
+  {
+    "Name": "student"
+  }
 ]

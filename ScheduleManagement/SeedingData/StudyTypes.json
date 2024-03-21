@@ -1,10 +1,10 @@
 ﻿[
-    {
-        "Name": "stacjonarne",
-        "Alias": "ST"
-    },
-    {
-        "Name": "niestacjonarne",
-        "Alias": "NS/Z"
-    }
+  {
+    "Name": "stacjonarne",
+    "Alias": "ST"
+  },
+  {
+    "Name": "niestacjonarne",
+    "Alias": "NS/Z"
+  }
 ]

@@ -1,34 +1,34 @@
 ﻿[
-    {
-        "Name": "Semestr I",
-        "Alias": "SEM I"
-    },
-    {
-        "Name": "Semestr II",
-        "Alias": "SEM II"
-    },
-    {
-        "Name": "Semestr III",
-        "Alias": "SEM III"
-    },
-    {
-        "Name": "Semestr IV",
-        "Alias": "SEM IV"
-    },
-    {
-        "Name": "Semestr V",
-        "Alias": "SEM V"
-    },
-    {
-        "Name": "Semestr VI",
-        "Alias": "SEM VI"
-    },
-    {
-        "Name": "Semestr VII",
-        "Alias": "SEM VII"
-    },
-    {
-        "Name": "Semestr VIII",
-        "Alias": "SEM VIII"
-    }
+  {
+    "Name": "Semestr I",
+    "Alias": "SEM I"
+  },
+  {
+    "Name": "Semestr II",
+    "Alias": "SEM II"
+  },
+  {
+    "Name": "Semestr III",
+    "Alias": "SEM III"
+  },
+  {
+    "Name": "Semestr IV",
+    "Alias": "SEM IV"
+  },
+  {
+    "Name": "Semestr V",
+    "Alias": "SEM V"
+  },
+  {
+    "Name": "Semestr VI",
+    "Alias": "SEM VI"
+  },
+  {
+    "Name": "Semestr VII",
+    "Alias": "SEM VII"
+  },
+  {
+    "Name": "Semestr VIII",
+    "Alias": "SEM VIII"
+  }
 ]
