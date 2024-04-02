@@ -16,6 +16,7 @@ using ScheduleManagement.Api.Network.Cathedral;
 using ScheduleManagement.Api.Network.ContactMessage;
 using ScheduleManagement.Api.Network.Department;
 using ScheduleManagement.Api.Network.Helper;
+using ScheduleManagement.Api.Network.LastOpenedSchedules;
 using ScheduleManagement.Api.Network.MemoryStorage;
 using ScheduleManagement.Api.Network.Profile;
 using ScheduleManagement.Api.Network.ResetPassword;
@@ -82,6 +83,7 @@ builder.Services.AddScoped<IStudySubjectService, StudySubjectServiceImpl>();
 builder.Services.AddScoped<ITimeManagementService, TimeManagementServiceImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
 builder.Services.AddScoped<IMemoryStorageService, MemoryStorageServiceImpl>();
+builder.Services.AddScoped<ILastOpenedSchedulesService, LastOpenedSchedulesServiceImpl>();
 
 builder.Services.AddScoped<IS3Service, S3ServiceImpl>();
 builder.Services.AddScoped<ISshInterceptor, SshInterceptorImpl>();

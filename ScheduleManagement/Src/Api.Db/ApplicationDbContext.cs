@@ -12,6 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 	public DbSet<RefreshToken> Tokens { get; init; }
 	public DbSet<ResetPasswordOtp> ResetPasswordOpts { get; init; }
 	public DbSet<Department> Departments { get; init; }
+	public DbSet<LastOpenedSchedule> LastOpenedSchedules { get; init; }
 	public DbSet<Cathedral> Cathedrals { get; init; }
 	public DbSet<StudyType> StudyTypes { get; init; }
 	public DbSet<StudySpecialization> StudySpecializations { get; init; }
