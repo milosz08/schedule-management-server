@@ -30,6 +30,7 @@ public class DepartmentServiceImpl(
 		{
 			throw new RestApiException("Podany wydział istnieje już w systemie.", HttpStatusCode.ExpectationFailed);
 		}
+
 		var newDepartment = mapper.Map<Entity.Department>(dto);
 		await dbContext.Departments.AddAsync(newDepartment);
 		await dbContext.SaveChangesAsync();
@@ -45,11 +46,13 @@ public class DepartmentServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono wydziału z podanym id.", HttpStatusCode.NotFound);
 		}
+
 		if (dto.Name.Equals(findDepartment.Name) && dto.Alias.Equals(findDepartment.Alias))
 		{
 			throw new RestApiException("Należy wprowadzić wartości różne od poprzednich.",
 				HttpStatusCode.ExpectationFailed);
 		}
+
 		findDepartment.Name = dto.Name;
 		findDepartment.Alias = dto.Alias;
 		await dbContext.SaveChangesAsync();
@@ -68,6 +71,7 @@ public class DepartmentServiceImpl(
 			allDepartments.Sort();
 			return new SearchQueryResponseDto(allDepartments);
 		}
+
 		var findAllDepartments = await dbContext.Departments
 			.Where(d => d.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
 			.Select(d => d.Name)
@@ -94,6 +98,7 @@ public class DepartmentServiceImpl(
 				{ nameof(Entity.Department.Alias), d => d.Alias }
 			}, searchQuery, ref deparmentsBaseQuery);
 		}
+
 		var allDepts = mapper.Map<List<DepartmentQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(deparmentsBaseQuery, searchQuery));
 
@@ -119,6 +124,7 @@ public class DepartmentServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono szukanego wydziału.", HttpStatusCode.NotFound);
 		}
+
 		return mapper.Map<DepartmentEditResDto>(findDepartment);
 	}
 
@@ -130,6 +136,7 @@ public class DepartmentServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
 		}
+
 		var message = "Nie usunięto żadnego wydziału.";
 
 		var nonRemovableIds = dbContext.Departments
@@ -145,6 +152,7 @@ public class DepartmentServiceImpl(
 		{
 			message = $"Pomyślnie usunięto wybrane wydziały. Liczba usuniętych wydziałów: {toRemoved.Count}.";
 		}
+
 		dbContext.Departments.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
@@ -162,6 +170,7 @@ public class DepartmentServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
 		}
+
 		var toRemoved = dbContext.Departments.Where(d => d.IsRemovable);
 
 		dbContext.Departments.RemoveRange(toRemoved);

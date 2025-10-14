@@ -29,16 +29,14 @@ public class StudyRoomServiceImpl(
 				c.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 
 		if (findCathedral == null)
-		{
 			throw new RestApiException("Nie znaleziono wydziału/katedry z podaną nazwą.", HttpStatusCode.NotFound);
-		}
+
 		var findRoomType = await dbContext.RoomTypes
 			.FirstOrDefaultAsync(r => string
 				.Equals(r.Name + " (" + r.Alias + ")", dto.RoomTypeName, StringComparison.OrdinalIgnoreCase));
 		if (findRoomType == null)
-		{
 			throw new RestApiException("Nie znaleziono typu sali z podanym aliasem.", HttpStatusCode.NotFound);
-		}
+
 		var findExistingRoom = await dbContext.StudyRooms
 			.Include(r => r.Department)
 			.Include(r => r.Cathedral)
@@ -49,10 +47,9 @@ public class StudyRoomServiceImpl(
 				r.Cathedral.Name.Equals(dto.CathedralName, StringComparison.OrdinalIgnoreCase));
 
 		if (findExistingRoom != null)
-		{
 			throw new RestApiException("Podana sala istnieje już w wybranej jednostce",
 				HttpStatusCode.ExpectationFailed);
-		}
+
 		var createStudyRoom = new Entity.StudyRoom
 		{
 			Name = dto.Name.ToUpper(),
@@ -80,23 +77,20 @@ public class StudyRoomServiceImpl(
 			.FirstOrDefaultAsync(r => r.Id == roomId);
 
 		if (findStudyRoom == null)
-		{
 			throw new RestApiException("Nie znaleziono szukanej sali zajęciowej.", HttpStatusCode.NotFound);
-		}
+
 		var roomTypeWithAlias = $"{findStudyRoom.RoomType.Name} ({findStudyRoom.RoomType.Alias})";
 
 		if (dto.Name.Equals(findStudyRoom.Name) && dto.Description.Equals(findStudyRoom.Description) &&
 		    dto.Capacity.Equals(findStudyRoom.Capacity) && dto.RoomTypeName.Equals(roomTypeWithAlias))
-		{
 			throw new RestApiException("Należy wprowadzić wartości różne od poprzednich.",
 				HttpStatusCode.ExpectationFailed);
-		}
+
 		var findRoomType = await dbContext.RoomTypes
 			.FirstOrDefaultAsync(t => string.Equals(t.Name + " (" + t.Alias + ")", dto.RoomTypeName));
 		if (findRoomType == null)
-		{
 			throw new RestApiException("Nie znaleziono typu sali na podstawie nazwy.", HttpStatusCode.NotFound);
-		}
+
 		findStudyRoom.Name = dto.Name;
 		findStudyRoom.Description = dto.Description;
 		findStudyRoom.Capacity = dto.Capacity;
@@ -119,7 +113,6 @@ public class StudyRoomServiceImpl(
 			            r.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
 
 		if (!string.IsNullOrEmpty(searchQuery.SortBy))
-		{
 			PaginationConfig.ConfigureSorting(new Dictionary<string, Expression<Func<Entity.StudyRoom, object>>>
 			{
 				{ nameof(Entity.StudyRoom.Id), r => r.Id },
@@ -129,7 +122,7 @@ public class StudyRoomServiceImpl(
 				{ "CathedralAlias", r => r.Cathedral.Alias },
 				{ "RoomTypeAlias", r => r.RoomType.Alias }
 			}, searchQuery, ref studyRoomsBaseQuery);
-		}
+
 		var allDepts = mapper.Map<List<StudyRoomQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(studyRoomsBaseQuery, searchQuery));
 
@@ -176,10 +169,8 @@ public class StudyRoomServiceImpl(
 			.Include(r => r.Department)
 			.FirstOrDefaultAsync(r => r.Id == roomId);
 
-		if (findStudyRoom == null)
-		{
-			throw new RestApiException("Nie znaleziono szunakej sali.", HttpStatusCode.NotFound);
-		}
+		if (findStudyRoom == null) throw new RestApiException("Nie znaleziono szunakej sali.", HttpStatusCode.NotFound);
+
 		return mapper.Map<StudyRoomEditResDto>(findStudyRoom);
 	}
 
@@ -187,18 +178,16 @@ public class StudyRoomServiceImpl(
 		UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var message = "Nie usunięto żadnej sali.";
 		var toRemoved = await dbContext.StudyRooms
 			.Where(s => items.Ids.Any(id => id == s.Id))
 			.ToListAsync();
 		if (toRemoved.Count != 0)
-		{
 			message = $"Pomyślnie usunięto wybrane sale. Liczba usuniętych sal: {toRemoved.Count}.";
-		}
+
 		dbContext.StudyRooms.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
@@ -212,10 +201,9 @@ public class StudyRoomServiceImpl(
 	protected override async Task<MessageContentResDto> OnDeleteAll(UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var count = dbContext.StudyRooms.Count();
 
 		dbContext.StudyRooms.RemoveRange();

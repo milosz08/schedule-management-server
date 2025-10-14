@@ -17,6 +17,7 @@ public static class RandomUtils
 			var randomIndex = Random.Next(RandomChars.Length);
 			builder.Append(RandomChars[randomIndex]);
 		}
+
 		return builder.ToString();
 	}
 
@@ -28,6 +29,7 @@ public static class RandomUtils
 			var randomIndex = Random.Next(RandomNumbers.Length);
 			builder.Append(RandomNumbers[randomIndex]);
 		}
+
 		return builder.ToString();
 	}
 

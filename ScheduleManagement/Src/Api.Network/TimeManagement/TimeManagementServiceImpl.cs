@@ -8,9 +8,8 @@ public class TimeManagementServiceImpl : ITimeManagementService
 		var currentYear = DateTime.Now.Year;
 		var allDates = new List<string>();
 		for (var i = 0; i < currentYear - initialYear + 1; i++)
-		{
 			allDates.Add($"{initialYear + i}/{initialYear + 1 + i}");
-		}
+
 		return allDates;
 	}
 
@@ -32,11 +31,10 @@ public class TimeManagementServiceImpl : ITimeManagementService
 				currentYear = dt.Year;
 				weekNumber = 1;
 			}
+
 			var firstDate = new DateTime(dt.Year, 1, 4);
-			while (firstDate.DayOfWeek != DayOfWeek.Monday)
-			{
-				firstDate = firstDate.AddDays(-1);
-			}
+			while (firstDate.DayOfWeek != DayOfWeek.Monday) firstDate = firstDate.AddDays(-1);
+
 			var firstDay = firstDate.AddDays((weekNumber - 1) * 7);
 			var lastDay = firstDay.AddDays(6);
 
@@ -50,6 +48,7 @@ public class TimeManagementServiceImpl : ITimeManagementService
 			             $"({dt.Year}, {weekNumber})");
 			++weekNumber;
 		}
+
 		return allDates;
 	}
 }

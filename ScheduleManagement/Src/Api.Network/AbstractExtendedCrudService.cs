@@ -35,20 +35,17 @@ public abstract class AbstractExtendedCrudService(
 			.Include(p => p.Department)
 			.FirstOrDefaultAsync(p => p.Login.Equals(userLogin == null ? string.Empty : userLogin.Value));
 		if (searchPerson == null)
-		{
 			throw new RestApiException("Nie znaleziono użytkownika na podstawie tokenu.", HttpStatusCode.NotFound);
-		}
+
 		if (!headers.TryGetValue("X-UserName", out var username) ||
 		    !headers.TryGetValue("X-UserPassword", out var password))
-		{
 			throw new RestApiException("Brak nagłówków autoryzacji.", HttpStatusCode.Forbidden);
-		}
+
 		var verificationResult =
 			passwordHasher.VerifyHashedPassword(searchPerson, searchPerson.Password, password.First() ?? "");
 		if (verificationResult == PasswordVerificationResult.Failed)
-		{
 			throw new RestApiException("Podano nieprawidłowe hasło. Spróbuj ponownie.", HttpStatusCode.Forbidden);
-		}
+
 		return new UserCredentialsHeaderDto
 		{
 			Login = userLogin?.Value ?? "",

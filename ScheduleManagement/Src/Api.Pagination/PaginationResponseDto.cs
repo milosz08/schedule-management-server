@@ -29,20 +29,17 @@ public sealed class PaginationResponseDto<T>
 	{
 		var pages = new int[MaxPagesPlaceholder];
 		if (maxPagesCount < MaxPagesPlaceholder)
-		{
 			return new CurrentActivePages(new int[maxPagesCount].Select((_, i) => i + 1).ToArray());
-		}
+
 		if (currentPage >= 1 && currentPage < pages.Length)
-		{
 			// first 4
 			return new CurrentActivePages(pages.Select((_, i) => i + 1).Append(4).ToArray(), false, true);
-		}
+
 		if (currentPage > maxPagesCount - (pages.Length - 1) && currentPage <= maxPagesCount)
-		{
 			// last 4
 			return new CurrentActivePages(pages
 				.Select((_, i) => maxPagesCount + (i - (pages.Length - 1))).ToArray(), true);
-		}
+
 		// all others
 		return new CurrentActivePages([currentPage - 1, currentPage, currentPage + 1], true, true);
 	}

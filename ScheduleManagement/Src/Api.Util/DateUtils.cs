@@ -29,6 +29,7 @@ public static class DateUtils
 
 		var weekNum = weekOfYear;
 		if (firstWeek == 1) weekNum -= 1;
+
 		var result = firstThursday.AddDays(weekNum * 7);
 		return result.AddDays(-3);
 	}
@@ -45,6 +46,7 @@ public static class DateUtils
 
 		var weekNum = weekNumber;
 		if (firstWeek <= 1) weekNum -= 1;
+
 		return firstMonday.AddDays(weekNum * 7 + dayOfWeek - 2);
 	}
 

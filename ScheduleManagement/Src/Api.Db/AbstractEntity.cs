@@ -4,8 +4,7 @@ namespace ScheduleManagement.Api.Db;
 
 public abstract class AbstractEntity
 {
-	[Key]
-	public long Id { get; set; }
+	[Key] public long Id { get; set; }
 
 	public DateTime CreatedDate { get; set; }
 

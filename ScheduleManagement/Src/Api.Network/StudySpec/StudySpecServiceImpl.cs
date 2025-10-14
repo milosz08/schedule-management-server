@@ -24,21 +24,18 @@ public class StudySpecServiceImpl(
 		var findDepartment = await dbContext.Departments
 			.FirstOrDefaultAsync(d => d.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 		if (findDepartment == null)
-		{
 			throw new RestApiException("Nie znaleziono wydziału z podaną nazwą", HttpStatusCode.NotFound);
-		}
+
 		var findAllStudyTypes = dbContext.StudyTypes
 			.Where(t => dto.StudyType.Any(id => id == t.Id)).ToList();
 		if (findAllStudyTypes.Count == 0)
-		{
 			throw new RestApiException("Nie znaleziono podanych id typów kierunków", HttpStatusCode.NotFound);
-		}
+
 		var findAllStudyDegrees = dbContext.StudyDegrees
 			.Where(d => dto.StudyDegree.Any(id => id == d.Id)).ToList();
 		if (findAllStudyDegrees.Count == 0)
-		{
 			throw new RestApiException("Nie znaleziono podanych id stopni studiów", HttpStatusCode.NotFound);
-		}
+
 		var findSpecialization = await dbContext.StudySpecializations
 			.Include(s => s.Department)
 			.Include(s => s.StudyType)
@@ -50,13 +47,11 @@ public class StudySpecServiceImpl(
 				dto.StudyType.Any(v => v == s.StudyType.Id) && dto.StudyDegree.Any(v => v == s.StudyDegree.Id));
 
 		if (findSpecialization != null)
-		{
 			throw new RestApiException(
 				"Podany kierunek studiów istnieje już w wybranej jednostce.", HttpStatusCode.ExpectationFailed);
-		}
+
 		var createdSpecializations = new List<StudySpecialization>();
 		foreach (var studyType in findAllStudyTypes)
-		{
 			createdSpecializations.AddRange(findAllStudyDegrees.Select(studyDegree => new StudySpecialization
 			{
 				Name = dto.Name,
@@ -65,7 +60,7 @@ public class StudySpecServiceImpl(
 				StudyTypeId = studyType.Id,
 				StudyDegreeId = studyDegree.Id
 			}));
-		}
+
 		await dbContext.StudySpecializations.AddRangeAsync(createdSpecializations);
 		await dbContext.SaveChangesAsync();
 
@@ -84,14 +79,12 @@ public class StudySpecServiceImpl(
 			.FirstOrDefaultAsync(s => s.Id == specId);
 
 		if (findStudySpec == null)
-		{
 			throw new RestApiException("Nie znaleziono kierunku studiów z podanym id", HttpStatusCode.NotFound);
-		}
+
 		if (findStudySpec.Name.Equals(dto.Name) && findStudySpec.Alias.Equals(dto.Alias))
-		{
 			throw new RestApiException("Należy wprowadzić wartości różne od poprzednich.",
 				HttpStatusCode.ExpectationFailed);
-		}
+
 		findStudySpec.Name = dto.Name;
 		findStudySpec.Alias = dto.Alias;
 
@@ -114,7 +107,6 @@ public class StudySpecServiceImpl(
 			            s.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
 
 		if (!string.IsNullOrEmpty(searchQuery.SortBy))
-		{
 			PaginationConfig.ConfigureSorting(new Dictionary<string, Expression<Func<StudySpecialization, object>>>
 			{
 				{ nameof(StudySpecialization.Id), s => s.Id },
@@ -123,7 +115,7 @@ public class StudySpecServiceImpl(
 				{ "SpecTypeAlias", s => s.StudyType.Alias },
 				{ "SpecDegree", s => s.StudyDegree.Alias }
 			}, searchQuery, ref studySpecsBaseQuery);
-		}
+
 		var allDepts = mapper.Map<List<StudySpecQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(studySpecsBaseQuery, searchQuery));
 
@@ -173,9 +165,8 @@ public class StudySpecServiceImpl(
 			.FirstOrDefaultAsync(s => s.Id == specId);
 
 		if (findStudySpecialization == null)
-		{
 			throw new RestApiException("Nie znaleziono wybranego kierunku.", HttpStatusCode.NotFound);
-		}
+
 		return mapper.Map<StudySpecializationEditResDto>(findStudySpecialization);
 	}
 
@@ -195,10 +186,8 @@ public class StudySpecServiceImpl(
 
 		findAllStudySpecializations.Sort();
 
-		if (findAllStudySpecializations.Count > 0)
-		{
-			return new SearchQueryResponseDto(findAllStudySpecializations);
-		}
+		if (findAllStudySpecializations.Count > 0) return new SearchQueryResponseDto(findAllStudySpecializations);
+
 		var findAllElements = await dbContext.StudySpecializations
 			.Include(s => s.Department)
 			.Include(s => s.StudyType)
@@ -215,18 +204,16 @@ public class StudySpecServiceImpl(
 		UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var message = "Nie usunięto żadnego kierunku.";
 		var toRemoved = await dbContext.StudySpecializations
 			.Where(s => items.Ids.Any(id => id == s.Id))
 			.ToListAsync();
 		if (toRemoved.Count != 0)
-		{
 			message = $"Pomyślnie usunięto wybrane kierunki. Liczba usuniętych kierunków: {toRemoved.Count}.";
-		}
+
 		dbContext.StudySpecializations.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
@@ -240,10 +227,9 @@ public class StudySpecServiceImpl(
 	protected override async Task<MessageContentResDto> OnDeleteAll(UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var count = dbContext.StudySpecializations.Count();
 
 		dbContext.StudySpecializations.RemoveRange();

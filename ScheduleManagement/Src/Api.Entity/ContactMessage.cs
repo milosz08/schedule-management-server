@@ -8,29 +8,21 @@ namespace ScheduleManagement.Api.Entity;
 [Table("ContactMessages")]
 public class ContactMessage : AbstractEntity
 {
-	[StringLength(8)]
-	public string MessageIdentifier { get; set; }
+	[StringLength(8)] public string MessageIdentifier { get; set; }
 
-	[StringLength(50)]
-	public string? AnonName { get; set; }
+	[StringLength(50)] public string? AnonName { get; set; }
 
-	[StringLength(50)]
-	public string? AnonSurname { get; set; }
+	[StringLength(50)] public string? AnonSurname { get; set; }
 
-	[StringLength(100)]
-	public string? AnonEmail { get; set; }
+	[StringLength(100)] public string? AnonEmail { get; set; }
 
-	[Required]
-	[StringLength(300)]
-	public string Description { get; set; }
+	[Required] [StringLength(300)] public string Description { get; set; }
 
 	public bool IsAnonymous { get; set; }
 
-	[ForeignKey(nameof(Department))]
-	public long? DepartmentId { get; set; }
+	[ForeignKey(nameof(Department))] public long? DepartmentId { get; set; }
 
-	[ForeignKey(nameof(Person))]
-	public long? PersonId { get; set; }
+	[ForeignKey(nameof(Person))] public long? PersonId { get; set; }
 
 	[ForeignKey(nameof(ContactFormIssueType))]
 	public long ContactFormIssueTypeId { get; set; }

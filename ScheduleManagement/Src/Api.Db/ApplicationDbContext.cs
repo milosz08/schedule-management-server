@@ -53,11 +53,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 		{
 			var formatedDateTime = new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second);
 			if (entityEntry.State == EntityState.Added)
-			{
 				((AbstractEntity)entityEntry.Entity).CreatedDate = formatedDateTime;
-			}
 			((AbstractEntity)entityEntry.Entity).UpdatedDate = formatedDateTime;
 		}
+
 		return await base.SaveChangesAsync(cancellationToken);
 	}
 

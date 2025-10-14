@@ -31,7 +31,6 @@ public class UserServiceImpl(
 			            p.Surname.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
 
 		if (!string.IsNullOrEmpty(searchQuery.SortBy))
-		{
 			PaginationConfig.ConfigureSorting(new Dictionary<string, Expression<Func<Person, object>>>
 			{
 				{ nameof(Person.Id), p => p.Id },
@@ -39,7 +38,7 @@ public class UserServiceImpl(
 				{ nameof(Person.Login), p => p.Login },
 				{ nameof(Person.Role), p => p.Role.Name }
 			}, searchQuery, ref usersBaseQuery);
-		}
+
 		var allUsers = mapper.Map<List<UserResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(usersBaseQuery, searchQuery));
 
@@ -61,29 +60,25 @@ public class UserServiceImpl(
 			.FirstOrDefaultAsync(p => p.Id == userId);
 
 		if (findPerson == null)
-		{
 			throw new RestApiException("Nie znaleziono użytkownika z podanym id.", HttpStatusCode.NotFound);
-		}
+
 		var findRole = await dbContext.Roles
 			.FirstOrDefaultAsync(r => r.Name.Equals(dto.Role, StringComparison.OrdinalIgnoreCase));
 		if (findRole == null)
-		{
 			throw new RestApiException("Nie znaleziono roli z podaną nazwą.", HttpStatusCode.NotFound);
-		}
+
 		var findDepartment = await dbContext.Departments
 			.FirstOrDefaultAsync(d => d.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 		if (findDepartment == null)
-		{
 			throw new RestApiException("Nie znaleziono wydziału z podaną nazwą.", HttpStatusCode.NotFound);
-		}
+
 		if (!UserRole.Student.Equals(dto.Role))
 		{
 			var findCathedral = await dbContext.Cathedrals
 				.FirstOrDefaultAsync(c => c.Name.Equals(dto.CathedralName, StringComparison.OrdinalIgnoreCase));
 			if (findDepartment == null)
-			{
 				throw new RestApiException("Nie znaleziono katedry z podaną nazwą.", HttpStatusCode.NotFound);
-			}
+
 			findPerson.Cathedral!.Id = findCathedral!.Id;
 		}
 		else if (UserRole.Student.Equals(dto.Role))
@@ -92,12 +87,14 @@ public class UserServiceImpl(
 			findPerson.StudySpecializations = dbContext.StudySpecializations
 				.Where(s => dto.StudySpecsOrSubjects.Any(sid => sid == s.Id)).ToList();
 		}
+
 		if (UserRole.Teacher.Equals(dto.Role) || UserRole.Editor.Equals(dto.Role))
 		{
 			findPerson.Subjects.Clear();
 			findPerson.Subjects = dbContext.StudySubjects
 				.Where(s => dto.StudySpecsOrSubjects.Any(sid => sid == s.Id)).ToList();
 		}
+
 		if (((UserRole.Teacher.Equals(dto.Role) ||
 		      UserRole.Administrator.Equals(dto.Role)) &&
 		     (UserRole.Editor.Equals(findPerson.Role.Name) ||
@@ -113,12 +110,14 @@ public class UserServiceImpl(
 
 			logger.LogInformation("Successfully removed: {} schedule subjects", toRemoveEntities.Count());
 		}
+
 		if (isUpdateEmailPass)
 		{
 			var generatedEmailPassword = RandomUtils.GenerateUserFirstPassword();
 			mailboxProxyService.AddNewEmailAccount(findPerson.Email, generatedEmailPassword);
 			findPerson.EmailPassword = generatedEmailPassword;
 		}
+
 		findPerson.City = dto.City;
 		findPerson.Nationality = dto.Nationality;
 		findPerson.Role = findRole;
@@ -169,6 +168,7 @@ public class UserServiceImpl(
 				.Select(mapper.Map<NameIdElementDto>)
 				.ToList();
 		}
+
 		return [];
 	}
 
@@ -176,10 +176,8 @@ public class UserServiceImpl(
 	{
 		var userIdentity = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name));
 
-		if (userIdentity == null)
-		{
-			throw new RestApiException("Dostęp do zasobu zabroniony.", HttpStatusCode.Forbidden);
-		}
+		if (userIdentity == null) throw new RestApiException("Dostęp do zasobu zabroniony.", HttpStatusCode.Forbidden);
+
 		var findPerson = await dbContext.Persons
 			.Include(p => p.Role)
 			.Include(p => p.Subjects)
@@ -189,19 +187,16 @@ public class UserServiceImpl(
 			.FirstOrDefaultAsync(p => p.Login == userIdentity.Value);
 
 		if (findPerson == null)
-		{
 			throw new RestApiException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
-		}
+
 		var dashboardDetailsResDto = mapper.Map<DashboardDetailsResDto>(findPerson);
 		if (findPerson.Cathedral != null)
-		{
 			dashboardDetailsResDto.CathedralFullName = $"{findPerson.Cathedral.Name} ({findPerson.Cathedral.Alias})";
-		}
+
 		if (UserRole.Student.Equals(findPerson.Role.Name))
-		{
 			dashboardDetailsResDto.StudySpecializations =
 				findPerson.StudySpecializations.Select(s => $"{s.Name} ({s.Alias})").ToList();
-		}
+
 		switch (findPerson.Role.Name)
 		{
 			case UserRole.Teacher:
@@ -226,6 +221,7 @@ public class UserServiceImpl(
 				);
 				break;
 		}
+
 		return dashboardDetailsResDto;
 	}
 
@@ -240,9 +236,8 @@ public class UserServiceImpl(
 			.FirstOrDefaultAsync(p => p.Id == userId);
 
 		if (findPerson == null)
-		{
 			throw new RestApiException("Nie znaleziono użytkownika z podanym numerem id.", HttpStatusCode.NotFound);
-		}
+
 		var response = mapper.Map<UserDetailsEditResDto>(findPerson);
 
 		switch (findPerson.Role.Name)
@@ -255,6 +250,7 @@ public class UserServiceImpl(
 				response.StudySpecsOrSubjects = findPerson.StudySpecializations.Select(s => s.Id).ToList();
 				break;
 		}
+
 		return response;
 	}
 
@@ -262,10 +258,9 @@ public class UserServiceImpl(
 		UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var personsNotRemoveAccounts = dbContext.Persons.Where(p => !p.IsRemovable).Select(p => p.Id);
 		var filteredDeletedPersons = items.Ids.Where(id => !personsNotRemoveAccounts.Contains(id)).ToArray();
 
@@ -275,10 +270,8 @@ public class UserServiceImpl(
 			var personsToRemove = await dbContext.Persons
 				.Where(p => filteredDeletedPersons.Any(id => id == p.Id))
 				.ToListAsync();
-			foreach (var person in personsToRemove)
-			{
-				mailboxProxyService.DeleteEmailAccount(person.Email);
-			}
+			foreach (var person in personsToRemove) mailboxProxyService.DeleteEmailAccount(person.Email);
+
 			dbContext.Persons.RemoveRange(personsToRemove);
 			await dbContext.SaveChangesAsync();
 
@@ -286,6 +279,7 @@ public class UserServiceImpl(
 				$"Pomyślnie usunięto wybranych użytkowników. Liczba usuniętych użytkowników: {personsToRemove.Count}.";
 			logger.LogInformation("Successfully removed: {} users", personsToRemove.Count);
 		}
+
 		return new MessageContentResDto
 		{
 			Message = removeMessage
@@ -295,22 +289,20 @@ public class UserServiceImpl(
 	protected override async Task<MessageContentResDto> OnDeleteAll(UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var findAllRemovingPersons = dbContext.Persons.Where(p => p.IsRemovable);
 		if (findAllRemovingPersons.Any())
 		{
-			foreach (var person in findAllRemovingPersons)
-			{
-				mailboxProxyService.DeleteEmailAccount(person.Email);
-			}
+			foreach (var person in findAllRemovingPersons) mailboxProxyService.DeleteEmailAccount(person.Email);
+
 			dbContext.Persons.RemoveRange(findAllRemovingPersons);
 			await dbContext.SaveChangesAsync();
 
 			logger.LogInformation("Successfully removed: {} users", findAllRemovingPersons.Count());
 		}
+
 		return new MessageContentResDto
 		{
 			Message = "Pomyślnie usunięto wszystkich użytkowników."

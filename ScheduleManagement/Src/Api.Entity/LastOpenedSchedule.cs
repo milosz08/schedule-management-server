@@ -6,11 +6,9 @@ namespace ScheduleManagement.Api.Entity;
 [Table("LastOpenedSchedules")]
 public class LastOpenedSchedule : AbstractEntity
 {
-	[ForeignKey(nameof(StudyGroup))]
-	public long StudyGroupId { get; set; }
+	[ForeignKey(nameof(StudyGroup))] public long StudyGroupId { get; set; }
 
-	[ForeignKey(nameof(Person))]
-	public long? PersonId { get; set; }
+	[ForeignKey(nameof(Person))] public long? PersonId { get; set; }
 
 	public virtual StudyGroup StudyGroup { get; set; }
 

@@ -40,6 +40,7 @@ public class ContactMessageServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono typu zgłoszenia z podaną nazwą.", HttpStatusCode.NotFound);
 		}
+
 		if (!dto.IssueType.Contains("inne", StringComparison.OrdinalIgnoreCase))
 		{
 			findDepartment = await dbContext.Departments
@@ -49,6 +50,7 @@ public class ContactMessageServiceImpl(
 			{
 				throw new RestApiException("Nie znaleziono wydziału z podaną nazwą.", HttpStatusCode.NotFound);
 			}
+
 			findStudyGroups = await dbContext.StudyGroups
 				.Include(g => g.Department)
 				.Where(g => g.Department.Id == findDepartment.Id && dto.Groups.Any(sg => sg == g.Id))
@@ -58,6 +60,7 @@ public class ContactMessageServiceImpl(
 			{
 				throw new RestApiException("Należy wybrać przynajmniej jedną grupę.", HttpStatusCode.NotFound);
 			}
+
 			senderEmails.AddRange(await dbContext.Persons
 				.Include(p => p.Role)
 				.Include(p => p.Department)
@@ -76,6 +79,7 @@ public class ContactMessageServiceImpl(
 				.ToListAsync()
 			);
 		}
+
 		if (dto.IsAnonymous)
 		{
 			dto.Name = StringUtils.CapitalisedLetter(dto.Name!);
@@ -89,12 +93,14 @@ public class ContactMessageServiceImpl(
 				throw new RestApiException("Próba identyfikacji osoby zakończona niepowodzeniem.",
 					HttpStatusCode.NotFound);
 			}
+
 			dto.Name = null;
 			dto.Surname = null;
 			dto.Email = null;
 			senderEmails.Add(findPerson.Email);
 			resMessage += $" Kopia zgłoszenia została również wysłana na podany adres email: {findPerson.Email}.";
 		}
+
 		var stringifyGroups = string.Join(",", findStudyGroups.Select(g => g.Name));
 		var generateMessageId = RandomUtils.RandomNumberGenerator(8);
 		await mailSenderService.SendEmail(new UserEmailOptions<ContactFormMessageCopyViewModel>
@@ -167,6 +173,7 @@ public class ContactMessageServiceImpl(
 			throw new RestApiException("Nie znaleziono użytkownika na podstawie tokenu autoryzacji.",
 				HttpStatusCode.NotFound);
 		}
+
 		var contactMessagesBaseQuery = dbContext.ContactMessages
 			.Include(m => m.Person)
 			.Include(m => m.Department)
@@ -190,6 +197,7 @@ public class ContactMessageServiceImpl(
 				{ nameof(Entity.ContactMessage.IsAnonymous), d => d.IsAnonymous }
 			}, searchQuery, ref contactMessagesBaseQuery);
 		}
+
 		var allmessages = mapper.Map<List<ContactMessagesQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(contactMessagesBaseQuery, searchQuery));
 
@@ -215,23 +223,27 @@ public class ContactMessageServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono wiadomości z podanym id", HttpStatusCode.NotFound);
 		}
+
 		if ((findContactMessage.IsAnonymous || findContactMessage.ContactFormIssueType.Name.Contains("inne")) &&
 		    !userRole.Equals(UserRole.Administrator))
 		{
 			throw new RestApiException("Brak autoryzacji do pozyskania wiadomości.", HttpStatusCode.Forbidden);
 		}
+
 		if ((findContactMessage.Department?.Id != findPerson.Department?.Id && userRole.Equals(UserRole.Editor)) ||
 		    (findContactMessage.Person!.Login != findPerson.Login &&
 		     (userRole.Equals(UserRole.Teacher) || userRole.Equals(UserRole.Student))))
 		{
 			throw new RestApiException("Brak autoryzacji do pozyskania wiadomości.", HttpStatusCode.Forbidden);
 		}
+
 		var response = mapper.Map<SingleContactMessageResponseDto>(findContactMessage);
 		if (findContactMessage.Department != null)
 		{
 			response.DepartmentName = $"{findContactMessage.Department.Name} ({findContactMessage.Department.Alias})";
 			response.Groups = findContactMessage.StudyGroups.Select(g => g.Name).ToList();
 		}
+
 		return response;
 	}
 
@@ -256,6 +268,7 @@ public class ContactMessageServiceImpl(
 			message = $"Pomyślnie usunięto wybrane wiadomości. " +
 			          $"Liczba usuniętych wiadomości: {findAllRemovingMess.Count}.";
 		}
+
 		dbContext.ContactMessages.RemoveRange(findAllRemovingMess);
 		await dbContext.SaveChangesAsync();
 
@@ -300,6 +313,7 @@ public class ContactMessageServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
 		}
+
 		return findPerson;
 	}
 }

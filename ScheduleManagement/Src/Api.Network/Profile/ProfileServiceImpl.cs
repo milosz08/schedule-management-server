@@ -24,15 +24,13 @@ public class ProfileServiceImpl(
 	{
 		var findPerson = await GetPersonFromDb(claimsPrincipal);
 		if (image == null || image.Length == 0)
-		{
 			throw new RestApiException("Dodawany obraz nie istnieje lub jest uszkodzony. Spróbuj ponownie.",
 				HttpStatusCode.ExpectationFailed);
-		}
+
 		if (Array.IndexOf(AcceptableImageTypes, image.ContentType) == -1)
-		{
 			throw new RestApiException("Akceptowane rozszerzenia pliku to: png, jpg, jpeg.",
 				HttpStatusCode.ExpectationFailed);
-		}
+
 		var imageId = Guid.NewGuid().ToString();
 		using (var loadedImage = await Image.LoadAsync(image.OpenReadStream()))
 		{
@@ -44,12 +42,12 @@ public class ProfileServiceImpl(
 				outputStream.Seek(0, SeekOrigin.Begin);
 
 				if (findPerson.ProfileImageUuid != null)
-				{
 					await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, $"{findPerson.ProfileImageUuid}.jpg");
-				}
+
 				await s3Service.PutFileFromRequest(S3Bucket.Profiles, $"{imageId}.jpg", outputStream.ToArray());
 			}
 		}
+
 		findPerson.ProfileImageUuid = imageId;
 		await dbContext.SaveChangesAsync();
 
@@ -65,9 +63,8 @@ public class ProfileServiceImpl(
 	{
 		var findPerson = await GetPersonFromDb(claimsPrincipal);
 		if (findPerson.ProfileImageUuid == null)
-		{
 			throw new RestApiException("Użytkownik nie posiada zdjęcia profilowego.", HttpStatusCode.NotFound);
-		}
+
 		await s3Service.DeleteFileFromBucket(S3Bucket.Profiles, $"{findPerson.ProfileImageUuid}.jpg");
 
 		findPerson.ProfileImageUuid = null;
@@ -83,15 +80,12 @@ public class ProfileServiceImpl(
 	private async Task<Person> GetPersonFromDb(ClaimsPrincipal claimsPrincipal)
 	{
 		var userLogin = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
-		if (userLogin == null)
-		{
-			throw new RestApiException("Dostęp do zasobu zabroniony.", HttpStatusCode.Forbidden);
-		}
+		if (userLogin == null) throw new RestApiException("Dostęp do zasobu zabroniony.", HttpStatusCode.Forbidden);
+
 		var findPerson = await dbContext.Persons.FirstOrDefaultAsync(p => p.Login == userLogin);
 		if (findPerson == null)
-		{
 			throw new RestApiException("Podany użytkownik nie istenieje w systemie.", HttpStatusCode.NotFound);
-		}
+
 		return findPerson;
 	}
 }

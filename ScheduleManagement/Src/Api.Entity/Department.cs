@@ -7,14 +7,9 @@ namespace ScheduleManagement.Api.Entity;
 [Table("Departments")]
 public sealed class Department : AbstractEntity
 {
-	[Required]
-	[StringLength(100)]
-	public string Name { get; set; }
+	[Required] [StringLength(100)] public string Name { get; set; }
 
-	[Required]
-	[StringLength(20)]
-	public string Alias { get; set; }
+	[Required] [StringLength(20)] public string Alias { get; set; }
 
-	[Required]
-	public bool IsRemovable { get; set; } = true;
+	[Required] public bool IsRemovable { get; set; } = true;
 }

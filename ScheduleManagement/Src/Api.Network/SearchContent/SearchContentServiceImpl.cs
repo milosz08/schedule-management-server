@@ -9,10 +9,8 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 {
 	public async Task<List<SearchMassiveQueryResDto>> GetAllItemsFromServerQuery(SearchMassiveQueryReqDto query)
 	{
-		if (string.IsNullOrEmpty(query.SearchQuery))
-		{
-			return [];
-		}
+		if (string.IsNullOrEmpty(query.SearchQuery)) return [];
+
 		var responseData = new List<SearchMassiveQueryResDto>();
 
 		var findStudyGroups = await dbContext.StudyGroups
@@ -46,6 +44,7 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 				PathQueryParams = queryParams
 			});
 		}
+
 		var findStudyTeachers = await dbContext.Persons
 			.Include(p => p.Role)
 			.Include(p => p.Cathedral)
@@ -72,6 +71,7 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 				PathQueryParams = queryParams
 			});
 		}
+
 		var findStudyRooms = await dbContext.StudyRooms
 			.Include(p => p.RoomType)
 			.Include(p => p.Cathedral)
@@ -99,6 +99,7 @@ public class SearchContentServiceImpl(ApplicationDbContext dbContext) : ISearchC
 				PathQueryParams = queryParams
 			});
 		}
+
 		return responseData;
 	}
 }

@@ -7,7 +7,5 @@ namespace ScheduleManagement.Api.Entity;
 [Table("ContactFormIssueTypes")]
 public sealed class ContactFormIssueType : AbstractEntity
 {
-	[Required]
-	[StringLength(50)]
-	public string Name { get; set; }
+	[Required] [StringLength(50)] public string Name { get; set; }
 }

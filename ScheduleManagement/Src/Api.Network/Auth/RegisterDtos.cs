@@ -15,8 +15,7 @@ public class RegisterUpdateUserRequestDto
 	[Required(ErrorMessage = "Narowodowść nie może być pusta")]
 	public string Nationality { get; set; }
 
-	[Required]
-	public string City { get; set; }
+	[Required] public string City { get; set; }
 
 	[Required(ErrorMessage = "Rola użytkownika nie może być pusta")]
 	[ValidValues(UserRole.Editor, UserRole.Student, UserRole.Teacher, UserRole.Administrator)]

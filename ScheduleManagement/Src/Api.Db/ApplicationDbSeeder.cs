@@ -102,7 +102,6 @@ public class ApplicationDbSeeder(
 			.Include(c => c.Department)
 			.FirstOrDefaultAsync(c => c.Name.Equals(initialCathedrals[0].Name, StringComparison.OrdinalIgnoreCase));
 		if (findPerson == null)
-		{
 			await authService.Register(new RegisterUpdateUserRequestDto
 			{
 				Name = account.Name,
@@ -114,7 +113,6 @@ public class ApplicationDbSeeder(
 				DepartmentName = findCathedral!.Department.Name,
 				CathedralName = findCathedral.Name
 			}, ApiConfig.InitAccount.Password);
-		}
 	}
 
 	private async Task InsertDefaultStudyTypes()
@@ -163,16 +161,14 @@ public class ApplicationDbSeeder(
 		try
 		{
 			deserialisedArray = JsonSerializer.Deserialize<List<T>>(jsonString);
-			if (deserialisedArray == null)
-			{
-				throw new JsonException();
-			}
+			if (deserialisedArray == null) throw new JsonException();
 		}
 		catch (JsonException ex)
 		{
 			throw new RestApiException("Nieprawidłowy format pliku json! Stacktrace: " + ex.Message,
 				HttpStatusCode.InternalServerError);
 		}
+
 		return deserialisedArray;
 	}
 }

@@ -20,9 +20,8 @@ public class MemoryStorageServiceImpl(ApplicationDbContext dbContext, IMapper ma
 			{
 				var mappedPerson = mapper.Map<SavedAccountDetailsResponseDto>(p);
 				if (p.ProfileImageUuid != null)
-				{
 					mappedPerson.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{p.ProfileImageUuid}.jpg";
-				}
+
 				return mappedPerson;
 			})
 			.ToList();

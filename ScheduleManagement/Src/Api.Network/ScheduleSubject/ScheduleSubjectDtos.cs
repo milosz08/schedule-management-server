@@ -14,7 +14,7 @@ public sealed class ScheduleCanvasData
 {
 	public NameIdElementDto WeekdayNameWithId { get; set; }
 	public string WeekdayDateTime { get; set; }
-	public bool IsNotShowingOccuredDates { get; set; }
+	public bool IsNotShowingOccurredDates { get; set; }
 	public List<WeekdayData> WeekdayData { get; set; } = [];
 }
 
@@ -26,8 +26,8 @@ public class WeekdayData
 	public string SubjectTime { get; set; }
 	public int PositionFromTop { get; set; }
 	public int ElementHeight { get; set; }
-	public string SubjectOccuredData { get; set; }
-	public bool IsNotShowingOccuredDates { get; set; }
+	public string SubjectOccurredData { get; set; }
+	public bool IsNotShowingOccurredDates { get; set; }
 	public Dictionary<string, List<AliasData>> Aliases { get; set; }
 }
 

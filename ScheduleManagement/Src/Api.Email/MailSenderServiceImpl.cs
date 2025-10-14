@@ -45,10 +45,7 @@ public class MailSenderServiceImpl(ILogger<MailSenderServiceImpl> logger, IWebHo
 				await File.ReadAllTextAsync(Path.Combine("EmailTemplates", $"{templateName}.liquid"));
 
 			List<Address> addresses = [];
-			foreach (var user in userEmailOptions.ToEmails)
-			{
-				addresses.Add(new Address(user));
-			}
+			foreach (var user in userEmailOptions.ToEmails) addresses.Add(new Address(user));
 			var fluentEmail = FluentEmail.Core.Email
 				.From($"noreply@{ApiConfig.Smtp.EmailDomain}", "System Zarządzania Planem")
 				.ReplyTo($"info@{ApiConfig.Smtp.EmailDomain}", "System Zarządzania Planem")
@@ -70,10 +67,7 @@ public class MailSenderServiceImpl(ILogger<MailSenderServiceImpl> logger, IWebHo
 				ContentType = "image/jpg"
 			});
 			var sendResponse = await fluentEmail.SendAsync();
-			if (!sendResponse.Successful)
-			{
-				throw new System.Exception(string.Join(",", sendResponse.ErrorMessages));
-			}
+			if (!sendResponse.Successful) throw new System.Exception(string.Join(",", sendResponse.ErrorMessages));
 		}
 		catch (System.Exception ex)
 		{

@@ -31,17 +31,14 @@ public class StudyGroupServiceImpl(
 				s.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 
 		if (findStudySpec == null)
-		{
 			throw new RestApiException("Nie znaleziono pasującego wydziału/kierunku", HttpStatusCode.NotFound);
-		}
+
 		var findAllSemesters = await dbContext.Semesters
 			.Where(s => dto.Semesters.Any(id => id == s.Id))
 			.ToListAsync();
 
 		if (findAllSemesters.Count == 0)
-		{
 			throw new RestApiException("Nie znaleziono pasujących semestrów.", HttpStatusCode.NotFound);
-		}
 
 		List<Entity.StudyGroup> createdAllStudyGrops = [];
 
@@ -67,13 +64,13 @@ public class StudyGroupServiceImpl(
 					.FirstOrDefaultAsync(g => g.Name.Equals(createdStudyGroup.Name));
 
 				if (findExistingStudyGroup != null)
-				{
 					throw new RestApiException("Podana grupa istnieje już w systemie.",
 						HttpStatusCode.ExpectationFailed);
-				}
+
 				createdAllStudyGrops.Add(createdStudyGroup);
 			}
 		}
+
 		await dbContext.StudyGroups.AddRangeAsync(createdAllStudyGrops);
 		await dbContext.SaveChangesAsync();
 
@@ -95,7 +92,6 @@ public class StudyGroupServiceImpl(
 			            r.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
 
 		if (!string.IsNullOrEmpty(searchQuery.SortBy))
-		{
 			PaginationConfig.ConfigureSorting(new Dictionary<string, Expression<Func<Entity.StudyGroup, object>>>
 			{
 				{ nameof(Entity.StudyGroup.Id), r => r.Id },
@@ -103,7 +99,7 @@ public class StudyGroupServiceImpl(
 				{ "DepartmentAlias", r => r.Department.Alias },
 				{ "SpecTypeAlias", r => r.StudySpecialization.Alias }
 			}, searchQuery, ref studyGroupsBaseQuery);
-		}
+
 		var allGroups = mapper.Map<List<StudyGroupQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(studyGroupsBaseQuery, searchQuery));
 
@@ -146,10 +142,8 @@ public class StudyGroupServiceImpl(
 
 		findAllMatchStudyGroups.Sort();
 
-		if (findAllMatchStudyGroups.Count > 0)
-		{
-			return new SearchQueryResponseDto(findAllMatchStudyGroups);
-		}
+		if (findAllMatchStudyGroups.Count > 0) return new SearchQueryResponseDto(findAllMatchStudyGroups);
+
 		var findAllElements = await dbContext.StudyGroups
 			.Include(s => s.Department)
 			.Include(s => s.StudySpecialization)
@@ -180,18 +174,16 @@ public class StudyGroupServiceImpl(
 		UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var message = "Nie usunięto żadnej grupy.";
 		var toRemoved = await dbContext.StudyGroups
 			.Where(s => items.Ids.Any(id => id == s.Id))
 			.ToListAsync();
 		if (toRemoved.Count != 0)
-		{
 			message = $"Pomyślnie usunięto wybrane grupy. Liczba usuniętych grup: {toRemoved.Count}.";
-		}
+
 		dbContext.StudyGroups.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
@@ -205,10 +197,9 @@ public class StudyGroupServiceImpl(
 	protected override async Task<MessageContentResDto> OnDeleteAll(UserCredentialsHeaderDto userCredentialsHeaderDto)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeaderDto.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var count = dbContext.StudyGroups.Count();
 
 		dbContext.StudyGroups.RemoveRange();

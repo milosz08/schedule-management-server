@@ -19,10 +19,8 @@ public static class PaginationConfig
 	{
 		var selectColumn = colSelect.FirstOrDefault(c => c.Key.Equals(query.SortBy)).Value;
 		if (selectColumn != null)
-		{
 			baseQuery = query.SortDirection == SortDirection.Asc
 				? baseQuery.OrderBy(selectColumn)
 				: baseQuery.OrderByDescending(selectColumn);
-		}
 	}
 }

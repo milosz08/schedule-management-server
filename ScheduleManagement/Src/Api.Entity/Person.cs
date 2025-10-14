@@ -8,59 +8,35 @@ namespace ScheduleManagement.Api.Entity;
 [Table("Persons")]
 public class Person : AbstractEntity
 {
-	[Required]
-	[StringLength(50)]
-	public string Name { get; set; }
+	[Required] [StringLength(50)] public string Name { get; set; }
 
-	[Required]
-	[StringLength(50)]
-	public string Surname { get; set; }
+	[Required] [StringLength(50)] public string Surname { get; set; }
 
-	[Required]
-	[StringLength(8)]
-	public string Shortcut { get; set; }
+	[Required] [StringLength(8)] public string Shortcut { get; set; }
 
-	[Required]
-	[StringLength(50)]
-	public string Login { get; set; }
+	[Required] [StringLength(50)] public string Login { get; set; }
 
-	[Required]
-	public bool FirstAccess { get; set; } = true;
+	[Required] public bool FirstAccess { get; set; } = true;
 
-	[Required]
-	[StringLength(500)]
-	public string Password { get; set; }
+	[Required] [StringLength(500)] public string Password { get; set; }
 
-	[Required]
-	[StringLength(100)]
-	public string Email { get; set; }
+	[Required] [StringLength(100)] public string Email { get; set; }
 
-	[Required]
-	[StringLength(100)]
-	public string Nationality { get; set; }
+	[Required] [StringLength(100)] public string Nationality { get; set; }
 
-	[Required]
-	[StringLength(100)]
-	public string City { get; set; }
+	[Required] [StringLength(100)] public string City { get; set; }
 
-	[Required]
-	[StringLength(20)]
-	public string EmailPassword { get; set; }
+	[Required] [StringLength(20)] public string EmailPassword { get; set; }
 
-	[StringLength(36)]
-	public string? ProfileImageUuid { get; set; }
+	[StringLength(36)] public string? ProfileImageUuid { get; set; }
 
-	[Required]
-	public bool IsRemovable { get; set; } = true;
+	[Required] public bool IsRemovable { get; set; } = true;
 
-	[ForeignKey(nameof(Role))]
-	public long RoleId { get; set; }
+	[ForeignKey(nameof(Role))] public long RoleId { get; set; }
 
-	[ForeignKey(nameof(Department))]
-	public long? DepartmentId { get; set; }
+	[ForeignKey(nameof(Department))] public long? DepartmentId { get; set; }
 
-	[ForeignKey(nameof(Cathedral))]
-	public long? CathedralId { get; set; }
+	[ForeignKey(nameof(Cathedral))] public long? CathedralId { get; set; }
 
 	public virtual Role Role { get; set; }
 

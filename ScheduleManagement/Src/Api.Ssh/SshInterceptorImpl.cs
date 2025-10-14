@@ -29,6 +29,7 @@ public class SshInterceptorImpl : ISshInterceptor
 	public void ExecuteCommand(string commandParameter)
 	{
 		if (_sshClient == null) return;
+
 		try
 		{
 			_sshClient.Connect();

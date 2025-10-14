@@ -7,16 +7,11 @@ namespace ScheduleManagement.Api.Entity;
 [Table("StudySubjects")]
 public class StudySubject : AbstractEntity
 {
-	[Required]
-	[StringLength(50)]
-	public string Name { get; set; }
+	[Required] [StringLength(50)] public string Name { get; set; }
 
-	[Required]
-	[StringLength(20)]
-	public string Alias { get; set; }
+	[Required] [StringLength(20)] public string Alias { get; set; }
 
-	[ForeignKey(nameof(Department))]
-	public long DepartmentId { get; set; }
+	[ForeignKey(nameof(Department))] public long DepartmentId { get; set; }
 
 	[ForeignKey(nameof(StudySpecialization))]
 	public long StudySpecializationId { get; set; }

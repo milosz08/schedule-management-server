@@ -27,6 +27,7 @@ public class CathedralServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono wydziału z podanym id", HttpStatusCode.NotFound);
 		}
+
 		var findCathedral = await dbContext.Cathedrals
 			.Include(c => c.Department)
 			.FirstOrDefaultAsync(c =>
@@ -39,6 +40,7 @@ public class CathedralServiceImpl(
 			throw new RestApiException("Podana katedra istnieje już w wybranej jednostce.",
 				HttpStatusCode.ExpectationFailed);
 		}
+
 		var cathedral = new Entity.Cathedral
 		{
 			Name = dto.Name,
@@ -63,11 +65,13 @@ public class CathedralServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono katedry z podanym id", HttpStatusCode.NotFound);
 		}
+
 		if (findCathedral.Name == dto.Name && findCathedral.Alias == dto.Alias)
 		{
 			throw new RestApiException("Należy wprowadzić wartości różne od poprzednich.",
 				HttpStatusCode.ExpectationFailed);
 		}
+
 		findCathedral.Name = dto.Name;
 		findCathedral.Alias = dto.Alias;
 		await dbContext.SaveChangesAsync();
@@ -96,6 +100,7 @@ public class CathedralServiceImpl(
 				{ "DepartmentAlias", c => c.Department.Alias }
 			}, searchQuery, ref cathedralsBaseQuery);
 		}
+
 		var allCathedrals = mapper.Map<List<CathedralQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(cathedralsBaseQuery, searchQuery));
 
@@ -112,6 +117,7 @@ public class CathedralServiceImpl(
 		{
 			throw new RestApiException("Nie znaleziono katedry z podanym numerem id.", HttpStatusCode.NotFound);
 		}
+
 		return mapper.Map<CathedralEditResDto>(findCathedral);
 	}
 
@@ -145,6 +151,7 @@ public class CathedralServiceImpl(
 		{
 			return new SearchQueryResponseDto(findAllCathedralsNames);
 		}
+
 		var findAllCathedrals = await dbContext.Cathedrals
 			.Include(c => c.Department)
 			.Where(c => deptName.Equals(c.Department.Name, StringComparison.OrdinalIgnoreCase))
@@ -163,6 +170,7 @@ public class CathedralServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
 				HttpStatusCode.Forbidden);
 		}
+
 		var nonRemovableCaths = dbContext.Cathedrals.Where(c => !c.IsRemovable).Select(c => c.Id);
 		var filteredDeletedCathedrals = items.Ids.Where(id => !nonRemovableCaths.Contains(id)).ToArray();
 
@@ -178,6 +186,7 @@ public class CathedralServiceImpl(
 			removeMessage = $"Pomyślnie usunięto wybrane katedry. Liczba usuniętych katedr: {toRemove.Count}.";
 			logger.LogInformation("Successfully deleted: {} cathedrals", toRemove.Count);
 		}
+
 		return new MessageContentResDto
 		{
 			Message = removeMessage
@@ -191,6 +200,7 @@ public class CathedralServiceImpl(
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora",
 				HttpStatusCode.Forbidden);
 		}
+
 		var findAllRemovingCathedrals = dbContext.Cathedrals.Where(c => c.IsRemovable);
 		if (findAllRemovingCathedrals.Any())
 		{
@@ -199,6 +209,7 @@ public class CathedralServiceImpl(
 
 			logger.LogInformation("Successfully deleted: {} cathedrals", findAllRemovingCathedrals.Count());
 		}
+
 		return new MessageContentResDto
 		{
 			Message = "Pomyślnie usunięto wszystkie katedry."

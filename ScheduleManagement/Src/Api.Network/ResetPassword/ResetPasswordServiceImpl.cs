@@ -55,6 +55,7 @@ public class ResetPasswordServiceImpl(
 		{
 			logger.LogError("Attempt to reset password for non existing account. Login or email: {}", loginOrEmail);
 		}
+
 		return new MessageContentResDto
 		{
 			Message = "Jeśli konto z podanymi danymi istnieje, na adres email został wysłany token."
@@ -68,23 +69,19 @@ public class ResetPasswordServiceImpl(
 			.Include(p => p.Person.Role)
 			.FirstOrDefaultAsync(otp => otp.Otp == token && !otp.IfUsed);
 
-		if (findResetOtp == null)
-		{
-			throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.BadRequest);
-		}
+		if (findResetOtp == null) throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.BadRequest);
+
 		if (findResetOtp.OtpExpired < DateTime.UtcNow)
-		{
 			throw new RestApiException("Token uległ przedawnieniu.", HttpStatusCode.BadRequest);
-		}
+
 		logger.LogInformation("Successfully validated reset password email token for user: {}", findResetOtp.Person);
 
 		var person = findResetOtp.Person;
 		var resDto = mapper.Map<SetNewPasswordViaEmailResponse>(person);
 		resDto.Token = token;
 		if (person.ProfileImageUuid != null)
-		{
 			resDto.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{person.ProfileImageUuid}.jpg";
-		}
+
 		logger.LogInformation("Successfully verified token for reset password for user: {}", findResetOtp.Person);
 		return resDto;
 	}
@@ -98,28 +95,22 @@ public class ResetPasswordServiceImpl(
 			findResetOtp = await dbContext.ResetPasswordOpts
 				.Include(p => p.Person)
 				.FirstOrDefaultAsync(otp => otp.Otp == token && !otp.IfUsed);
-			if (findResetOtp == null)
-			{
-				throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.BadRequest);
-			}
+			if (findResetOtp == null) throw new RestApiException("Nieprawidłowy token.", HttpStatusCode.BadRequest);
+
 			if (findResetOtp.IfUsed)
-			{
 				throw new RestApiException("Token został już wykorzystany.", HttpStatusCode.BadRequest);
-			}
+
 			if (findResetOtp.OtpExpired < DateTime.UtcNow)
-			{
 				throw new RestApiException("Token uległ przedawnieniu.", HttpStatusCode.BadRequest);
-			}
 		}
 		catch (System.Exception)
 		{
 			throw new RestApiException("Wadliwy token dostępu.", HttpStatusCode.BadRequest);
 		}
+
 		var findPerson = await dbContext.Persons.FirstOrDefaultAsync(person => person.Id == findResetOtp.Person.Id);
-		if (findPerson == null)
-		{
-			throw new RestApiException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
-		}
+		if (findPerson == null) throw new RestApiException("Nie znaleziono użytkownika.", HttpStatusCode.NotFound);
+
 		findResetOtp.IfUsed = true;
 		findPerson.FirstAccess = false;
 		findPerson.Password = passwordHasher.HashPassword(findPerson, dto.NewPassword);
@@ -141,25 +132,21 @@ public class ResetPasswordServiceImpl(
 		var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Name))?.Value ?? "";
 		var findPerson = await dbContext.Persons.FirstOrDefaultAsync(p => p.Login.Equals(username));
 		if (findPerson == null)
-		{
 			throw new RestApiException("Nie znaleziono użytkownika w bazie danych.", HttpStatusCode.NotFound);
-		}
+
 		if (!findPerson.FirstAccess)
-		{
 			throw new RestApiException("Użytkownik zmienił już hasło wygenerowane przez system.",
 				HttpStatusCode.BadRequest);
-		}
+
 		if (dto.OldPassword.Equals(dto.NewPassword))
-		{
 			throw new RestApiException(
 				"Nowe hasło nie może być takie same jak hasło poprzednie.", HttpStatusCode.BadRequest);
-		}
+
 		var verificationPassword =
 			passwordHasher.VerifyHashedPassword(findPerson, findPerson.Password, dto.OldPassword);
 		if (verificationPassword == PasswordVerificationResult.Failed)
-		{
 			throw new RestApiException("Podano złe hasło pierwotne.", HttpStatusCode.BadRequest);
-		}
+
 		findPerson.Password = passwordHasher.HashPassword(findPerson, dto.NewPassword);
 		findPerson.FirstAccess = false;
 

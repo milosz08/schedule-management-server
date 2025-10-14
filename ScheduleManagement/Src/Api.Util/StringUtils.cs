@@ -20,6 +20,7 @@ public static class StringUtils
 			builder.Append(iterator == 0 ? piece[..1].ToUpper() : piece[..1].ToLower());
 			iterator++;
 		}
+
 		return builder.ToString();
 	}
 
@@ -34,10 +35,8 @@ public static class StringUtils
 		string[] diacretics = ["ą", "ć", "ę", "ł", "ń", "ó", "ś", "ź", "ż"];
 		string[] normalLetters = ["a", "c", "e", "l", "n", "o", "s", "z", "z"];
 		var output = text;
-		for (var i = 0; i < diacretics.Length; i++)
-		{
-			output = output.Replace(diacretics[i], normalLetters[i]);
-		}
+		for (var i = 0; i < diacretics.Length; i++) output = output.Replace(diacretics[i], normalLetters[i]);
+
 		return output;
 	}
 }

@@ -89,9 +89,8 @@ public class HelperServiceImpl(ApplicationDbContext dbContext, IMapper mapper) :
 					dto.StudySpecName, StringComparison.OrdinalIgnoreCase));
 
 		if (findStudyGroup == null)
-		{
 			throw new RestApiException("Nie znaleziono grupy z podanymi parametrami.", HttpStatusCode.NotFound);
-		}
+
 		return new ConvertToTupleResponseDto(
 			findStudyGroup.Department,
 			findStudyGroup.StudySpecialization,

@@ -8,21 +8,15 @@ namespace ScheduleManagement.Api.Entity;
 [Table("ScheduleSubjects")]
 public class ScheduleSubject : AbstractEntity
 {
-	[Required]
-	public TimeSpan StartTime { get; set; }
+	[Required] public TimeSpan StartTime { get; set; }
 
-	[Required]
-	public TimeSpan EndTime { get; set; }
+	[Required] public TimeSpan EndTime { get; set; }
 
-	[Required]
-	[StringLength(9)]
-	public string StudyYear { get; set; }
+	[Required] [StringLength(9)] public string StudyYear { get; set; }
 
-	[ForeignKey(nameof(Weekday))]
-	public long WeekdayId { get; set; }
+	[ForeignKey(nameof(Weekday))] public long WeekdayId { get; set; }
 
-	[ForeignKey(nameof(StudySubject))]
-	public long StudySubjectId { get; set; }
+	[ForeignKey(nameof(StudySubject))] public long StudySubjectId { get; set; }
 
 	[ForeignKey(nameof(ScheduleSubjectType))]
 	public long ScheduleSubjectTypeId { get; set; }

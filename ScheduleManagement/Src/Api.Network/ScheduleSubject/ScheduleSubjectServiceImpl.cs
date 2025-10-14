@@ -33,59 +33,49 @@ public class ScheduleSubjectServiceImpl(
 			            g.StudySpecialization.Id == dto.StudySpecId)
 			.ToListAsync();
 		if (findStudyGroups.Count == 0)
-		{
 			throw new RestApiException("Nie znaleziono grup dziekańskich na podstawie podanych parametrów.",
 				HttpStatusCode.NotFound);
-		}
 		TimeSpan startHour, endHour;
 		try
 		{
 			startHour = TimeSpan.ParseExact(dto.HourStart, "h\\:mm", new CultureInfo("pl-PL"));
 			endHour = TimeSpan.ParseExact(dto.HourEnd, "h\\:mm", new CultureInfo("pl-PL"));
 			if (startHour >= endHour)
-			{
 				throw new RestApiException("Godzina rozpoczęcia musi być mniejsza od godziny zakończenia.",
 					HttpStatusCode.ExpectationFailed);
-			}
 			if (startHour < _startTime || endHour > _endTime)
-			{
 				throw new RestApiException("Nieprawidłowy zakres godzin.", HttpStatusCode.ExpectationFailed);
-			}
 			var formattedDividedHour = (startHour / _minInterval).ToString(CultureInfo.CurrentCulture);
 			if (formattedDividedHour.Contains(NumberFormatInfo.CurrentInfo.CurrencyDecimalSeparator))
-			{
 				throw new RestApiException("Czas odbywania zajęć musi być wielokrotnością pięciu minut.",
 					HttpStatusCode.ExpectationFailed);
-			}
 		}
 		catch (FormatException)
 		{
 			throw new RestApiException("Niepoprawne wartości godzinowe.", HttpStatusCode.ExpectationFailed);
 		}
+
 		var findWeekday = await dbContext.Weekdays.FirstOrDefaultAsync(w => w.Id == dto.WeekDayId);
 
 		if (findWeekday == null)
-		{
 			throw new RestApiException("Nie znaleziono dnia tygodnia na podstawie parametrów.",
 				HttpStatusCode.NotFound);
-		}
+
 		var findSubjectType = await dbContext.ScheduleSubjectTypes
 			.FirstOrDefaultAsync(t => t.Name.Equals(dto.SubjectTypeName, StringComparison.OrdinalIgnoreCase));
 
 		if (findSubjectType == null)
-		{
 			throw new RestApiException("Nie znaleziono typu przedmiotu na podstawie podanych parametrów.",
 				HttpStatusCode.NotFound);
-		}
+
 		var findStudySubject = await dbContext.StudySubjects
 			.Include(s => s.StudySpecialization)
 			.FirstOrDefaultAsync(s => s.StudySpecialization.Id == dto.StudySpecId &&
 			                          s.Name.Equals(dto.SubjectOrActivityName, StringComparison.OrdinalIgnoreCase));
 		if (findStudySubject == null)
-		{
 			throw new RestApiException("Nie znaleziono przedmiotu na podstawie podanych parametrów.",
 				HttpStatusCode.NotFound);
-		}
+
 		var findAllStudyRooms = await dbContext.StudyRooms
 			.Include(r => r.Department)
 			.Where(r => dto.SubjectRooms.Any(rdto => rdto == r.Id) && r.Department.Id == dto.DeptId)
@@ -114,6 +104,7 @@ public class ScheduleSubjectServiceImpl(
 					onlyYearAndWeekNumber[1], findWeekday.Identifier)
 			});
 		}
+
 		var allOccursConvert = allScheduleOccurs.Select(o => $"{o.Year},{o.WeekIdentifier}").ToList();
 		var findDuplicatRooms = await dbContext.ScheduleSubjects
 			.Include(sb => sb.Weekday)
@@ -123,25 +114,22 @@ public class ScheduleSubjectServiceImpl(
 			.ToListAsync();
 
 		foreach (var sb in findDuplicatRooms)
-		{
 			if (sb.StudyGroups.Any(sgb => findStudyGroups.Any(sg => sgb.Id == sg.Id)))
 			{
-				var convertOccured = sb.WeekScheduleOccurs.Select(o => $"{o.Year},{o.WeekIdentifier}").ToList();
+				var convertOccurred = sb.WeekScheduleOccurs.Select(o => $"{o.Year},{o.WeekIdentifier}").ToList();
 				var hours = sb.StartTime < TimeSpan.Parse(dto.HourStart)
 				            || TimeSpan.Parse(dto.HourStart) < sb.EndTime
 				            || sb.StartTime < TimeSpan.Parse(dto.HourEnd)
 				            || TimeSpan.Parse(dto.HourEnd) < sb.EndTime;
 
 				if (sb.Weekday.Id == dto.WeekDayId && sb.StudyYear.Equals(dto.StudyYear) && hours &&
-				    (convertOccured.Intersect(allOccursConvert).Any()
-				     || (convertOccured.IsNullOrEmpty() && allOccursConvert.IsNullOrEmpty())))
-				{
+				    (convertOccurred.Intersect(allOccursConvert).Any()
+				     || (convertOccurred.IsNullOrEmpty() && allOccursConvert.IsNullOrEmpty())))
 					throw new RestApiException(
 						"Termin ma już przypisaną aktywność. Proszę dodać aktywność dla innego terminu lub " +
 						"usunąć kolizję.", HttpStatusCode.Forbidden);
-				}
 			}
-		}
+
 		var addingScheduleSubject = new Entity.ScheduleSubject
 		{
 			ScheduleSubjectTypeId = findSubjectType.Id,
@@ -176,10 +164,8 @@ public class ScheduleSubjectServiceImpl(
 			.Include(g => g.StudySpecialization.StudyDegree)
 			.FirstOrDefaultAsync(g => g.Id == dto.GroupId && g.Department.Id == dto.DeptId &&
 			                          g.StudySpecialization.Id == dto.SpecId);
-		if (findStudyGroup == null)
-		{
-			throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
-		}
+		if (findStudyGroup == null) throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
+
 		var response = new ScheduleDataRes
 		{
 			TraceDetails =
@@ -228,11 +214,13 @@ public class ScheduleSubjectServiceImpl(
 				};
 				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseGroup, ref baseData);
 			}
+
 			AddBaseValuesForSingleDay(ref singleDay, weekday, filter, ref dayIncrement);
 			singleDay.WeekdayData = allScheduleSubjectsBaseGroup;
 
 			response.ScheduleCanvasData.Add(singleDay);
 		}
+
 		response.CurrentChooseWeek = filter.WeekInputOptions;
 		return response;
 	}
@@ -249,10 +237,9 @@ public class ScheduleSubjectServiceImpl(
 				t.Id == dto.EmployerId && t.Department!.Id == dto.DeptId && t.Cathedral!.Id == dto.CathId);
 
 		if (findTeacher == null)
-		{
 			throw new RestApiException("Nie znaleziono planu na podstawie szukanych parametrów.",
 				HttpStatusCode.NotFound);
-		}
+
 		var response = new ScheduleDataRes
 		{
 			TraceDetails =
@@ -292,11 +279,13 @@ public class ScheduleSubjectServiceImpl(
 				};
 				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseTeacher, ref baseData);
 			}
+
 			AddBaseValuesForSingleDay(ref singleDay, weekday, filter, ref dayIncrement);
 			singleDay.WeekdayData = allScheduleSubjectsBaseTeacher;
 
 			response.ScheduleCanvasData.Add(singleDay);
 		}
+
 		response.CurrentChooseWeek = filter.WeekInputOptions;
 		return response;
 	}
@@ -311,10 +300,8 @@ public class ScheduleSubjectServiceImpl(
 			.FirstOrDefaultAsync(r =>
 				r.Id == dto.RoomId && r.Department.Id == dto.DeptId && r.Cathedral.Id == dto.CathId);
 
-		if (findStudyRoom == null)
-		{
-			throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
-		}
+		if (findStudyRoom == null) throw new RestApiException("Błędne parametry planu.", HttpStatusCode.NotFound);
+
 		var response = new ScheduleDataRes
 		{
 			TraceDetails =
@@ -358,11 +345,13 @@ public class ScheduleSubjectServiceImpl(
 				};
 				FilteringScheduleSubject(scheduleSubject, filter, ref allScheduleSubjectsBaseRoom, ref baseData);
 			}
+
 			AddBaseValuesForSingleDay(ref singleDay, weekday, filter, ref dayIncrement);
 			singleDay.WeekdayData = allScheduleSubjectsBaseRoom;
 
 			response.ScheduleCanvasData.Add(singleDay);
 		}
+
 		response.CurrentChooseWeek = filter.WeekInputOptions;
 		return response;
 	}
@@ -379,10 +368,9 @@ public class ScheduleSubjectServiceImpl(
 			.FirstOrDefaultAsync(s => s.Id == schedSubjId);
 
 		if (findSubject == null)
-		{
 			throw new RestApiException("Nie znaleziono szukanego przedmiotu w wybranym planie zajęć.",
 				HttpStatusCode.NotFound);
-		}
+
 		return new ScheduleSubjectDetailsResDto
 		{
 			Id = findSubject.Id,
@@ -406,26 +394,23 @@ public class ScheduleSubjectServiceImpl(
 			.FirstOrDefaultAsync(d => items.Ids.Any(sb => sb == d.Id));
 
 		if (findScheduleSubject == null)
-		{
 			throw new RestApiException("Nie znaleziono szukanego przedmiotu.", HttpStatusCode.NotFound);
-		}
+
 		if (findScheduleSubject.StudySubject.Department.Id != userCredentialsHeader.Person.Department!.Id &&
 		    UserRole.Editor.Equals(userCredentialsHeader.Person.Role.Name) &&
 		    !UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora " +
 			                           "lub próba usunięcia chronionego zasobu z rangą edytora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var message = "Nie usunięto żadnego przedmiotu z planu.";
 		var toRemoved = await dbContext.ScheduleSubjects
 			.Where(s => items.Ids.Any(id => id == s.Id))
 			.ToListAsync();
 		if (toRemoved.Count != 0)
-		{
 			message = $"Pomyślnie usunięto wybrane przedmioty z planu. " +
 			          $"Liczba usuniętych przedmiotów: {toRemoved.Count}.";
-		}
+
 		dbContext.ScheduleSubjects.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
@@ -468,10 +453,8 @@ public class ScheduleSubjectServiceImpl(
 		{
 			isShowing = true;
 		}
-		if (isShowing)
-		{
-			allElements.Add(element);
-		}
+
+		if (isShowing) allElements.Add(element);
 	}
 
 	private static WeekdayData ScheduleSubjectFilledFieldData(Entity.ScheduleSubject subj,
@@ -485,8 +468,8 @@ public class ScheduleSubjectServiceImpl(
 			SubjectTime = DateUtils.FormatTime(subj),
 			PositionFromTop = DateUtils.ComputedPositionFromTopAndHeight(subj.StartTime, subj.EndTime).pxFromTop,
 			ElementHeight = DateUtils.ComputedPositionFromTopAndHeight(subj.StartTime, subj.EndTime).pxHegith,
-			SubjectOccuredData = DateUtils.ConvertScheduleOccur(subj),
-			IsNotShowingOccuredDates =
+			SubjectOccurredData = DateUtils.ConvertScheduleOccur(subj),
+			IsNotShowingOccurredDates =
 				!filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase)
 		};
 	}
@@ -550,7 +533,7 @@ public class ScheduleSubjectServiceImpl(
 			Id = weekday.Id,
 			Name = weekday.Alias
 		};
-		canvasData.IsNotShowingOccuredDates = filter.WeekInputOptions
+		canvasData.IsNotShowingOccurredDates = filter.WeekInputOptions
 			.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase);
 		if (!filter.WeekInputOptions.Equals("pokaż wszystko", StringComparison.OrdinalIgnoreCase))
 		{

@@ -7,18 +7,14 @@ namespace ScheduleManagement.Api.Entity;
 [Table("StudyGroups")]
 public class StudyGroup : AbstractEntity
 {
-	[Required]
-	[StringLength(50)]
-	public string Name { get; set; }
+	[Required] [StringLength(50)] public string Name { get; set; }
 
-	[ForeignKey(nameof(Department))]
-	public long DepartmentId { get; set; }
+	[ForeignKey(nameof(Department))] public long DepartmentId { get; set; }
 
 	[ForeignKey(nameof(StudySpecialization))]
 	public long StudySpecializationId { get; set; }
 
-	[ForeignKey(nameof(Semester))]
-	public long SemesterId { get; set; }
+	[ForeignKey(nameof(Semester))] public long SemesterId { get; set; }
 
 	public virtual Department Department { get; set; }
 

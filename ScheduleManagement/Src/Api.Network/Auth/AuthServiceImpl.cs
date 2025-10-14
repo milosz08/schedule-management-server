@@ -35,16 +35,14 @@ public class AuthServiceImpl(
 			.FirstOrDefaultAsync(p => p.Login == reqDto.Login || p.Email == reqDto.Login);
 
 		if (findPerson == null)
-		{
 			throw new RestApiException("Podano zły login lub hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
-		}
+
 		var verificatrionRes = passwordHasher
 			.VerifyHashedPassword(findPerson, findPerson.Password, reqDto.Password);
 
 		if (verificatrionRes == PasswordVerificationResult.Failed)
-		{
 			throw new RestApiException("Podano zły login lub hasło. Spróbuj ponownie.", HttpStatusCode.Unauthorized);
-		}
+
 		var bearerRefreshToken = jwtAuthManager.RefreshTokenGenerator();
 		var refreshToken = new RefreshToken
 		{
@@ -60,9 +58,8 @@ public class AuthServiceImpl(
 		resDto.ConnectedWithDepartment = findPerson.Department!.Name;
 
 		if (findPerson.ProfileImageUuid != null)
-		{
 			resDto.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{findPerson.ProfileImageUuid}.jpg";
-		}
+
 		logger.LogInformation("Successfully logged user: {}", findPerson);
 		return resDto;
 	}
@@ -77,9 +74,8 @@ public class AuthServiceImpl(
 			.Include(p => p.Person.Role)
 			.FirstOrDefaultAsync(t => t.Token == reqDto.RefreshToken && t.Person.Login.Equals(userLogin));
 		if (findRefreshToken == null)
-		{
 			throw new RestApiException("Nie odnaleziono aktywnej sesji.", HttpStatusCode.Forbidden);
-		}
+
 		var findPerson = findRefreshToken.Person;
 
 		var resDto = mapper.Map<LoginResponseDto>(findPerson);
@@ -89,9 +85,8 @@ public class AuthServiceImpl(
 		resDto.ConnectedWithDepartment = findPerson.Department!.Name;
 
 		if (findPerson.ProfileImageUuid != null)
-		{
 			resDto.ProfileImageUrl = $"{ApiConfig.S3.Url}/{S3Bucket.Profiles}/{findPerson.ProfileImageUuid}.jpg";
-		}
+
 		logger.LogInformation("Successfully logged user via token: {}", findPerson);
 		return resDto;
 	}
@@ -105,9 +100,8 @@ public class AuthServiceImpl(
 			.Include(p => p.Person)
 			.FirstOrDefaultAsync(t => t.Token == reqDto.RefreshToken && t.Person.Login.Equals(userLogin));
 		if (findRefreshToken == null)
-		{
 			throw new RestApiException("Nie znaleziono tokenu odświeżającego.", HttpStatusCode.Forbidden);
-		}
+
 		var resDto = new RefreshTokenResponseDto
 		{
 			AccessToken = jwtAuthManager.BearerHandlingRefreshTokenService(principal.Claims.ToArray()),
@@ -138,13 +132,10 @@ public class AuthServiceImpl(
 
 		var findRoleId = await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == reqDto.Role);
 		if (findRoleId == null)
-		{
 			throw new RestApiException("Podana rola nie istnieje w systemie.", HttpStatusCode.NotFound);
-		}
-		if (!customPassword.Equals(string.Empty))
-		{
-			defValues.Password = customPassword;
-		}
+
+		if (!customPassword.Equals(string.Empty)) defValues.Password = customPassword;
+
 		var findDepartment = await dbContext.Departments
 			.FirstOrDefaultAsync(d => d.Name.Equals(reqDto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 
@@ -188,11 +179,11 @@ public class AuthServiceImpl(
 				newPerson.Subjects = findAllStudySubjects.ToList();
 			}
 		}
+
 		newPerson.Password = passwordHasher.HashPassword(newPerson, defValues.Password);
 		await dbContext.Persons.AddAsync(newPerson);
 
 		if (customPassword.Equals(string.Empty))
-		{
 			await mailSenderService.SendEmail(new UserEmailOptions<NewUserToUserViewModel>
 			{
 				ToEmails = [newPerson.Email],
@@ -205,7 +196,7 @@ public class AuthServiceImpl(
 					UserRole = newPerson.Role.Name
 				}
 			}, LiquidTemplate.NewUserToUser);
-		}
+
 		await dbContext.SaveChangesAsync();
 		var resDto = mapper.Map<RegisterUpdateUserResponseDto>(newPerson);
 
@@ -221,9 +212,8 @@ public class AuthServiceImpl(
 			.Include(p => p.Person).ThenInclude(person => person.Department)
 			.FirstOrDefaultAsync(t => t.Token == refreshToken && t.Person.Login.Equals(userLogin));
 		if (findRefreshToken == null)
-		{
 			throw new RestApiException("Nie odnaleziono aktywnej sesji.", HttpStatusCode.Forbidden);
-		}
+
 		dbContext.Tokens.Remove(findRefreshToken);
 		await dbContext.SaveChangesAsync();
 
@@ -247,15 +237,14 @@ public class AuthServiceImpl(
 			);
 			if (validatedToken is not JwtSecurityToken jwtToken || !jwtToken.Header.Alg
 				    .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-			{
 				throw new RestApiException("Niepoprawny token.", HttpStatusCode.ExpectationFailed);
-			}
 		}
 		catch (System.Exception)
 		{
 			throw new RestApiException("Nieoczekiwany błąd podczas odczytywania tokenu.",
 				HttpStatusCode.ExpectationFailed);
 		}
+
 		return principal;
 	}
 }

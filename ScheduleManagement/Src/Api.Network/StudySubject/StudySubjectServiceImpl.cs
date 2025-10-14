@@ -32,10 +32,9 @@ public class StudySubjectServiceImpl(
 				s.Department.Name.Equals(dto.DepartmentName, StringComparison.InvariantCulture));
 
 		if (findSpecialization == null)
-		{
 			throw new RestApiException(
 				"Nie znaleziono kierunku/wydziału z podaną nazwą", HttpStatusCode.NotFound);
-		}
+
 		var findSubject = await dbContext.StudySubjects
 			.Include(s => s.Department)
 			.Include(s => s.StudySpecialization)
@@ -45,10 +44,9 @@ public class StudySubjectServiceImpl(
 				&& s.Department.Name.Equals(dto.DepartmentName, StringComparison.OrdinalIgnoreCase));
 
 		if (findSubject != null)
-		{
 			throw new RestApiException(
 				"Podany przedmiot istnieje już na wybranym kierunku.", HttpStatusCode.ExpectationFailed);
-		}
+
 		var studySubject = new Entity.StudySubject
 		{
 			Name = dto.Name,
@@ -74,14 +72,12 @@ public class StudySubjectServiceImpl(
 			.FirstOrDefaultAsync(s => s.Id == subjId);
 
 		if (findStudySubject == null)
-		{
 			throw new RestApiException("Nie znaleziono przedmiotu z podanym id", HttpStatusCode.NotFound);
-		}
+
 		if (dto.Name.Equals(findStudySubject.Name))
-		{
 			throw new RestApiException("Należy wprowadzić wartości różne od poprzednich.",
 				HttpStatusCode.ExpectationFailed);
-		}
+
 		findStudySubject.Name = dto.Name;
 		findStudySubject.Alias = $"{StringUtils.CreateSubjectAlias(dto.Name)}" +
 		                         $"/{findStudySubject.StudySpecialization.Alias}" +
@@ -105,7 +101,6 @@ public class StudySubjectServiceImpl(
 			            || s.Name.Contains(searchQuery.SearchPhrase, StringComparison.OrdinalIgnoreCase));
 
 		if (!string.IsNullOrEmpty(searchQuery.SortBy))
-		{
 			PaginationConfig.ConfigureSorting(new Dictionary<string, Expression<Func<Entity.StudySubject, object>>>
 			{
 				{ nameof(Entity.StudyRoom.Id), s => s.Id },
@@ -113,7 +108,7 @@ public class StudySubjectServiceImpl(
 				{ "DepartmentAlias", s => s.Department.Alias },
 				{ "SpecTypeAlias", s => s.StudySpecialization.Alias }
 			}, searchQuery, ref studySubjectsBaseQuery);
-		}
+
 		var allDepts = mapper.Map<List<StudySubjectQueryResponseDto>>(PaginationConfig
 			.ConfigureAdditionalFiltering(studySubjectsBaseQuery, searchQuery));
 
@@ -129,9 +124,8 @@ public class StudySubjectServiceImpl(
 			.Include(s => s.StudySpecialization).ThenInclude(sp => sp.StudyDegree)
 			.FirstOrDefaultAsync(s => s.Id == subjId);
 		if (findStudySubject == null)
-		{
 			throw new RestApiException("Nie znaleziono szukanego przedmiotu.", HttpStatusCode.NotFound);
-		}
+
 		return mapper.Map<StudySubjectEditResDto>(findStudySubject);
 	}
 
@@ -165,10 +159,8 @@ public class StudySubjectServiceImpl(
 			.ToListAsync();
 		findAllSubjects.Sort();
 
-		if (findAllSubjects.Count > 0)
-		{
-			return new SearchQueryResponseDto(findAllSubjects);
-		}
+		if (findAllSubjects.Count > 0) return new SearchQueryResponseDto(findAllSubjects);
+
 		var findAllElements = await dbContext.StudySubjects
 			.Include(s => s.Department)
 			.Where(s => s.Department.Id == deptId && s.StudySpecialization.Id == studySpecId)
@@ -183,18 +175,16 @@ public class StudySubjectServiceImpl(
 		UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var message = "Nie usunięto żadnego przedmiotu.";
 		var toRemoved = await dbContext.StudySubjects
 			.Where(s => items.Ids.Any(id => id == s.Id))
 			.ToListAsync();
 		if (toRemoved.Count != 0)
-		{
 			message = $"Pomyślnie usunięto wybrane przedmioty. Liczba usuniętych przedmiotów: {toRemoved.Count}.";
-		}
+
 		dbContext.StudySubjects.RemoveRange(toRemoved);
 		await dbContext.SaveChangesAsync();
 
@@ -208,10 +198,9 @@ public class StudySubjectServiceImpl(
 	protected override async Task<MessageContentResDto> OnDeleteAll(UserCredentialsHeaderDto userCredentialsHeader)
 	{
 		if (!UserRole.IsAdministrator(userCredentialsHeader.Person))
-		{
 			throw new RestApiException("Nastąpiła próba usunięcia zasobu z konta bez rangi administratora.",
 				HttpStatusCode.Forbidden);
-		}
+
 		var count = dbContext.StudySubjects.Count();
 
 		dbContext.StudySubjects.RemoveRange();
