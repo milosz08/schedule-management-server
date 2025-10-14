@@ -18,13 +18,6 @@ public class MailboxProxyServiceImpl(
 		logger.LogInformation("Successfully created email account: {} with capacity: {}", emailAddress, capacity);
 	}
 
-	public void UpdateEmailPassword(string emailAddress, string newEmailPassword)
-	{
-		sshInterceptor.ExecuteCommand(string.Format(ApiConfig.MailboxManagerCommand?.UpdatePassword!, emailAddress,
-			newEmailPassword));
-		logger.LogInformation("Successfully updated password for email: {}", emailAddress);
-	}
-
 	public void DeleteEmailAccount(string emailAddress)
 	{
 		sshInterceptor.ExecuteCommand(string.Format(ApiConfig.MailboxManagerCommand?.Delete!, emailAddress));

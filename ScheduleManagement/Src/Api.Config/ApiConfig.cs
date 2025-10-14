@@ -57,7 +57,6 @@ public class MailboxManagerCommandConfig
 {
 	public string Create { get; set; }
 	public string SetCapacity { get; set; }
-	public string UpdatePassword { get; set; }
 	public string Delete { get; set; }
 }
 
