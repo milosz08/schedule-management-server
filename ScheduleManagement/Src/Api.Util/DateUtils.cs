@@ -5,11 +5,6 @@ namespace ScheduleManagement.Api.Util;
 
 public static class DateUtils
 {
-	public static string GetCurrentUtcDateString()
-	{
-		return $"{DateTime.UtcNow.ToShortDateString()}, {DateTime.UtcNow.ToShortTimeString()}";
-	}
-
 	public static string FormatTime(ScheduleSubject subject)
 	{
 		return $@"{subject.StartTime:hh\:mm} - {subject.EndTime:hh\:mm}";
