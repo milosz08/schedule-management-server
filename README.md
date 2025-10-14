@@ -85,7 +85,10 @@ This command should create following containers:
 3. Run necessary containers via:
 
 ```bash
-$ docker compose up -d schedule-management-mysql-db schedule-management-mailhog-smtp schedule-management-minio-s3
+$ docker compose up -d \
+  schedule-management-mysql-db \
+  schedule-management-mailhog-smtp \
+  schedule-management-minio-s3
 ```
 
 This command should create following containers:
