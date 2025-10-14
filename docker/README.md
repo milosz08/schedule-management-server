@@ -20,7 +20,7 @@ docker build -t milosz08/schedule-management-server .
 ```bash
 docker run -d \
   --name schedule-management-server \
-  -p 8080:8080 \
+  -p 7695:8080 \
   -e ASPNETCORE_ENVIRONMENT=Docker \
   -e SCHEDULE_MYSQL_URL="server=<>;port=3306;user=<>;password=<>;database=<>" \
   -e SCHEDULE_CLIENT_ORIGIN=<client application origin> \
@@ -56,7 +56,7 @@ services:
     container_name: schedule-management-server
     image: milosz08/schedule-management-server:latest
     ports:
-      - '8080:8080'
+      - '7695:8080'
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
       SCHEDULE_CLIENT_ORIGIN: <client application origin>
