@@ -10,21 +10,25 @@ namespace ScheduleManagement.Api.Ssh;
 
 public class SshInterceptorImpl : ISshInterceptor
 {
-	private readonly SshClient _sshClient;
+	private readonly SshClient? _sshClient;
 
-	public SshInterceptorImpl(IHostEnvironment environment)
+	public SshInterceptorImpl(ILogger<SshInterceptorImpl> logger)
 	{
-		if (environment.IsProduction())
+		if (ApiConfig.Ssh?.Enabled == false)
 		{
-			var keyAuth = new KeyboardInteractiveAuthenticationMethod(ApiConfig.Ssh?.Username);
-			keyAuth.AuthenticationPrompt += HandleKeyEvent;
-			var connectionInfo = new ConnectionInfo(ApiConfig.Ssh?.Server, 22, ApiConfig.Ssh?.Username, keyAuth);
-			_sshClient = new SshClient(connectionInfo);
+			logger.LogInformation("Skipping SSH configuration (SSH is disabled)");
+			return;
 		}
+
+		var keyAuth = new KeyboardInteractiveAuthenticationMethod(ApiConfig.Ssh?.Username);
+		keyAuth.AuthenticationPrompt += HandleKeyEvent;
+		var connectionInfo = new ConnectionInfo(ApiConfig.Ssh?.Server, 22, ApiConfig.Ssh?.Username, keyAuth);
+		_sshClient = new SshClient(connectionInfo);
 	}
 
 	public void ExecuteCommand(string commandParameter)
 	{
+		if (_sshClient == null) return;
 		try
 		{
 			_sshClient.Connect();
@@ -52,11 +56,7 @@ public class SshInterceptorImpl : ISshInterceptor
 	private static void HandleKeyEvent(object? sender, AuthenticationPromptEventArgs eventArgs)
 	{
 		foreach (var prompt in eventArgs.Prompts)
-		{
 			if (prompt.Request.Contains("Password", StringComparison.InvariantCultureIgnoreCase))
-			{
 				prompt.Response = ApiConfig.Ssh?.Password;
-			}
-		}
 	}
 }
