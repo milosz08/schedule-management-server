@@ -23,4 +23,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: milosz08/schedule-management-server
           readme-filepath: ./docker/README.md
-          short-description: "ASP.NET rest API for the Angular application to manage schedule for example university."
+          short-description: "ASP.NET rest API for the Angular application to manage schedules for example university."
