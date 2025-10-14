@@ -4,5 +4,7 @@ WORKDIR /app
 
 COPY /docker/app .
 
+LABEL maintainer="Miłosz Gilga <miloszgilga@gmail.com>"
+
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "ScheduleManagement.dll"]
