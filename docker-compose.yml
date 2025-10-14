@@ -63,9 +63,10 @@ services:
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
-      SCHEDULE_MYSQL_URL: server=schedule-management-mysql-db;port=3306;user=root;password=${SCHEDULE_DEV_MYSQL_PASSWORD};database=${SCHEDULE_DEV_MYSQL_DB_NAME}
       SCHEDULE_CLIENT_ORIGIN: http://localhost:${SCHEDULE_DEV_CLIENT_PORT}
       SCHEDULE_JWT_SECRET: ${SCHEDULE_DEV_JWT_SECRET}
+      # db
+      SCHEDULE_MYSQL_URL: server=schedule-management-mysql-db;port=3306;user=root;password=${SCHEDULE_DEV_MYSQL_PASSWORD};database=${SCHEDULE_DEV_MYSQL_DB_NAME}
       # smtp server
       SCHEDULE_SMTP_HOST: schedule-management-mailhog-smtp
       SCHEDULE_SMTP_PORT: 1025
@@ -75,6 +76,7 @@ services:
       SCHEDULE_SMTP_EMAIL_DOMAIN: schedule.DOCKER.pl
       # s3
       SCHEDULE_S3_HOST: http://schedule-management-minio-s3:9000
+      SCHEDULE_S3_REGION: eu-central-1
       SCHEDULE_S3_ACCESS_KEY: ${SCHEDULE_DEV_S3_USERNAME}
       SCHEDULE_S3_SECRET_KEY: ${SCHEDULE_DEV_S3_PASSWORD}
       # mailbox management api (ssh)
@@ -82,7 +84,6 @@ services:
       SCHEDULE_SSH_HOST: ${SCHEDULE_DEV_SSH_HOST}
       SCHEDULE_SSH_LOGIN: ${SCHEDULE_DEV_SSH_LOGIN}
       SCHEDULE_SSH_PASSWORD: ${SCHEDULE_DEV_SSH_PASSWORD}
-      SCHEDULE_EMAIL_CAPACITY_MB: ${SCHEDULE_DEV_EMAIL_CAPACITY_MB}
       SCHEDULE_MAILBOX_CREATE_CMD: ${SCHEDULE_DEV_MAILBOX_CREATE_CMD}
       SCHEDULE_MAILBOX_SET_CAPACITY_CMD: ${SCHEDULE_DEV_MAILBOX_SET_CAPACITY_CMD}
       SCHEDULE_MAILBOX_DELETE_CMD: ${SCHEDULE_DEV_MAILBOX_DELETE_CMD}

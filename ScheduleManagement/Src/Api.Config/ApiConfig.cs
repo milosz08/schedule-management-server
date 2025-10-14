@@ -11,7 +11,6 @@ public class ApiConfig
 	public static string ClientOrigin { get; set; }
 	public static SshConfig? Ssh { get; set; }
 	public static MailboxManagerCommandConfig? MailboxManagerCommand { get; set; }
-	public static int EmailCapacityMb { get; set; }
 	public static SmtpConfig Smtp { get; set; }
 	public static S3Config S3 { get; set; }
 	public static InitAccountConfig InitAccount { get; set; }

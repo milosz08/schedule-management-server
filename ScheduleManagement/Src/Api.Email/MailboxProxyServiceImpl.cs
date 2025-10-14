@@ -13,9 +13,8 @@ public class MailboxProxyServiceImpl(
 		var capacity = ApiConfig.MailboxManagerCommand?.SetCapacity;
 		sshInterceptor.ExecuteCommand(
 			string.Format(ApiConfig.MailboxManagerCommand?.Create!, emailAddress, emailPassword));
-		sshInterceptor.ExecuteCommand(string.Format(capacity!, emailAddress,
-			ApiConfig.EmailCapacityMb));
-		logger.LogInformation("Successfully created email account: {} with capacity: {}", emailAddress, capacity);
+		sshInterceptor.ExecuteCommand(string.Format(capacity!, emailAddress));
+		logger.LogInformation("Successfully created email account: {} ", emailAddress);
 	}
 
 	public void DeleteEmailAccount(string emailAddress)
