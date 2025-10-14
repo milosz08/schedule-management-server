@@ -146,14 +146,14 @@ app.UseCors();
 
 using (var scope = app.Services.CreateScope())
 {
+	var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	db.Database.Migrate();
+
 	var seeder = scope.ServiceProvider.GetRequiredService<ApplicationDbSeeder>();
 	seeder.Seed().Wait();
 }
 
-if (app.Environment.IsProduction())
-{
-	app.UseHttpsRedirection();
-}
+if (app.Environment.IsProduction()) app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
