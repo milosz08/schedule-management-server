@@ -28,10 +28,7 @@ public static class DateUtils
 		var firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
 		var weekNum = weekOfYear;
-		if (firstWeek == 1)
-		{
-			weekNum -= 1;
-		}
+		if (firstWeek == 1) weekNum -= 1;
 		var result = firstThursday.AddDays(weekNum * 7);
 		return result.AddDays(-3);
 	}
@@ -47,10 +44,7 @@ public static class DateUtils
 		var firstWeek = cal.GetWeekOfYear(jan1, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
 		var weekNum = weekNumber;
-		if (firstWeek <= 1)
-		{
-			weekNum -= 1;
-		}
+		if (firstWeek <= 1) weekNum -= 1;
 		return firstMonday.AddDays(weekNum * 7 + dayOfWeek - 2);
 	}
 
