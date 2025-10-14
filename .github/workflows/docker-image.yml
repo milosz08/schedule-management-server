@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: output-app
-          path: out/
+          path: ./ScheduleManagement/out/
           retention-days: 1
           
   docker:
