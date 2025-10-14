@@ -19,9 +19,20 @@ public class ApiConfig
 
 	public static void BindValuesFromConfigFile(WebApplicationBuilder builder)
 	{
-		var keyValuePairs = Env.Load();
-		builder.AddConfigurationPlaceholders(
-			new InMemoryPlaceholderResolver(new Dictionary<string, string?>(keyValuePairs)));
+		var environment = builder.Environment.EnvironmentName;
+		IPlaceholderResolver placeholderResolver;
+
+		if (environment == "Docker")
+		{
+			placeholderResolver = new EnvironmentVariableResolver();
+		}
+		else
+		{
+			var keyValuePairs = Env.Load("../.env");
+			placeholderResolver = new InMemoryPlaceholderResolver(new Dictionary<string, string?>(keyValuePairs));
+		}
+
+		builder.AddConfigurationPlaceholders(placeholderResolver);
 		builder.Configuration.GetSection("ApiConfig").Bind(new ApiConfig());
 	}
 }
