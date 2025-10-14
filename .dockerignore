@@ -1,0 +1,10 @@
+﻿.volumes
+obj
+.env
+example.env
+docker-compose.yml
+Dockerfile
+
+ScheduleManagement/bin
+ScheduleManagement/obj
+ScheduleManagement/appsettings.Development.json

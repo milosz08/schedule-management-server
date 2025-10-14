@@ -1,9 +1,10 @@
-bin/
-obj/
+.idea
+bin
+obj
 
-ScheduleManagement/bin/
-ScheduleManagement/obj/
+ScheduleManagement/bin
+ScheduleManagement/obj
 
-ScheduleManagement/.env
-ScheduleManagement/.volumes/**/*volume/
+.env
+.volumes/**/*volume
 ScheduleManagement.sln.DotSettings.user
