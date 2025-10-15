@@ -1,6 +1,4 @@
-﻿<p align="center">
-    <img src=".github/banner.png" alt="">
-</p>
+﻿![](.github/banner.png)
 
 # Schedule Management Server
 
