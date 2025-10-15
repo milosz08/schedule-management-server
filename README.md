@@ -76,7 +76,7 @@ This command should create following containers:
 | schedule-management-mysql-db     | 7690            | [localhost:7690](http://localhost:7690) |
 | schedule-management-mailhog-smtp | 7691, 7692 (UI) | [localhost:7692](http://localhost:7692) |
 | schedule-management-minio-s3     | 7693, 7694 (UI) | [localhost:7694](http://localhost:7694) |
-| schedule-management-app          | 7695            | [localhost:7695](http://localhost:7695) |
+| schedule-management-api          | 7695            | [localhost:7695](http://localhost:7695) |
 
 ## Prepare development environment
 
