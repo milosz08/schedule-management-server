@@ -116,7 +116,7 @@ $ ASPNETCORE_ENVIRONMENT=Development \
 * FluentEmail, Liquid templates,
 * ImageSharp,
 * SSH.NET,
-* AWSSDK,
+* AWS SDK,
 * JwtBearer, NewtonsoftJson,
 * OpenApi,
 * Docker and Docker compose.
