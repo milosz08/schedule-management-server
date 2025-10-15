@@ -54,10 +54,10 @@ services:
     networks:
       - schedule-management-network
 
-  schedule-management-app:
-    container_name: schedule-management-app
+  schedule-management-api:
+    container_name: schedule-management-api
     ports:
-      - '${SCHEDULE_DEV_APP_PORT}:8080'
+      - '${SCHEDULE_DEV_API_PORT}:8080'
     build:
       context: .
       dockerfile: Dockerfile
