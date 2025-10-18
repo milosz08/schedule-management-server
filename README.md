@@ -22,7 +22,7 @@ data storage and FluentEmail with Liquid templates for sending email messages.
 1. Clone repository on your local machine via:
 
 ```bash
-git clone https://github.com/milosz08/schedule-management-server
+$ git clone https://github.com/milosz08/schedule-management-server
 ```
 
 2. Create `.env` file and fill up environment variables based on `example.env` file:
@@ -44,11 +44,11 @@ SCHEDULE_DEV_MYSQL_DB_NAME=<MySQL database name>
 # smtp
 SCHEDULE_DEV_MAILHOG_USERNAME=<Mailhog username, by default mailhoguser (see .volumes/mail/mailhog-auth.txt file)>
 SCHEDULE_DEV_MAILHOG_PASSWORD=<Mailhog password, by default root (see .volumes/mail/mailhog-auth.txt file)>
-SCHEDULE_DEV_SSH_ENABLED=<decided, if mailbox management via SSH is enabled (true/false)>
 # S3
 SCHEDULE_DEV_S3_USERNAME=<S3 username>
 SCHEDULE_DEV_S3_PASSWORD=<S3 password>
 # ssh and mailbox management
+SCHEDULE_DEV_SSH_ENABLED=<decided, if mailbox management via SSH is enabled (true/false)>
 SCHEDULE_DEV_SSH_HOST=<optional, SSH host>
 SCHEDULE_DEV_SSH_LOGIN=<optional, SSH login>
 SCHEDULE_DEV_SSH_PASSWORD=<optional, SSH password>
