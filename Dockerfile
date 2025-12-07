@@ -13,7 +13,7 @@ ENV ASPNETCORE_HTTP_PORTS=8080
 
 WORKDIR /app
 
-COPY --from=build --chown=app:app /app/out .
+COPY --chown=app:app --from=build /app/out .
 
 LABEL maintainer="Miłosz Gilga <miloszgilga@gmail.com>"
 
