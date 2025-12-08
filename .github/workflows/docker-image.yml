@@ -72,6 +72,3 @@ jobs:
           file: ./Dockerfile.pipeline
           push: true
           tags: milosz08/schedule-management-server:latest
-
-      - name: Logout from Docker Hub
-        run: docker logout
